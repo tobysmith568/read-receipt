@@ -38,13 +38,15 @@ function getButtonText($sent) {
 }
 
 $sent = false;
-if (isset( $_POST['submit'])) {
-  error_log('got post');
-  
-  $email = '<' . $_REQUEST['email'] . '>';
+if (isset( $_POST['submit'])) {  
+  $email = $_REQUEST['email'];
+  $recipient = '<' . $email . '>';
   $content = $_REQUEST['content'];
   
-  $message = "<p>{$content}</p>";
+  error_log($email);
+  error_log(urlencode($email));
+
+  $message = '<p>' . $content . '</p><img style="display: none;" src="http://api.tobysmith.uk/read-receipt/callback?email=' . urlencode($email) . '">';
 
   $headers = array(
     'From' => '<' . $emailCredentials->username . '>',
@@ -62,9 +64,9 @@ if (isset( $_POST['submit'])) {
   );
 
   $smtp = Mail::factory('smtp', $params);
-  $sent = $smtp->send($email, $headers, $message);
+  $sent = $smtp->send($recipient, $headers, $message);
 
-  $isError = !PEAR::isError($mail);
+  $isError = !PEAR::isError($sent);
 }
 ?>
 
@@ -80,8 +82,8 @@ if (isset( $_POST['submit'])) {
     <form id="input-form" action="" method="<?php echo getVerb($sent); ?>">
       <?php if (!$sent): ?>
         <h3>Read Receipts</h3>
-        <h4>Emails can use tricks to know when you open them.</h4>
-        <h4>Enter your email address below to receive an email demonstrating this.</h4>
+        <h4>Emails can often use tricks to know when you open them.</h4>
+        <h4>Enter your email address below to receive an email attempting to demonstrate this.</h4>
         <fieldset>
           <input placeholder="Your Email Address" name="email" type="email" tabindex="2" required>
         </fieldset>

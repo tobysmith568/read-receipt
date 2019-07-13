@@ -1,8 +1,8 @@
 <!doctype html>
 <?php
-ini_set('include_path', '/home/billspli/php:' . ini_get('include_path') );
+ini_set('include_path', '/home/billspli/php:' . ini_get('include_path'));
 require_once('Mail.php');
-require_once('../../email-credentials.php');
+require_once('../email-credentials.php');
 error_reporting(E_ALL);
 ?>
 
@@ -42,11 +42,8 @@ if (isset( $_POST['submit'])) {
   $email = $_REQUEST['email'];
   $recipient = '<' . $email . '>';
   $content = $_REQUEST['content'];
-  
-  error_log($email);
-  error_log(urlencode($email));
 
-  $message = '<p>' . $content . '</p><img style="display: none;" src="http://api.tobysmith.uk/read-receipt/callback?email=' . urlencode($email) . '">';
+  $message = '<p>' . $content . '</p><img style="display: none;" src="https://readreceipt.tobysmith.uk/callback?email=' . urlencode($email) . '">';
 
   $headers = array(
     'From' => '<' . $emailCredentials->username . '>',

@@ -1,7 +1,7 @@
 <?php
-ini_set('include_path', '/home/billspli/php:' . ini_get('include_path') );
+ini_set('include_path', '/home/billspli/php:' . ini_get('include_path'));
 require_once('Mail.php');
-require_once('../../email-credentials.php');
+require_once('../email-credentials.php');
 error_reporting(E_ALL);
 
 header("Content-Type: image/jpeg");
@@ -17,6 +17,7 @@ function getUserIpAddr() {
 }
 
 $email = $_GET['email'];
+error_log($email);
 
 if (!$email) {
   die();

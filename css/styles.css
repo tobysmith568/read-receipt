@@ -20,10 +20,16 @@ body {
 }
 
 .container {
-  max-width: 400px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
   position: relative;
+}
+
+@media only screen and (min-width: 480px) {
+  .container {
+    max-width: 400px;
+  }
 }
 
 #input-form button[type=submit],

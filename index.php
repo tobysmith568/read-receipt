@@ -10,9 +10,10 @@ error_reporting(E_ALL);
 <head>
   <meta charset="utf-8">
   <title>Read Receipt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="An email read receipt example">
   <meta name="author" content="Toby Smith">
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <?php

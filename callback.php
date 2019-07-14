@@ -56,6 +56,11 @@ $timeDifference = $dateTimeNow->diff($dateTimeSent)->format('%a days, %h hours, 
 $ip = getUserIpAddr();
 $ipDetails = processIP($ip);
 
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+if (!isset($userAgent)) {
+  $userAgent = 'unknown';
+}
+
 ob_start(); ?>
 <h3>You just opened your email!</h3>
 <p>
@@ -63,12 +68,17 @@ ob_start(); ?>
   <div>Time email was read: <?php echo $dateTimeNow->format('Y-m-d H:i:s') . 'UTC'; ?></div>
   <div>Time difference: <?php echo $timeDifference; ?></div>
 </p>
-<div>IP address: <?php echo $ip; ?></div>
-<div>Internet service provider: <?php echo $ipDetails->isp; ?></div>
-<div>Is mobile connection: <?php echo $ipDetails->mobile ? 'Yes' : 'No'; ?></div>
-<div>Is a proxy: <?php echo $ipDetails->proxy ? 'Yes' : 'No'; ?></div>
+<p>
+  <div>IP address: <?php echo $ip; ?></div>
+  <div>Internet service provider: <?php echo $ipDetails->isp; ?></div>
+  <div>Is mobile connection: <?php echo $ipDetails->mobile ? 'Yes' : 'No'; ?></div>
+  <div>Is a proxy: <?php echo $ipDetails->proxy ? 'Yes' : 'No'; ?></div>
+</p>
 <p>Guessed location:
   <ul><?php echo getAddressFromIPDetails($ipDetails); ?></ul>
+</p>
+<p>
+  <div>User agent: <?php echo $userAgent; ?></div>
 </p>
 <?php
 $message = ob_get_clean();

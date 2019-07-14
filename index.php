@@ -1,11 +1,10 @@
-<!doctype html>
 <?php
 ini_set('include_path', '/home/billspli/php:' . ini_get('include_path'));
 require_once('Mail.php');
 require_once('../email-credentials.php');
 error_reporting(E_ALL);
 ?>
-
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -43,7 +42,7 @@ if (isset( $_POST['submit'])) {
   $recipient = '<' . $email . '>';
   $content = $_REQUEST['content'];
 
-  $message = '<p>' . $content . '</p><img style="display: none;" src="https://readreceipt.tobysmith.uk/callback?email=' . urlencode($email) . '">';
+  $message = '<p>' . $content . '</p><img src="https://readreceipt.tobysmith.uk/' . urlencode($email) . '/' . time() .'/callback.png">';
 
   $headers = array(
     'From' => '<' . $emailCredentials->username . '>',

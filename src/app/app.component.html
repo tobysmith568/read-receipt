@@ -1,37 +1,42 @@
-<div [ngSwitch]="status">
-  <h1>Read Reciept</h1>
-  <p>
-    Email senders can use a trick called a tracking pixel to know exactly when you open their emails, just like a read
-    reciept.
-  </p>
-  <p>These pixels are not only hard to detect, but they also give away lots of personal information!</p>
-  <p>
-    Using this tool, you can receive an email containing my implementation of a tracking pixel to see the type of
-    information you're giving away simply by opening an email.
-  </p>
-  <p>
-    Note that this tool stores <b>none</b> of your personal information. It's totally stateless with no cookies,
-    databases, logs, or anything else! You can check the source code on
-    <a href="https://github.com/tobysmith568/Read-Receipt">my GitHub</a>.
-  </p>
-  <div *ngSwitchDefault>
-    <div>
-      <label for="email">Email</label><br />
-      <input
-        id="email"
-        name="email"
-        type="email"
-        autocomplete="off"
-        required
-        [(ngModel)]="emailValue"
-        #email="ngModel"
-      />
+<div class="wrapper">
+  <div class="content">
+    <h1>Read Reciept</h1>
+    <p>
+      Email senders can use a trick called a tracking pixel to know exactly when you open their emails, just like a read
+      reciept.
+    </p>
+    <p>These pixels are not only hard to detect, but they also give away lots of personal information!</p>
+    <p>
+      Using this tool, you can receive an email containing my implementation of a tracking pixel to see the type of
+      information you're giving away simply by opening an email.
+    </p>
+    <div class="form" [ngSwitch]="status">
+      <div *ngSwitchDefault>
+        <div>
+          <label for="email">Enter Your Email:</label><br />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="off"
+            required
+            [(ngModel)]="emailValue"
+            #email="ngModel"
+          />
+        </div>
+        <div class="errors" *ngIf="email.touched || email.dirty">
+          <p *ngIf="email.errors?.required">An email address is required</p>
+        </div>
+        <button [disabled]="email.errors" (click)="send()">Send Email</button>
+      </div>
+      <div *ngSwitchCase="'sent'">Sent!</div>
+      <div *ngSwitchCase="'error'">Sorry, there was an error!</div>
     </div>
-    <div *ngIf="email.touched || email.dirty">
-      <p *ngIf="email.errors?.required">An email address is required</p>
-    </div>
-    <button [disabled]="email.errors" (click)="send()">Send</button>
+    <p>
+      Note that this tool stores <b>none</b> of your personal information. It's totally stateless with no cookies,
+      databases, logs, or anything else! You can check the source code on
+      <a target="_blank" rel="noopener" href="https://github.com/tobysmith568/Read-Receipt">my GitHub</a>.
+    </p>
   </div>
-  <div *ngSwitchCase="'sent'">Sent!</div>
-  <div *ngSwitchCase="'error'">Sorry, there was an error!</div>
 </div>
+<div class="copyright">© Copyright Toby Smith {{ year }}</div>

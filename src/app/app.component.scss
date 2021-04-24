@@ -1,0 +1,67 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+}
+
+.content {
+  max-width: 500px;
+  background: #f9f9f9;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.form {
+  width: 75%;
+  margin: 1.5em auto 1.5em auto;
+
+  label {
+    text-align: left;
+  }
+
+  input {
+    width: 100%;
+    margin: 0.5em 0 0.5em 0;
+    padding: 10px;
+    font-size: 1em;
+    text-align: center;
+  }
+
+  button {
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    background: #237fb4;
+    color: #fff;
+    margin: 0;
+    padding: 10px;
+    font-size: 0.7em;
+
+    &:disabled {
+      cursor: default;
+      opacity: 70%;
+    }
+  }
+
+  .errors {
+    color: red;
+  }
+}
+@media (max-width: 500px) {
+  .form {
+    width: 100%;
+  }
+}
+
+.copyright {
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  font-size: 0.8em;
+  width: 100%;
+  text-align: center;
+  z-index: -1;
+  color: #0c0c0c;
+}

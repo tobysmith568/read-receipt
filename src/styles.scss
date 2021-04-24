@@ -12,8 +12,31 @@ body {
 }
 
 body {
-  font-size: unquote("clamp(1rem, -0.875rem + 8.3333vw, 3.5rem)");
+  font-size: large;
   overflow: hidden;
-  color: #777;
+  color: #4a4a4a;
   background-color: #2fa7ec;
+}
+@media (max-width: 500px) {
+  body {
+    font-size: medium;
+  }
+}
+@media (max-width: 350px) {
+  body {
+    font-size: small;
+  }
+}
+
+h1 {
+  margin-bottom: 0.75em;
+}
+
+p {
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
+}
+
+a {
+  color: #4a4a4a;
 }

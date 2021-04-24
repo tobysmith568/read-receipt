@@ -14,6 +14,10 @@ export class AppComponent {
   public emailValue: string = "";
   public status: Status = "form";
 
+  public get year(): string {
+    return new Date().getFullYear().toString();
+  }
+
   constructor(
     private readonly httpClient: HttpClient,
     @Inject(ENVIRONMENT) private readonly environment: IEnvironment

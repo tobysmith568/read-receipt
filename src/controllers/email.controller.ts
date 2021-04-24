@@ -16,6 +16,7 @@ export class EmailController implements IController {
   }
 
   private async post(req: Request, res: Response): Promise<void> {
+    // await new Promise(resolve => setTimeout(resolve, 300000));
     res.json({ sentTo: req.body.email });
   }
 }

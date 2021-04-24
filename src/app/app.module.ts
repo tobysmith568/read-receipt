@@ -5,11 +5,10 @@ import { FormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { environment } from "../environments/environment";
 import { ENVIRONMENT } from "./injection-tokens";
-import { RouterModule } from "@angular/router";
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [FormsModule, RouterModule, HttpClientModule, BrowserModule.withServerTransition({ appId: "serverApp" })],
+  imports: [FormsModule, HttpClientModule, BrowserModule.withServerTransition({ appId: "serverApp" })],
   providers: [
     {
       provide: ENVIRONMENT,

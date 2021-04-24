@@ -55,6 +55,29 @@
   }
 }
 
+.spinner-outer {
+  margin-bottom: 1em;
+
+  .spinner {
+    border: 0.4em solid #cecece;
+    border-top: 0.4em solid #2fa7ec;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    height: 3em;
+    width: 3em;
+    margin: auto;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .copyright {
   position: absolute;
   bottom: 0;

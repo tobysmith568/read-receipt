@@ -3,7 +3,7 @@ import { Component, Inject } from "@angular/core";
 import { IEnvironment } from "src/environments/environment.interface";
 import { ENVIRONMENT } from "./injection-tokens";
 
-type Status = "form" | "sent" | "error";
+type Status = "form" | "sending" | "sent" | "error";
 
 @Component({
   selector: "app-root",
@@ -24,11 +24,16 @@ export class AppComponent {
   ) {}
 
   public async send(): Promise<void> {
+    this.status = "sending";
+
     try {
-      const response = await this.httpClient
+      const httpPromise = this.httpClient
         .post(this.environment.sendEmailEndpoint, { email: this.emailValue }, { observe: "response" })
         .toPromise();
 
+      const minDelayPromise = new Promise(resolve => setTimeout(resolve, 500));
+
+      const [response] = await Promise.all([httpPromise, minDelayPromise]);
       this.status = response.ok ? "sent" : "error";
     } catch {
       this.status = "error";

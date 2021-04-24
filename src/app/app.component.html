@@ -20,8 +20,9 @@
             type="email"
             autocomplete="off"
             required
-            [(ngModel)]="emailValue"
             #email="ngModel"
+            [(ngModel)]="emailValue"
+            (keydown.enter)="send()"
           />
         </div>
         <div class="errors" *ngIf="email.touched || email.dirty">

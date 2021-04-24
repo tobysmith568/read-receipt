@@ -34,4 +34,9 @@ export class AppComponent {
       this.status = "error";
     }
   }
+
+  public reset(): void {
+    this.emailValue = "";
+    this.status = "form";
+  }
 }

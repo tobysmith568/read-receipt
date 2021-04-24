@@ -30,7 +30,10 @@
         </div>
         <button [disabled]="email.errors" (click)="send()">Send Email</button>
       </div>
-      <div *ngSwitchCase="'sent'">Sent!</div>
+      <div *ngSwitchCase="'sent'">
+        Sent!
+        <div><a [routerLink]="" (click)="reset()">Send another</a></div>
+      </div>
       <div *ngSwitchCase="'error'">Sorry, there was an error!</div>
     </div>
     <p>

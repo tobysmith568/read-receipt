@@ -9,7 +9,7 @@ import { APP_BASE_HREF } from "@angular/common";
 import { existsSync } from "fs";
 import { container } from "tsyringe";
 import { EmailController } from "src/controllers/email.controller";
-import { json } from "express";
+import { json, Response, Request } from "express";
 
 export function app(): express.Express {
   const server = express();
@@ -28,6 +28,15 @@ export function app(): express.Express {
   server.set("view engine", "html");
   server.set("views", distFolder);
 
+  server.use((req, res, next) => {
+    if (req.url.includes("__server__")) {
+      render(indexHtml, req, res);
+      return;
+    }
+
+    next();
+  });
+
   server.get(
     "*.*",
     express.static(distFolder, {
@@ -35,10 +44,10 @@ export function app(): express.Express {
     })
   );
 
-  server.use("/send-email", json(), emailController.getRouter());
+  server.use("/email", json(), emailController.getRouter());
 
   server.get("*", (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+    render(indexHtml, req, res);
   });
 
   return server;
@@ -52,6 +61,10 @@ function run(): void {
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
+}
+
+function render(indexHtml: string, req: Request, res: Response): void {
+  res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
 }
 
 // Webpack will replace 'require' with '__webpack_require__'

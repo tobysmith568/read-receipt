@@ -1,9 +1,9 @@
 <div class="wrapper">
   <div class="content">
-    <h1>Read Reciept</h1>
+    <h1>Read Receipt</h1>
     <p>
       Email senders can use a trick called a tracking pixel to know exactly when you open their emails, just like a read
-      reciept.
+      receipt.
     </p>
     <p>These pixels are not only hard to detect, but they also give away lots of personal information!</p>
     <p>
@@ -37,10 +37,13 @@
         Sending
       </div>
       <div *ngSwitchCase="'sent'">
-        Sent!
+        <div *ngIf="sentTo">Successfully sent to {{ sentTo }}!</div>
         <div><a (click)="reset()">Send another</a></div>
       </div>
-      <div *ngSwitchCase="'error'">Sorry, there was an error!</div>
+      <div *ngSwitchCase="'error'">
+        Sorry, there was an error!
+        <div><a (click)="reset()">Try again</a></div>
+      </div>
     </div>
     <p>
       Note that this tool stores <b>none</b> of your personal information. It's totally stateless with no cookies,

@@ -37,14 +37,14 @@ export function app(): express.Express {
     next();
   });
 
+  server.use("/email", json(), emailController.getRouter());
+
   server.get(
     "*.*",
     express.static(distFolder, {
       maxAge: "1y"
     })
   );
-
-  server.use("/email", json(), emailController.getRouter());
 
   server.get("*", (req, res) => {
     render(indexHtml, req, res);

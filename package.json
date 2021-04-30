@@ -31,6 +31,7 @@
     "@angular/platform-server": "~10.1.6",
     "@angular/router": "~10.1.6",
     "@nguniversal/express-engine": "^10.1.0",
+    "dayjs": "^1.10.4",
     "dotenv": "^8.2.0",
     "express": "^4.15.2",
     "nodemailer": "^6.5.0",

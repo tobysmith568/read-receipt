@@ -9,19 +9,30 @@
   <p>Hey 👋</p>
   <p>
     You received this email because your email address was entered into the tool <a href="{{domain}}">Read Receipt</a>
-    created by <a href="https://tobysmith.uk">Toby Smith</a>.
+    created by <a href="https://tobysmith.uk">Toby Smith</a> and you opened an email containing a tracking pixel.
   </p>
 
   <p>
-    This email contains a 'tracking pixel'. A tiny invisible image which, when loaded by you opening this email, gave
-    away not only that you opened this email, but also some personal information about you and your device.
+    TODO: Add more text
   </p>
 
   <p>
-    Some email providers are able to block these pixels, but assuming that it was successful, opening this email will
-    trigger another email to be sent to you. This second email, which you should have already received by now, contains
-    all of the information I was able to gather from you opening this email.
+    You:
   </p>
+
+  <ul>
+    <li>Your Email: {{user.email}}</li>
+  </ul>
+
+  <p>
+    Times:
+  </p>
+
+  <ul>
+    <li>First email sent at: {{times.firstEmailTimestamp}}</li>
+    <li>This email sent at: {{times.secondEmailTimestamp}}</li>
+    <li>Time difference: {{times.timestampDifference}}</li>
+  </ul>
 
   <p>
     Note that this tool stores <b>none</b> of your personal information. It's totally stateless with no cookies,
@@ -38,8 +49,6 @@
   <p>
     Thanks!
   </p>
-
-  <img src="{{domain}}email/{{urlSafeEmail}}/{{timestamp}}/pixel.png" />
 </body>
 
 </html>

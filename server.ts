@@ -3,13 +3,13 @@ import "zone.js/dist/zone-node";
 import { ngExpressEngine } from "@nguniversal/express-engine";
 import * as express from "express";
 import { join } from "path";
-
 import { AppServerModule } from "./src/main.server";
 import { APP_BASE_HREF } from "@angular/common";
 import { existsSync } from "fs";
 import { container } from "tsyringe";
 import { EmailController } from "src/controllers/email.controller";
 import { json, Response, Request } from "express";
+import * as requestIp from "request-ip";
 
 export function app(): express.Express {
   const server = express();
@@ -27,6 +27,8 @@ export function app(): express.Express {
 
   server.set("view engine", "html");
   server.set("views", distFolder);
+
+  server.use(requestIp.mw());
 
   server.use((req, res, next) => {
     if (req.url.includes("__server__")) {

@@ -8,6 +8,7 @@ import { FileService } from "src/services/file.service";
 import { IFirstEmail } from "src/models/first-email.interface";
 import { TimeService } from "src/services/time.service";
 import { ISecondEmail } from "src/models/second-email.interface";
+import { EnvironmentService } from "src/services/environment.service";
 
 @singleton()
 export class EmailController implements IController {
@@ -24,7 +25,8 @@ export class EmailController implements IController {
     private readonly expressService: ExpressService,
     private readonly emailService: EmailService,
     private readonly fileService: FileService,
-    private readonly timeService: TimeService
+    private readonly timeService: TimeService,
+    private readonly environmentService: EnvironmentService
   ) {
     this.pixelLocation = fileService.resolvePath(__dirname, "../browser/assets/__server__/img/pixel.png");
     this.firstEmailLocation = fileService.resolvePath(__dirname, "../browser/assets/__server__/emails/first-email.hbs");
@@ -99,15 +101,28 @@ export class EmailController implements IController {
       secondSentAtTimestampUTC
     );
 
+    const userIp = this.getIp(req);
+
     return {
       user: {
-        email: recipientEmailAddress
+        email: recipientEmailAddress,
+        ip: userIp
       },
       times: {
-        firstEmailTimestamp: firstSentAtTimestampUTC.toString(),
-        secondEmailTimestamp: secondSentAtTimestampUTC.toString(),
+        firstEmailTimestamp: this.timeService.printTimestamp(firstSentAtTimestampUTC),
+        secondEmailTimestamp: this.timeService.printTimestamp(secondSentAtTimestampUTC),
         timestampDifference: differenceBetweenTimestamps
       }
     };
+  }
+
+  private getIp(request: Request): string {
+    const fromExpress = request.clientIp;
+
+    if (!fromExpress || fromExpress === "::1") {
+      return this.environmentService.config.dev.ip ?? "unknown";
+    }
+
+    return fromExpress;
   }
 }

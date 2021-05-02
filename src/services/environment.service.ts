@@ -11,6 +11,9 @@ interface IConfig {
     user: string;
     pass: string;
   };
+  dev: {
+    ip?: string;
+  };
 }
 
 @singleton()
@@ -29,6 +32,9 @@ export class EnvironmentService {
         sender: process.env.EMAIL_SENDER ?? "",
         user: process.env.EMAIL_USER ?? "",
         pass: process.env.EMAIL_PASS ?? ""
+      },
+      dev: {
+        ip: process.env.DEV_IP ?? undefined
       }
     };
   }

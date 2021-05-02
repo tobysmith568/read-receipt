@@ -11,7 +11,7 @@ export class TimeService {
   }
 
   public printTimestamp(timestamp: number): string {
-    return dayjs.unix(timestamp).format("h:mm:ss a, Do MMMM YYYY");
+    return dayjs.unix(timestamp).format("h:mm:ssa, D MMMM YYYY");
   }
 
   public getDifferenceBetweenTimestamps(first: number, second: number): string {

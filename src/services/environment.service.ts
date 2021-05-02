@@ -7,7 +7,8 @@ interface IConfig {
   email: {
     host: string;
     port: number;
-    sender: string;
+    senderName: string;
+    senderEmail: string;
     user: string;
     pass: string;
   };
@@ -29,7 +30,8 @@ export class EnvironmentService {
       email: {
         host: process.env.EMAIL_HOST ?? "",
         port: this.parseNumber(process.env.EMAIL_PORT, 465),
-        sender: process.env.EMAIL_SENDER ?? "",
+        senderName: process.env.EMAIL_SENDER_NAME ?? "",
+        senderEmail: process.env.EMAIL_SENDER_EMAIL ?? "",
         user: process.env.EMAIL_USER ?? "",
         pass: process.env.EMAIL_PASS ?? ""
       },

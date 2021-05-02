@@ -11,7 +11,7 @@ export class EmailService {
   private from: string;
 
   constructor(environmentService: EnvironmentService) {
-    const { host, port, sender, user, pass } = environmentService.config.email;
+    const { host, port, senderName, senderEmail, user, pass } = environmentService.config.email;
 
     this.transporter = createTransport({
       host,
@@ -22,7 +22,7 @@ export class EmailService {
         pass
       }
     });
-    this.from = `${sender} <${user}>`;
+    this.from = `${senderName} <${senderEmail}>`;
   }
 
   public async sendHtml(to: string, subject: string, html: string): Promise<void> {

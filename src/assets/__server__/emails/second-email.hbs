@@ -13,7 +13,8 @@
   </p>
 
   <p>
-    TODO: Add more text
+    Below shows all of the information which my implementation of a tracking pixel is able to expose. Note that other
+    people's or company's implementations may be able too find out more!
   </p>
 
   <p>
@@ -29,11 +30,46 @@
   <p>
     You:
   </p>
-
   <ul>
     <li>Email: {{user.email}}</li>
     <li>IP Address: {{user.ip}}</li>
   </ul>
+
+  {{#if ipData}}
+  <p>
+    Your <b>approximate</b> location:
+  </p>
+  <ul>
+    <li>{{ipData.city}}</li>
+    <li>{{ipData.zip}}</li>
+    <li>{{ipData.regionName}} ({{ipData.region}})</li>
+    <li>{{ipData.country}} ({{ipData.countryCode}})</li>
+    <p>
+      <li>Lat: {{ipData.lat}}, Lon: {{ipData.lon}}</li>
+    </p>
+  </ul>
+
+  <p>
+    Your connection:
+  </p>
+  <ul>
+    <li>Is Mobile: {{ipData.mobile}}</li>
+    <li>Is via Proxy: {{ipData.proxy}}</li>
+    <li>Internet provider: {{ipData.isp}}</li>
+  </ul>
+  {{/if}}
+
+  {{#if userAgentData}}
+  <p>
+    Your device:
+  </p>
+  <ul>
+    <li>Browser: {{userAgentData.browser}}</li>
+    <li>Version: {{userAgentData.version}}</li>
+    <li>Operating System: {{userAgentData.os}}</li>
+    <li>Platform: {{userAgentData.platform}}</li>
+  </ul>
+  {{/if}}
 
   <p>
     Note that this tool stores <b>none</b> of your personal information. It's totally stateless with no cookies,

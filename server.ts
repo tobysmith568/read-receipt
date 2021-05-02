@@ -10,6 +10,7 @@ import { container } from "tsyringe";
 import { EmailController } from "src/controllers/email.controller";
 import { json, Response, Request } from "express";
 import * as requestIp from "request-ip";
+import * as useragent from "express-useragent";
 
 export function app(): express.Express {
   const server = express();
@@ -29,6 +30,7 @@ export function app(): express.Express {
   server.set("views", distFolder);
 
   server.use(requestIp.mw());
+  server.use(useragent.express());
 
   server.use((req, res, next) => {
     if (req.url.includes("__server__")) {

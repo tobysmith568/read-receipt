@@ -9,6 +9,8 @@ import { IFirstEmail } from "src/models/first-email.interface";
 import { TimeService } from "src/services/time.service";
 import { ISecondEmail } from "src/models/second-email.interface";
 import { EnvironmentService } from "src/services/environment.service";
+import { IpService } from "src/services/ip.service";
+import { UserAgentService } from "src/services/user-agent.service";
 
 @singleton()
 export class EmailController implements IController {
@@ -26,7 +28,9 @@ export class EmailController implements IController {
     private readonly emailService: EmailService,
     private readonly fileService: FileService,
     private readonly timeService: TimeService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly ipService: IpService,
+    private readonly userAgentService: UserAgentService
   ) {
     this.pixelLocation = fileService.resolvePath(__dirname, "../browser/assets/__server__/img/pixel.png");
     this.firstEmailLocation = fileService.resolvePath(__dirname, "../browser/assets/__server__/emails/first-email.hbs");
@@ -80,7 +84,7 @@ export class EmailController implements IController {
     }
     const recipientEmailAddress = decodeURIComponent(req.params.urlSafeEmail);
 
-    const emailData = this.gatherUserData(req, recipientEmailAddress);
+    const emailData = await this.gatherUserData(req, recipientEmailAddress);
     const completeEmailContent = this.compiledSecondEmail(emailData);
     this.emailService.sendHtml(recipientEmailAddress, "You just opened your  email!", completeEmailContent);
   }
@@ -93,7 +97,7 @@ export class EmailController implements IController {
     return url.href;
   }
 
-  private gatherUserData(req: Request, recipientEmailAddress: string): ISecondEmail {
+  private async gatherUserData(req: Request, recipientEmailAddress: string): Promise<ISecondEmail> {
     const firstSentAtTimestampUTC = Number(req.params.timestamp);
     const secondSentAtTimestampUTC = this.timeService.getCurrentTimestampUTC();
     const differenceBetweenTimestamps = this.timeService.getDifferenceBetweenTimestamps(
@@ -102,6 +106,8 @@ export class EmailController implements IController {
     );
 
     const userIp = this.getIp(req);
+    const ipData = await this.ipService.getInfoFromIp(userIp);
+    const userAgentData = this.userAgentService.getUserAgent(req);
 
     return {
       user: {
@@ -112,7 +118,9 @@ export class EmailController implements IController {
         firstEmailTimestamp: this.timeService.printTimestamp(firstSentAtTimestampUTC),
         secondEmailTimestamp: this.timeService.printTimestamp(secondSentAtTimestampUTC),
         timestampDifference: differenceBetweenTimestamps
-      }
+      },
+      ipData,
+      userAgentData
     };
   }
 

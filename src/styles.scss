@@ -1,8 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Blinker&display=swap");
+
 * {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
   outline: none;
+  font-family: "Blinker", sans-serif;
 }
 
 html,
@@ -15,7 +18,7 @@ body {
   font-size: large;
   overflow: hidden;
   color: #4a4a4a;
-  background-color: #2fa7ec;
+  background-color: dodgerblue;
 }
 @media (max-width: 500px) {
   body {

@@ -1,27 +1,30 @@
 # ReadReceipt
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.7.
+Email senders can use a trick called a 'tracking pixel' to know exactly when you open their emails, just like a read receipt.
 
-## Development server
+These pixels are not only hard to detect, but they also give away lots of personal information!
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Using this website, you can receive an email containing my implementation of a tracking pixel to see examples of the information you're giving away simply by opening emails.
 
-## Code scaffolding
+Hosted at: https://read-receipt.tobythe.dev
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Dev Setup
 
-## Build
+Project needs a `.env` file with the following properties for the SMTP server as well as a mock IP address to use when run as a dev build:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```
+EMAIL_HOST=localhost
+EMAIL_PORT=25
+EMAIL_SENDER_NAME=Read Receipt
+EMAIL_SENDER_EMAIL=read.receipt@whatever.com
+EMAIL_USER=user
+EMAIL_PASS=pass
+DEV_IP=xxx.xxx.xxx.xxx
+```
 
-## Running unit tests
+To run the project use:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```
+npm install
+npm run dev:ssr
+```

@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1001.7",
-    "@angular/cli": "~10.1.7",
+    "@angular/cli": "~10.2.0",
     "@angular/compiler-cli": "~10.2.0",
     "@nguniversal/builders": "^10.1.0",
     "@tobysmith568/prettier-config": "^1.0.0",

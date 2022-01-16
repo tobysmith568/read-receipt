@@ -31,7 +31,7 @@
     "@angular/platform-server": "~10.2.0",
     "@angular/router": "~10.2.0",
     "@nguniversal/express-engine": "^10.1.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "dayjs": "^1.10.4",
     "dotenv": "^8.2.0",
     "express": "^4.15.2",

@@ -37,7 +37,7 @@
     "express": "^4.15.2",
     "express-useragent": "^1.0.15",
     "nodemailer": "^6.5.0",
-    "nodemailer-express-handlebars": "^4.0.0",
+    "nodemailer-express-handlebars": "^5.0.0",
     "request-ip": "^2.1.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

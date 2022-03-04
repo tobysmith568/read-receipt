@@ -5,7 +5,7 @@ import { EnvironmentService } from "./environment.service";
 
 @singleton()
 export class EmailService {
-  private static readonly SECUREPORT = 465;
+  private static readonly SECURE_PORT = 465;
 
   private transporter: Mail;
   private from: string;
@@ -16,7 +16,7 @@ export class EmailService {
     this.transporter = createTransport({
       host,
       port,
-      secure: port === EmailService.SECUREPORT,
+      secure: port === EmailService.SECURE_PORT,
       auth: {
         user,
         pass

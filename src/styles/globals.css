@@ -1,16 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Blinker&display=swap");
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: "Blinker", sans-serif;
+}
+
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
-    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-size: large;
+  overflow: hidden;
+  color: #4a4a4a;
+  background-color: dodgerblue;
+}
+@media (max-width: 500px) {
+  body {
+    font-size: medium;
+  }
+}
+@media (max-width: 350px) {
+  body {
+    font-size: small;
+  }
+}
+
+h1 {
+  margin-bottom: 0.75em;
+}
+
+p {
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
+  color: #4a4a4a;
+  text-decoration: underline;
+  cursor: pointer;
 }

@@ -1,18 +1,20 @@
+import styled from "@emotion/styled";
 import Error from "./error";
 import Form from "./form";
-import Sending from "./sending";
 import Sent from "./sent";
-import { useFormState } from "./use-form-state";
+import { Status, useFormState } from "./use-form-state";
 
 const EmailForm = () => {
   const formState = useFormState();
 
+  return <FormWrapper>{getFormPage(formState)}</FormWrapper>;
+};
+export default EmailForm;
+
+const getFormPage = (formState: Status) => {
   switch (formState) {
     case "form":
       return <Form />;
-
-    case "sending":
-      return <Sending />;
 
     case "sent":
       return <Sent />;
@@ -22,4 +24,13 @@ const EmailForm = () => {
   }
 };
 
-export default EmailForm;
+const FormWrapper = styled.div`
+  width: 75%;
+  margin: 1.5em auto 1.5em auto;
+
+  @media (max-width: 500px) {
+    &.form {
+      width: 100%;
+    }
+  }
+`;

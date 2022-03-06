@@ -1,4 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { firstEmailAsHtml } from "../../emails/first-email";
+import { sendHtml } from "../../utils/email";
+import { getCurrentTimestampUTC } from "../../utils/time";
 
 export interface SubmitRequest {}
 
@@ -6,6 +9,35 @@ export interface SubmitResponse {
   success: boolean;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<SubmitResponse>) {
-  res.status(200).json({ success: true });
-}
+const handler = async (req: NextApiRequest, res: NextApiResponse<SubmitResponse>) => {
+  try {
+    await handleRequest(req);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false });
+  }
+};
+export default handler;
+
+const handleRequest = async (req: NextApiRequest) => {
+  const currentDomain = fullUrl(req);
+
+  const recipientEmailAddress = req.body.email;
+  const recipientEmailAddressBase64 = encodeURIComponent(recipientEmailAddress);
+
+  const timestamp = getCurrentTimestampUTC();
+
+  const emailContentAsHtml = firstEmailAsHtml({
+    domain: currentDomain,
+    urlSafeEmail: recipientEmailAddressBase64,
+    timestamp
+  });
+
+  await sendHtml(recipientEmailAddress, "Read Receipt", emailContentAsHtml);
+};
+
+const fullUrl = (req: NextApiRequest): string => {
+  const host = req.headers.host;
+  return `https://${host}`;
+};

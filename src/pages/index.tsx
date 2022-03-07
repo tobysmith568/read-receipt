@@ -13,7 +13,6 @@ const Index: NextPage = () => {
           name="description"
           content="Email senders can use a trick called a tracking pixel to know exactly when you open their emails, just like a read receipt. Use this tool to see the information you're giving away simply by opening emails."
         />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Wrapper>

@@ -8,7 +8,7 @@ export const getCurrentTimestampUTC = (): number => {
 };
 
 export const printTimestamp = (timestamp: number): string => {
-  return dayjs.unix(timestamp).format("h:mm:ssa, D MMMM YYYY");
+  return dayjs.unix(timestamp).format("h:mm:ssa, D MMMM YYYY") + " UTC";
 };
 
 export const getDifferenceBetweenTimestamps = (first: number, second: number): string => {

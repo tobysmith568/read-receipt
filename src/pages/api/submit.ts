@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { firstEmailAsHtml } from "../../emails/first-email";
+import { getDomainForRequest } from "../../utils/domain";
 import { sendHtml } from "../../utils/email";
 import { getCurrentTimestampUTC } from "../../utils/time";
 
@@ -21,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<SubmitResponse>
 export default handler;
 
 const handleRequest = async (req: NextApiRequest) => {
-  const currentDomain = fullUrl(req);
+  const currentDomain = getDomainForRequest(req);
 
   const recipientEmailAddress = req.body.email;
   const recipientEmailAddressBase64 = encodeURIComponent(recipientEmailAddress);
@@ -35,9 +36,4 @@ const handleRequest = async (req: NextApiRequest) => {
   });
 
   await sendHtml(recipientEmailAddress, "Read Receipt", emailContentAsHtml);
-};
-
-const fullUrl = (req: NextApiRequest): string => {
-  const host = req.headers.host;
-  return `https://${host}`;
 };

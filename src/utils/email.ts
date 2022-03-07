@@ -17,7 +17,6 @@ const transporter = createTransport({
 const from = `${senderName} <${senderEmail}>`;
 
 export const sendHtml = async (to: string, subject: string, html: string): Promise<void> => {
-  console.log({ to, subject });
   await transporter.sendMail({
     from,
     to,

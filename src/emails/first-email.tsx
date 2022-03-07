@@ -3,13 +3,13 @@
 import { FC } from "react";
 import { renderToString } from "react-dom/server";
 
-interface Props {
+export interface FirstEmailProps {
   domain: string;
   urlSafeEmail: string;
   timestamp: number;
 }
 
-export const firstEmailAsHtml = (props: Props): string => {
+export const firstEmailAsHtml = (props: FirstEmailProps): string => {
   return `<!DOCTYPE html>
 <html>
 
@@ -24,7 +24,7 @@ ${renderToString(<FirstEmail {...props} />)}
 </html>`;
 };
 
-const FirstEmail: FC<Props> = ({ domain, timestamp, urlSafeEmail }) => {
+const FirstEmail: FC<FirstEmailProps> = ({ domain, timestamp, urlSafeEmail }) => {
   return (
     <>
       <p>Hey 👋</p>

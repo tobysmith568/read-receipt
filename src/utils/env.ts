@@ -10,6 +10,7 @@ interface Env {
     pass: string;
   };
   dev: {
+    isDev: boolean;
     ip?: string;
   };
 }
@@ -24,6 +25,7 @@ const env: Env = {
     pass: process.env.EMAIL_PASS ?? ""
   },
   dev: {
+    isDev: process.env.NODE_ENV === "development",
     ip: process.env.DEV_IP ?? undefined
   }
 };

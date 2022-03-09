@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`second email should render correctly 1`] = `
+"<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Read Receipt</title>
+</head>
+
+<body>
+<p>Hey 👋</p><p>You received this email because your email address was entered into the tool<!-- --> <a href=\\"https://wherever.this.is.hosted\\">Read Receipt</a> created by <a href=\\"https://tobysmith.uk\\">Toby Smith</a> <!-- -->and you opened an email containing a tracking pixel.</p><p>Below shows all of the information which my implementation of a tracking pixel is able to expose. Note that other people or companies may be able to find out more!</p><p>Times:</p><ul><li>First email sent at: <!-- -->1234567890</li><li>This email sent at: <!-- -->9876543210</li><li>Time difference: <!-- -->Some time passed</li></ul><p>You:</p><ul><li>Email: <!-- -->this.is.a.email.address@mail.com</li><li>IP Address: <!-- -->123.456.789.0</li></ul><p>Your <b>approximate</b> location:</p><ul><li>London</li><li>NW1 4RY</li><li>London<!-- --> (<!-- -->LON<!-- -->)</li><li>United Kingdom<!-- --> (<!-- -->UK<!-- -->)</li><p><li>Lat: <!-- -->51.53455744270914<!-- -->, Lon: <!-- -->-0.154572358965142</li></p></ul><p>Your connection:</p><ul><li>Is Mobile: <!-- -->No</li><li>Is via Proxy: <!-- -->No</li><li>Internet provider: <!-- -->BT Internet Services, Inc.</li></ul><p>Your device:</p><ul><li>Browser: <!-- -->Chrome</li><li>Version: <!-- -->78.0.3904.70</li><li>Operating System: <!-- -->Windows</li><li>Platform: <!-- -->Windows NT</li></ul><p>Some of this information may be inaccurate, especially the location and device sections. This is because some providers attempt to protect their users from tools like the tracking pixel hidden in the first email.</p><p>Reopening the first email you received on different devices or by enabling/disabling WiFi on mobile devices will yield different results with different levels of data accuracy. If you have multiple emails from different providers you will see different results from each of them too, eg, @outlook.com or @gmail.com.</p><p>This tool stores <b>none</b> of your personal information. It&#x27;s totally stateless with no cookies, databases, logs, or anything else! You can check the source code<!-- --> <a target=\\"_blank\\" rel=\\"noreferrer noopener\\" href=\\"https://github.com/tobysmith568/Read-Receipt\\">on GitHub</a>.</p><p>If you have any questions, you can reach out to me at<!-- --> <a href=\\"mailto:tobysmith568@hotmail.co.uk\\">tobysmith568@hotmail.co.uk</a> or find me at<!-- --> <a href=\\"https://tobysmith.uk\\">https://tobysmith.uk</a>.</p><p>Thanks!</p>
+</body>
+
+</html>"
+`;

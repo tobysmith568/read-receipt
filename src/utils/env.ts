@@ -1,6 +1,6 @@
 import { parseNumber } from "./number";
 
-interface Env {
+export interface Env {
   email: {
     host: string;
     port: number;
@@ -15,7 +15,7 @@ interface Env {
   };
 }
 
-const env: Env = {
+export const getEnv = (): Env => ({
   email: {
     host: process.env.EMAIL_HOST ?? "",
     port: parseNumber(process.env.EMAIL_PORT, 465),
@@ -26,7 +26,10 @@ const env: Env = {
   },
   dev: {
     isDev: process.env.NODE_ENV === "development",
-    ip: process.env.DEV_IP ?? undefined
+    ip: isFalsyOrEmpty(process.env.DEV_IP) ? undefined : process.env.DEV_IP
   }
+});
+
+const isFalsyOrEmpty = (value: string | undefined | null): boolean => {
+  return !value || value.trim() === "";
 };
-export default env;

@@ -1,8 +1,8 @@
 import { createTransport } from "nodemailer";
-import env from "./env";
+import { getEnv } from "./env";
 
 const securePort = 465;
-const { host, port, user, pass, senderName, senderEmail } = env.email;
+const { host, port, user, pass, senderName, senderEmail } = getEnv().email;
 
 const transporter = createTransport({
   host,

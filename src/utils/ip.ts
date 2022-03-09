@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NextApiRequest } from "next";
 import requestIp from "request-ip";
-import env from "./env";
+import { getEnv } from "./env";
 
 export interface IpResponse {
   status: string;
@@ -19,6 +19,8 @@ export interface IpResponse {
 }
 
 export const getIpFromRequest = (req: NextApiRequest): string => {
+  const env = getEnv();
+
   if (env.dev.isDev && !!env.dev.ip) {
     return env.dev.ip;
   }

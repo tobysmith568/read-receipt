@@ -12,6 +12,10 @@ export const printTimestamp = (timestamp: number): string => {
 };
 
 export const getDifferenceBetweenTimestamps = (first: number, second: number): string => {
+  if (second < first) {
+    throw new Error("The second timestamp must be greater than first timestamp");
+  }
+
   const firstDayjs = dayjs.unix(first);
   const secondDayjs = dayjs.unix(second);
 

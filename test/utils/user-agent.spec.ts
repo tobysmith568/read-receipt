@@ -2,6 +2,17 @@ import { NextApiRequest } from "next";
 import { getUserAgentData } from "src/utils/user-agent";
 
 describe("user-agent utils", () => {
+  let userAgentGetter: jest.SpyInstance<string, []>;
+
+  beforeAll(() => {
+    userAgentGetter = jest.spyOn(window.navigator, "userAgent", "get");
+    userAgentGetter.mockReturnValue(undefined!);
+  });
+
+  afterAll(() => {
+    userAgentGetter.mockRestore();
+  });
+
   describe("getUserAgentData", () => {
     [
       {

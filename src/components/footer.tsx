@@ -1,9 +1,17 @@
 import styled from "@emotion/styled";
+import Link from "next/link";
 
 const year = new Date().getFullYear().toString();
 
 const Footer = () => {
-  return <Copyright>Copyright © Toby Smith {year}</Copyright>;
+  return (
+    <Copyright>
+      Copyright © Toby Smith {year}.
+      <Link href="/licenses" passHref>
+        <LicenceLink>Third-party licenses.</LicenceLink>
+      </Link>
+    </Copyright>
+  );
 };
 
 export default Footer;
@@ -15,6 +23,15 @@ const Copyright = styled.div`
   font-size: 0.8em;
   width: 100%;
   text-align: center;
-  z-index: -1;
   color: #0c0c0c;
+`;
+
+const LicenceLink = styled.a`
+  margin-left: 0.5em;
+  text-decoration: none;
+  color: #0c0c0c;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

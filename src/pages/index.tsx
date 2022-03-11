@@ -16,7 +16,7 @@ const Index: NextPage = () => {
       </Head>
 
       <Wrapper>
-        <Content>
+        <Content maxWidth="500px">
           <h1>Read Receipt</h1>
           <p>
             Email senders can use a trick called a &apos;tracking pixel&apos; to know exactly when
@@ -54,19 +54,25 @@ const Index: NextPage = () => {
   );
 };
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
   display: grid;
   place-content: center;
 `;
 
-const Content = styled.div`
-  max-width: 500px;
+interface ContentProps {
+  maxWidth: string;
+}
+
+export const Content = styled.div<ContentProps>`
+  max-width: ${props => props.maxWidth};
+  max-height: 80vh;
   background: #f9f9f9;
   padding: 25px;
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  overflow-y: auto;
 `;
 
 export default Index;

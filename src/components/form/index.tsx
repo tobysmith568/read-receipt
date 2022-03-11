@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import Error from "./error";
 import Form from "./form";
+import Sending from "./sending";
 import Sent from "./sent";
 import { Status, useFormState } from "./use-form-state";
 
@@ -15,6 +16,9 @@ const getFormPage = (formState: Status) => {
   switch (formState) {
     case "form":
       return <Form />;
+
+    case "sending":
+      return <Sending />;
 
     case "sent":
       return <Sent />;

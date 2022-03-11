@@ -2,7 +2,7 @@ import { atom, useAtom } from "jotai";
 import { useUpdateAtom } from "jotai/utils";
 import { useCallback } from "react";
 
-export type Status = "form" | "sent" | "error";
+export type Status = "form" | "sending" | "sent" | "error";
 
 const formStateAtom = atom<Status>("form");
 const formEmailAtom = atom<string>("");

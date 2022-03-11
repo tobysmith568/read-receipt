@@ -1,14 +1,12 @@
 import styled from "@emotion/styled";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import Sending from "./sending";
-import { useFormData, useSetFormState } from "./use-form-state";
+import { useFormData } from "./use-form-state";
 import { useSubmitEmail } from "./use-submit-email";
 
 const Form = () => {
   const [isEmailPristine, setIsEmailPristine] = useState(true);
   const { email, setEmail } = useFormData();
-  const [submitEmail, isSubmittingEmail] = useSubmitEmail();
-  const setFormState = useSetFormState();
+  const submitEmail = useSubmitEmail();
 
   const isEmailValid = useMemo(() => {
     if (isEmailPristine) {
@@ -29,14 +27,8 @@ const Form = () => {
   );
 
   const handleOnSubmit = useCallback(() => {
-    submitEmail(email)
-      .then(() => setFormState("sent"))
-      .catch(() => setFormState("error"));
-  }, [email, setFormState, submitEmail]);
-
-  if (isSubmittingEmail) {
-    return <Sending />;
-  }
+    submitEmail(email);
+  }, [submitEmail, email]);
 
   return (
     <>
@@ -48,6 +40,7 @@ const Form = () => {
           name="email"
           type="email"
           autoComplete="off"
+          placeholder="you@website.com"
           onChange={handleEmailChange}
         />
       </div>

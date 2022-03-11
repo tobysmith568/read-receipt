@@ -1,22 +1,31 @@
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { SubmitResponse } from "../../pages/api/submit";
+import { useSetFormState } from "./use-form-state";
 
-type UseSubmitEmail = () => [(email: string) => Promise<SubmitResponse>, boolean];
+export const useSubmitEmail = () => {
+  const setFormState = useSetFormState();
 
-export const useSubmitEmail: UseSubmitEmail = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const submit = useCallback(
+    async (email: string) => {
+      setFormState("sending");
 
-  const submit = useCallback(async (email: string) => {
-    const res = await axios.post<SubmitResponse>("/api/submit", { email });
-    setIsLoading(false);
+      try {
+        const res = await axios.post<SubmitResponse>("/api/submit", { email });
 
-    if (res.status !== 200) {
-      throw new Error("Failed to submit email");
-    }
+        if (res.status !== 200) {
+          setFormState("error");
+          throw new Error("Failed to submit email");
+        }
 
-    return res.data;
-  }, []);
+        setFormState("sent");
+        return res.data;
+      } catch {
+        setFormState("error");
+      }
+    },
+    [setFormState]
+  );
 
-  return [submit, isLoading];
+  return submit;
 };

@@ -33,6 +33,7 @@
     "@types/react-dom": "^17.0.13",
     "@types/request-ip": "^0.0.37",
     "@types/ua-parser-js": "^0.7.36",
+    "cspell": "^5.18.5",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
     "jest": "^27.5.1",

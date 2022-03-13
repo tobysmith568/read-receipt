@@ -39,4 +39,5 @@ const InnerContent = styled.div<InnerContentProps>`
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
   overflow-y: auto;
+  white-space: pre-line;
 `;

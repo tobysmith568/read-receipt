@@ -70,7 +70,7 @@ const getLicense = (license: ILicense, i: number) => {
         ))}
       </PackageList>
       <p>These packages contains the following license and notice below:</p>
-      <Document>{license.content}</Document>
+      {license.content}
       <br />
       <hr />
       <br />
@@ -107,8 +107,4 @@ const PackageList = styled.ul`
 
 const PackageLink = styled.a`
   text-decoration: underline;
-`;
-
-const Document = styled.p`
-  white-space: pre-line;
 `;

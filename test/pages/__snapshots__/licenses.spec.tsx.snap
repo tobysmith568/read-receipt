@@ -1,0 +1,182 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Licenses should render licenses 1`] = `
+<div>
+  <div
+    class="css-1wcee00"
+  >
+    <a
+      class="css-7kai5d"
+      href="/"
+    >
+      &lt;- Home
+    </a>
+    <div
+      class="css-d1odxa"
+    >
+      <h1>
+        Third-Party Licenses
+      </h1>
+      <h3
+        class="css-c7fb5r"
+      >
+        This page lists all of the third-party licenses used by this website
+      </h3>
+      <h4
+        class="css-13um2cg"
+      >
+        This page was generated using the
+         
+        <a
+          class="css-1170tpp"
+          href="https://www.npmjs.com/package/generate-license-file"
+          rel="noreferrer"
+          target="_blank"
+        >
+          generate-license-file npm package
+        </a>
+        .
+      </h4>
+      <div
+        class="css-zkg6nm"
+      >
+        <p>
+          The following npm packages may be included in this website:
+        </p>
+        <ul
+          class="css-l4qfaj"
+        >
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #1"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #1
+            </a>
+          </li>
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #2"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #2
+            </a>
+          </li>
+        </ul>
+        <p>
+          These packages contains the following license and notice below:
+        </p>
+        license content #1
+        <br />
+        <hr />
+        <br />
+      </div>
+      <div
+        class="css-zkg6nm"
+      >
+        <p>
+          The following npm packages may be included in this website:
+        </p>
+        <ul
+          class="css-l4qfaj"
+        >
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #3"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #3
+            </a>
+          </li>
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #4"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #4
+            </a>
+          </li>
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #5"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #5
+            </a>
+          </li>
+        </ul>
+        <p>
+          These packages contains the following license and notice below:
+        </p>
+        license content #2
+        <br />
+        <hr />
+        <br />
+      </div>
+      <div
+        class="css-zkg6nm"
+      >
+        <p>
+          The following npm packages may be included in this website:
+        </p>
+        <ul
+          class="css-l4qfaj"
+        >
+          <li>
+            <a
+              class="css-1170tpp"
+              href="https://www.npmjs.com/package//v/dependency #6"
+              rel="noreferrer"
+              target="_blank"
+            >
+              dependency #6
+            </a>
+          </li>
+        </ul>
+        <p>
+          These packages contains the following license and notice below:
+        </p>
+        license content #3
+        <br />
+        <hr />
+        <br />
+      </div>
+    </div>
+    <div
+      class="css-1g71zvr"
+    >
+      Copyright © Toby Smith 
+      2022
+      .
+      <a
+        class="css-gy0gih"
+        href="/terms"
+      >
+        Terms.
+      </a>
+      <a
+        class="css-gy0gih"
+        href="/privacy"
+      >
+        Privacy.
+      </a>
+      <a
+        class="css-gy0gih"
+        href="/licenses"
+      >
+        Third-party licenses.
+      </a>
+    </div>
+  </div>
+</div>
+`;

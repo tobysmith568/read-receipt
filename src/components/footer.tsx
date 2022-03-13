@@ -8,10 +8,10 @@ const Footer = () => {
     <Copyright>
       Copyright © Toby Smith {year}.
       <Link href="/terms" passHref>
-        <LicenceLink>Terms and Conditions.</LicenceLink>
+        <LicenceLink>Terms.</LicenceLink>
       </Link>
       <Link href="/privacy" passHref>
-        <LicenceLink>Privacy policy.</LicenceLink>
+        <LicenceLink>Privacy.</LicenceLink>
       </Link>
       <Link href="/licenses" passHref>
         <LicenceLink>Third-party licenses.</LicenceLink>

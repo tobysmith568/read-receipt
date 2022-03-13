@@ -1,5 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>tobysmith568/renovate-config"],
-  "baseBranches": ["dev"]
+  "extends": ["local>tobysmith568/renovate-config"]
 }

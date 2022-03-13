@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { firstEmailAsHtml } from "../../emails/first-email";
-import { getDomainForRequest } from "../../utils/domain";
-import { sendHtml } from "../../utils/email";
-import { getCurrentTimestampUTC } from "../../utils/time";
+import { firstEmailAsHtml } from "src/emails/first-email";
+import { getDomainForRequest } from "src/utils/domain";
+import { sendHtml } from "src/utils/email";
+import { getCurrentTimestampUTC } from "src/utils/time";
 
 export interface SubmitRequest {}
 
@@ -15,7 +15,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<SubmitResponse>
     await handleRequest(req);
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false });
   }
 };

@@ -34,7 +34,7 @@ const LicensesPage: FC<Props> = ({ licenses }) => {
 
       <Wrapper>
         <Content maxWidth="800px" showHome>
-          <H1>Third-Party Licenses</H1>
+          <h1>Third-Party Licenses</h1>
           <H3>This page lists all of the third-party licenses used by this website</H3>
           <H4>
             This page was generated using the{" "}
@@ -70,7 +70,7 @@ const getLicense = (license: ILicense, i: number) => {
         ))}
       </PackageList>
       <p>These packages contains the following license and notice below:</p>
-      <LicenseContent>{license.content}</LicenseContent>
+      <Document>{license.content}</Document>
       <br />
       <hr />
       <br />
@@ -86,18 +86,12 @@ const getPackageUrl = (packageNameAndVersion: string) => {
   return `https://www.npmjs.com/package/${packageName}/v/${packageVersion}`;
 };
 
-const H1 = styled.h1`
-  text-align: center;
-`;
-
 const H3 = styled.h3`
-  text-align: center;
   margin-bottom: 0.5em;
   font-weight: normal;
 `;
 
 const H4 = styled.h4`
-  text-align: center;
   margin-bottom: 3em;
   font-weight: normal;
 `;
@@ -115,6 +109,6 @@ const PackageLink = styled.a`
   text-decoration: underline;
 `;
 
-const LicenseContent = styled.p`
+const Document = styled.p`
   white-space: pre-line;
 `;

@@ -3,9 +3,9 @@ import { getProjectLicenses } from "generate-license-file";
 import { ILicense } from "generate-license-file/dist/models/license";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { FC } from "react";
-import { Content, Wrapper } from ".";
+import { Wrapper } from ".";
+import Content from "../components/content";
 import Footer from "../components/footer";
 
 // cspell: ignore noindex
@@ -33,11 +33,7 @@ const LicensesPage: FC<Props> = ({ licenses }) => {
       </Head>
 
       <Wrapper>
-        <Background>
-          <Link href="/">&lt;- Home</Link>
-        </Background>
-
-        <Content maxWidth="800px">
+        <Content maxWidth="800px" showHome>
           <H1>Third-Party Licenses</H1>
           <H3>This page lists all of the third-party licenses used by this website</H3>
           <H4>
@@ -89,11 +85,6 @@ const getPackageUrl = (packageNameAndVersion: string) => {
 
   return `https://www.npmjs.com/package/${packageName}/v/${packageVersion}`;
 };
-
-const Background = styled.div`
-  padding-bottom: 0.25em;
-  color: #0c0c0c;
-`;
 
 const H1 = styled.h1`
   text-align: center;

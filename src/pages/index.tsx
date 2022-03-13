@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import type { NextPage } from "next";
 import Head from "next/head";
+import Content from "../components/content";
 import Footer from "../components/footer";
 import EmailForm from "../components/form";
 
@@ -53,6 +54,7 @@ const Index: NextPage = () => {
     </>
   );
 };
+export default Index;
 
 export const Wrapper = styled.div`
   width: 100vw;
@@ -60,19 +62,3 @@ export const Wrapper = styled.div`
   display: grid;
   place-content: center;
 `;
-
-interface ContentProps {
-  maxWidth: string;
-}
-
-export const Content = styled.div<ContentProps>`
-  max-width: ${props => props.maxWidth};
-  max-height: 80vh;
-  background: #f9f9f9;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-  overflow-y: auto;
-`;
-
-export default Index;

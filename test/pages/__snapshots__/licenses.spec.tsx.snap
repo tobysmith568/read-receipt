@@ -49,21 +49,21 @@ exports[`Licenses should render licenses 1`] = `
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #1"
+              href="https://www.npmjs.com/package/dependency#1/v/v1.2.3"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #1
+              dependency#1@v1.2.3
             </a>
           </li>
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #2"
+              href="https://www.npmjs.com/package/dependency#2/v/v4.5.6"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #2
+              dependency#2@v4.5.6
             </a>
           </li>
         </ul>
@@ -87,31 +87,31 @@ exports[`Licenses should render licenses 1`] = `
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #3"
+              href="https://www.npmjs.com/package/dependency#3/v/7.8.9"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #3
+              dependency#3@7.8.9
             </a>
           </li>
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #4"
+              href="https://www.npmjs.com/package/dependency#4/v/1.4.7"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #4
+              dependency#4@1.4.7
             </a>
           </li>
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #5"
+              href="https://www.npmjs.com/package/dependency#5/v/2.5.8"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #5
+              dependency#5@2.5.8
             </a>
           </li>
         </ul>
@@ -135,11 +135,11 @@ exports[`Licenses should render licenses 1`] = `
           <li>
             <a
               class="css-1170tpp"
-              href="https://www.npmjs.com/package//v/dependency #6"
+              href="https://www.npmjs.com/package/dependency#6/v/3.6.9"
               rel="noreferrer"
               target="_blank"
             >
-              dependency #6
+              dependency#6@3.6.9
             </a>
           </li>
         </ul>

@@ -12,12 +12,12 @@ const mockedGetProjectLicenses = jest.mocked(getProjectLicenses);
 
 describe("Licenses", () => {
   const licenses: ILicense[] = [
-    { content: "license content #1", dependencies: ["dependency #1", "dependency #2"] },
+    { content: "license content #1", dependencies: ["dependency#1@v1.2.3", "dependency#2@v4.5.6"] },
     {
       content: "license content #2",
-      dependencies: ["dependency #3", "dependency #4", "dependency #5"]
+      dependencies: ["dependency#3@7.8.9", "dependency#4@1.4.7", "dependency#5@2.5.8"]
     },
-    { content: "license content #3", dependencies: ["dependency #6"] }
+    { content: "license content #3", dependencies: ["dependency#6@3.6.9"] }
   ];
 
   beforeEach(() => {

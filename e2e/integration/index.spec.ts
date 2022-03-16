@@ -12,14 +12,14 @@ describe("Index", () => {
   });
 
   it("Using the form sends the first email with the correct tracking pixel URL", () => {
-    let currentUnixTimestamp = Math.floor(Date.now() / 1000);
+    const currentUnixTimestamp = Math.floor(Date.now() / 1000);
 
     cy.visit("/");
 
     cy.get("#email").type(userEmail);
     cy.get("button").click();
 
-    cy.wait(100);
+    cy.get(`div:contains("Successfully sent to ${userEmail}")`).should("exist");
 
     cy.task<string>("getLastEmail", userEmail).its("subject").should("equal", "Read Receipt");
 
@@ -47,14 +47,16 @@ describe("Index", () => {
     cy.get("#email").type(userEmail);
     cy.get("button").click();
 
-    cy.wait(100);
+    cy.get(`div:contains("Successfully sent to ${userEmail}")`).should("exist");
 
     cy.task<string>("getLastEmail", userEmail)
       .its("html")
       .then(html => {
         cy.document().invoke("write", html);
 
-        cy.wait(1000);
+        cy.get(`p:contains("Hey 👋")`).should("exist");
+
+        cy.wait(500);
 
         cy.task<string>("getLastEmail", userEmail)
           .its("subject")
@@ -68,7 +70,7 @@ describe("Index", () => {
     cy.get("#email").type(userEmail);
     cy.get("button").click();
 
-    cy.wait(100);
+    cy.get(`div:contains("Successfully sent to ${userEmail}")`).should("exist");
 
     cy.get(`a:contains("Send another")`).click();
 
@@ -89,8 +91,6 @@ describe("Index", () => {
 
     cy.get("#email").type("this is not an email address");
     cy.get("button").click();
-
-    cy.wait(100);
 
     cy.get(`a:contains("Try again")`).click();
 

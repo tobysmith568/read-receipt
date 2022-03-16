@@ -13,6 +13,7 @@ export interface Env {
     isDev: boolean;
     ip?: string;
   };
+  forceHttp: boolean;
 }
 
 export const getEnv = (): Env => ({
@@ -27,7 +28,8 @@ export const getEnv = (): Env => ({
   dev: {
     isDev: process.env.NODE_ENV === "development",
     ip: isFalsyOrEmpty(process.env.DEV_IP) ? undefined : process.env.DEV_IP
-  }
+  },
+  forceHttp: process.env.FORCE_HTTP === "true"
 });
 
 const isFalsyOrEmpty = (value: string | undefined | null): boolean => {

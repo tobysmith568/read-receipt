@@ -24,16 +24,24 @@ describe("domain utils", () => {
       jest.restoreAllMocks();
     });
 
-    it("should return the http protocol when in dev", () => {
-      mockedGetEnv.mockReturnValue({ dev: { isDev: true } } as Env);
+    it("should return the http protocol when forceHttp is true", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: true, dev: { isDev: false } } as Env);
 
       const result = getDomainForRequest(request);
 
       expect(result.startsWith("http://")).toBe(true);
     });
 
-    it("should return the https protocol when in dev", () => {
-      mockedGetEnv.mockReturnValue({ dev: { isDev: false } } as Env);
+    it("should return the http protocol when idDev is true", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: true } } as Env);
+
+      const result = getDomainForRequest(request);
+
+      expect(result.startsWith("http://")).toBe(true);
+    });
+
+    it("should return the https protocol when forceHttp and isDev are false", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: false } } as Env);
 
       const result = getDomainForRequest(request);
 
@@ -44,7 +52,7 @@ describe("domain utils", () => {
       domain => {
         it(`should return the host ${domain}`, () => {
           request.headers.host = domain;
-          mockedGetEnv.mockReturnValue({ dev: { isDev: false } } as Env);
+          mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: false } } as Env);
 
           const result = getDomainForRequest(request);
 

@@ -1,10 +1,15 @@
+import { when } from "jest-when";
 import { NextApiRequest, NextApiResponse } from "next";
 import { secondEmailAsHtml } from "src/emails/second-email";
 import emailReadApiHandler from "src/pages/api/open/[email]/[timestamp]";
 import { getDomainForRequest } from "src/utils/domain";
 import { sendHtml } from "src/utils/email";
 import { getIpData, getIpFromRequest, IpResponse } from "src/utils/ip";
-import { getCurrentTimestampUTC, getDifferenceBetweenTimestamps } from "src/utils/time";
+import {
+  getCurrentTimestampUTC,
+  getDifferenceBetweenTimestamps,
+  printTimestamp
+} from "src/utils/time";
 import { getUserAgentData } from "src/utils/user-agent";
 
 jest.mock("src/emails/second-email");
@@ -13,13 +18,10 @@ const mockedSecondEmailAsHtml = jest.mocked(secondEmailAsHtml);
 jest.mock("src/utils/domain");
 const mockedGetDomainForRequest = jest.mocked(getDomainForRequest);
 
-jest.mock("src/utils/time", () => ({
-  ...jest.requireActual("src/utils/time"),
-  getDifferenceBetweenTimestamps: jest.fn(),
-  getCurrentTimestampUTC: jest.fn()
-}));
-const mockedGetDifferenceBetweenTimestamps = jest.mocked(getDifferenceBetweenTimestamps);
+jest.mock("src/utils/time");
 const mockedGetCurrentTimestampUTC = jest.mocked(getCurrentTimestampUTC);
+const mockedPrintTimestamp = jest.mocked(printTimestamp);
+const mockedGetDifferenceBetweenTimestamps = jest.mocked(getDifferenceBetweenTimestamps);
 
 jest.mock("src/utils/email");
 const mockedSendHtml = jest.mocked(sendHtml);
@@ -37,7 +39,9 @@ describe("Submit API", () => {
   const usersEmail = "theUsers@email.address";
   const usersIpAddress = "123.456.789.0";
   const timeStampOfFirstEmail = 12345;
+  const timeStampOfFirstEmailFormatted = "4:25:45am, 1 January 1970 UTC";
   const currentTimeStamp = 67890;
+  const timeStampOfSecondEmailFormatted = "7:51:30pm, 1 January 1970 UTC";
   const differenceBetweenEmails = "0 days, 15 hours, 25 minutes, and 45 seconds";
   const usersIpData: IpResponse = {
     city: "London"
@@ -60,6 +64,13 @@ describe("Submit API", () => {
     jest.resetAllMocks();
 
     mockedSecondEmailAsHtml.mockReturnValue(emailContent);
+
+    when(mockedPrintTimestamp)
+      .calledWith(timeStampOfFirstEmail)
+      .mockReturnValue(timeStampOfFirstEmailFormatted);
+    when(mockedPrintTimestamp)
+      .calledWith(currentTimeStamp)
+      .mockReturnValue(timeStampOfSecondEmailFormatted);
 
     req = {} as NextApiRequest;
     res = {} as NextApiResponse<Buffer>;
@@ -141,9 +152,9 @@ describe("Submit API", () => {
         city: "London"
       },
       times: {
-        firstEmailTimestamp: "4:25:45am, 1 January 1970 UTC",
-        secondEmailTimestamp: "7:51:30pm, 1 January 1970 UTC",
-        timestampDifference: "0 days, 15 hours, 25 minutes, and 45 seconds"
+        firstEmailTimestamp: timeStampOfFirstEmailFormatted,
+        secondEmailTimestamp: timeStampOfSecondEmailFormatted,
+        timestampDifference: differenceBetweenEmails
       },
       user: {
         email: "theUsers@email.address",

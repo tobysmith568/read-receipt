@@ -1,4 +1,4 @@
-import { firstEmailAsHtml, FirstEmailProps } from "src/emails/first-email";
+import { firstEmailAsHtml, FirstEmailProps } from "../../src/emails/first-email";
 
 describe("first email", () => {
   it("should render correctly", () => {

@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { secondEmailAsHtml, Times, User } from "src/emails/second-email";
-import { getDomainForRequest } from "src/utils/domain";
-import { sendHtml } from "src/utils/email";
-import { getIpData, getIpFromRequest } from "src/utils/ip";
+import { secondEmailAsHtml, Times, User } from "../../../../emails/second-email";
+import { getDomainForRequest } from "../../../../utils/domain";
+import { sendHtml } from "../../../../utils/email";
+import { getIpData, getIpFromRequest } from "../../../../utils/ip";
 import {
   getCurrentTimestampUTC,
   getDifferenceBetweenTimestamps,
   printTimestamp
-} from "src/utils/time";
-import { getUserAgentData } from "src/utils/user-agent";
+} from "../../../../utils/time";
+import { getUserAgentData } from "../../../../utils/user-agent";
 
 const base64pixel =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY/j//z8ABf4C/qc1gYQAAAAASUVORK5CYII=";

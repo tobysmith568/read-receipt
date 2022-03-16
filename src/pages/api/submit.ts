@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { firstEmailAsHtml } from "src/emails/first-email";
-import { getDomainForRequest } from "src/utils/domain";
-import { sendHtml } from "src/utils/email";
-import { getCurrentTimestampUTC } from "src/utils/time";
+import { firstEmailAsHtml } from "../../emails/first-email";
+import { getDomainForRequest } from "../../utils/domain";
+import { sendHtml } from "../../utils/email";
+import { getCurrentTimestampUTC } from "../../utils/time";
 
 export interface SubmitRequest {}
 

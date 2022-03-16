@@ -1,7 +1,7 @@
 export {};
 
 const trackingPixelRegex =
-  /<img src="http:\/\/localhost:3000\/api\/open\/(?<encodedEmail>.*?)\/(?<timestamp>[0-9]*?)"\/>/;
+  /<img src="https?:\/\/localhost:3000\/api\/open\/(?<encodedEmail>.*?)\/(?<timestamp>[0-9]*?)"\/>/;
 
 describe("Index", () => {
   const userEmail = "user@tobysmith.uk";

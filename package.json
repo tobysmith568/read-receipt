@@ -7,9 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "start:e2e": "cross-env FORCE_HTTP=true npm run start",
     "lint": "next lint",
     "test": "jest",
-    "cy": "cypress open"
+    "e2e": "cypress open"
   },
   "dependencies": {
     "axios": "^0.26.0",
@@ -39,6 +40,7 @@
     "@types/react-dom": "^17.0.13",
     "@types/request-ip": "^0.0.37",
     "@types/ua-parser-js": "^0.7.36",
+    "cross-env": "^7.0.3",
     "cspell": "^5.18.5",
     "cypress": "^9.5.2",
     "eslint": "8.10.0",

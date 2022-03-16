@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Privacy should render the privacy policy 1`] = `
+<div>
+  <div
+    class="css-1wcee00"
+  >
+    <a
+      class="css-7kai5d"
+      href="/"
+    >
+      &lt;- Home
+    </a>
+    <div
+      class="css-d1odxa"
+    >
+      <div
+        class="css-gv001y"
+      >
+        <h1>
+          404
+        </h1>
+        <h4>
+          Not Found!
+        </h4>
+      </div>
+    </div>
+    <div
+      class="css-1g71zvr"
+    >
+      Copyright © Toby Smith 
+      2022
+      .
+      <a
+        class="css-gy0gih"
+        href="/terms"
+      >
+        Terms.
+      </a>
+      <a
+        class="css-gy0gih"
+        href="/privacy"
+      >
+        Privacy.
+      </a>
+      <a
+        class="css-gy0gih"
+        href="/licenses"
+      >
+        Third-party licenses.
+      </a>
+    </div>
+  </div>
+</div>
+`;

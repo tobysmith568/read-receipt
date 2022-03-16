@@ -48,19 +48,17 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         browser: [chrome, firefox]
 
-    name: E2E tests on ${{ matrix.os }} in ${{ matrix.browser }}
+    name: E2E tests in ${{ matrix.browser }}
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.0-slim-chrome99-ff97
+      options: --user 1001
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install Cypress dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -72,7 +70,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           browser: ${{ matrix.browser }}
-          headless: true
+          install-command: npm ci
           build: npm run build
           start: npm run start:e2e
           wait-on: http://localhost:3000

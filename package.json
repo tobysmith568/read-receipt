@@ -10,6 +10,7 @@
     "start:e2e": "cross-env FORCE_HTTP=true npm run start",
     "lint": "next lint",
     "test": "jest",
+    "test:ci": "jest --ci --coverage",
     "e2e": "cypress open"
   },
   "dependencies": {

@@ -7,7 +7,9 @@
   "words": [
     "tobysmith",
     "Serializers",
-    "zdnfztgnfgt" // Used as unique string to stop asset caching
+    "zdnfztgnfgt", // Used as unique string to stop asset caching
+    "codecov",
+    "fossas"
   ],
   "ignoreWords": [],
   "import": [],

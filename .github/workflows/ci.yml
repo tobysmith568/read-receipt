@@ -47,10 +47,20 @@ jobs:
     needs: Build-and-unit-test
 
     strategy:
+      fail-fast: false
       matrix:
         browser: [chrome, firefox]
 
     name: E2E tests in ${{ matrix.browser }}
+
+    env:
+      EMAIL_HOST: localhost
+      EMAIL_PORT: 2525
+      EMAIL_SENDER_NAME: Read Receipt
+      EMAIL_SENDER_EMAIL: read.receipt@tobythe.dev
+      EMAIL_USER: user
+      EMAIL_PASS: pass
+      DEV_IP: 95.150.202.188
 
     runs-on: ubuntu-latest
     container:

@@ -17,15 +17,10 @@ const transporter = createTransport({
 const from = `${senderName} <${senderEmail}>`;
 
 export const sendHtml = async (to: string, subject: string, html: string): Promise<void> => {
-  try {
-    await transporter.sendMail({
-      from,
-      to,
-      subject,
-      html
-    });
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
+  await transporter.sendMail({
+    from,
+    to,
+    subject,
+    html
+  });
 };

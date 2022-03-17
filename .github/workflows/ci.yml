@@ -47,11 +47,13 @@ jobs:
     needs: Build-and-unit-test
 
     strategy:
-      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         browser: [chrome, firefox]
 
-    name: E2E tests in ${{ matrix.browser }}
+    name: E2E tests on ${{ matrix.os }} in ${{ matrix.browser }}
+
+    runs-on: ${{ matrix.os }}
 
     env:
       EMAIL_HOST: localhost
@@ -61,11 +63,6 @@ jobs:
       EMAIL_USER: user
       EMAIL_PASS: pass
       DEV_IP: 95.150.202.188
-
-    runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node16.14.0-slim-chrome99-ff97
-      options: --user 1001
 
     steps:
       - uses: actions/checkout@v2

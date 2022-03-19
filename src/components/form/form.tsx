@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from "react";
 import { useFormData } from "./use-form-state";
 import { useSubmitEmail } from "./use-submit-email";
 
@@ -26,9 +26,13 @@ const Form = () => {
     [setEmail]
   );
 
-  const handleOnSubmit = useCallback(() => {
-    submitEmail(email);
-  }, [submitEmail, email]);
+  const handleOnSubmit = useCallback(
+    (event?: SyntheticEvent) => {
+      event?.preventDefault();
+      submitEmail(email);
+    },
+    [submitEmail, email]
+  );
 
   return (
     <form onSubmit={handleOnSubmit}>
@@ -37,7 +41,6 @@ const Form = () => {
       <EmailInput
         id="email"
         name="email"
-        // type="email"
         ref={focusRef}
         autoComplete="username"
         placeholder="you@website.com"

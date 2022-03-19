@@ -1,16 +1,29 @@
+import { SyntheticEvent, useCallback } from "react";
+import LinkButton from "../link-button";
 import { useResetForm } from "./use-form-state";
 
 const Error = () => {
   const resetForm = useResetForm();
 
+  const onSubmit = useCallback(
+    (event?: SyntheticEvent) => {
+      event?.preventDefault();
+      resetForm();
+    },
+    [resetForm]
+  );
+
   return (
-    <div>
-      Sorry, there was an error!
+    <form onSubmit={onSubmit}>
+      <div>Sorry, there was an error!</div>
       <div>
-        <a onClick={resetForm}>Try again</a>
+        <LinkButton type="submit" ref={focusRef}>
+          Try again
+        </LinkButton>
       </div>
-    </div>
+    </form>
   );
 };
-
 export default Error;
+
+const focusRef = (ref: HTMLElement | null) => ref?.focus();

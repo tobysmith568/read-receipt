@@ -72,7 +72,7 @@ describe("Index", () => {
 
     cy.get(`div:contains("Successfully sent to ${userEmail}")`).should("exist");
 
-    cy.get(`a:contains("Send another")`).click();
+    cy.get(`button:contains("Send another")`).click();
 
     cy.get("#email").should("be.visible");
   });
@@ -92,7 +92,7 @@ describe("Index", () => {
     cy.get("#email").type("this is not an email address");
     cy.get("button").click();
 
-    cy.get(`a:contains("Try again")`).click();
+    cy.get(`button:contains("Try again")`).click();
 
     cy.get("#email").should("be.visible");
   });

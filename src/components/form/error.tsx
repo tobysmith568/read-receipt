@@ -1,16 +1,20 @@
+import LinkButton from "../link-button";
 import { useResetForm } from "./use-form-state";
 
 const Error = () => {
   const resetForm = useResetForm();
 
   return (
-    <div>
-      Sorry, there was an error!
+    <form onSubmit={resetForm}>
+      <div>Sorry, there was an error!</div>
       <div>
-        <a onClick={resetForm}>Try again</a>
+        <LinkButton type="submit" ref={focusRef}>
+          Try again
+        </LinkButton>
       </div>
-    </div>
+    </form>
   );
 };
-
 export default Error;
+
+const focusRef = (ref: HTMLElement | null) => ref?.focus();

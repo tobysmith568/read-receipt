@@ -31,32 +31,32 @@ const Form = () => {
   }, [submitEmail, email]);
 
   return (
-    <>
-      <div>
-        <EmailLabel htmlFor="email">Enter Your Email:</EmailLabel>
-        <br />
-        <EmailInput
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="off"
-          placeholder="you@website.com"
-          onChange={handleEmailChange}
-        />
-      </div>
+    <form onSubmit={handleOnSubmit}>
+      <EmailLabel htmlFor="email">Enter Your Email:</EmailLabel>
+      <br />
+      <EmailInput
+        id="email"
+        name="email"
+        // type="email"
+        ref={focusRef}
+        autoComplete="username"
+        placeholder="you@website.com"
+        onChange={handleEmailChange}
+      />
       {!isEmailValid && (
         <Errors>
           <p>An email address is required</p>
         </Errors>
       )}
-      <Submit disabled={!isEmailValid || isEmailPristine} onClick={handleOnSubmit}>
+      <Submit disabled={!isEmailValid || isEmailPristine} type="submit">
         Send Email
       </Submit>
-    </>
+    </form>
   );
 };
-
 export default Form;
+
+const focusRef = (ref: HTMLElement | null) => ref?.focus();
 
 const EmailLabel = styled.label`
   text-align: left;

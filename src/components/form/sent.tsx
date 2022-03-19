@@ -1,3 +1,4 @@
+import LinkButton from "../link-button";
 import { useFormData, useResetForm } from "./use-form-state";
 
 const Sent = () => {
@@ -5,13 +6,16 @@ const Sent = () => {
   const { email } = useFormData();
 
   return (
-    <div>
+    <form onSubmit={resetForm}>
       <div>Successfully sent to {email}!</div>
       <div>
-        <a onClick={resetForm}>Send another</a>
+        <LinkButton type="submit" ref={focusRef}>
+          Send another
+        </LinkButton>
       </div>
-    </div>
+    </form>
   );
 };
-
 export default Sent;
+
+const focusRef = (ref: HTMLElement | null) => ref?.focus();

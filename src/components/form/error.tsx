@@ -6,8 +6,8 @@ const Error = () => {
   const resetForm = useResetForm();
 
   const onSubmit = useCallback(
-    (event?: SyntheticEvent) => {
-      event?.preventDefault();
+    (event: SyntheticEvent) => {
+      event.preventDefault();
       resetForm();
     },
     [resetForm]

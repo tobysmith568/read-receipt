@@ -10,5 +10,7 @@
   "pluginsFile": "e2e/plugins",
   "screenshotsFolder": "e2e/screenshots",
   "supportFile": "e2e/support",
-  "videosFolder": "e2e/videos"
+  "videosFolder": "e2e/videos",
+
+  "defaultCommandTimeout": 6000
 }

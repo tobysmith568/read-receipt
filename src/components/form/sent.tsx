@@ -7,8 +7,8 @@ const Sent = () => {
   const { email } = useFormData();
 
   const onSubmit = useCallback(
-    (event?: SyntheticEvent) => {
-      event?.preventDefault();
+    (event: SyntheticEvent) => {
+      event.preventDefault();
       resetForm();
     },
     [resetForm]

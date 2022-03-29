@@ -27,8 +27,8 @@ const Form = () => {
   );
 
   const handleOnSubmit = useCallback(
-    (event?: SyntheticEvent) => {
-      event?.preventDefault();
+    (event: SyntheticEvent) => {
+      event.preventDefault();
       submitEmail(email);
     },
     [submitEmail, email]

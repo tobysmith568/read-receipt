@@ -21,7 +21,7 @@ describe("Index", () => {
   });
 
   it("should show a spinner when an email is submitted", async () => {
-    setupPostStatusCode(200);
+    setupPostStatusCode(200, 500);
 
     render(
       <Provider>
@@ -30,15 +30,15 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.click(screen.getByText("Send Email"));
+    await userEvent.click(screen.getByText("Send Email"));
 
     await waitFor(() => screen.getByText("Sending"));
   });
 
   it("should submit the email to the api when an email is submitted", async () => {
-    setupPostStatusCode(200);
+    setupPostStatusCode(200, 500);
 
     render(
       <Provider>
@@ -47,9 +47,9 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.click(screen.getByText("Send Email"));
+    await userEvent.click(screen.getByText("Send Email"));
 
     await waitFor(() => screen.getByText("Sending"));
     expect(mockedAxios.post).toHaveBeenCalledWith("/api/submit", { email });
@@ -65,9 +65,9 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.click(screen.getByText("Send Email"));
+    await userEvent.click(screen.getByText("Send Email"));
 
     await waitFor(() => screen.getByText(`Successfully sent to ${email}!`));
   });
@@ -83,9 +83,9 @@ describe("Index", () => {
       );
 
       const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-      userEvent.type(emailInput, email);
+      await userEvent.type(emailInput, email);
 
-      userEvent.click(screen.getByText("Send Email"));
+      await userEvent.click(screen.getByText("Send Email"));
 
       await waitFor(() => screen.getByText("Sorry, there was an error!"));
     })
@@ -101,14 +101,14 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.click(screen.getByText("Send Email"));
+    await userEvent.click(screen.getByText("Send Email"));
 
     await waitFor(() => screen.getByText(`Successfully sent to ${email}!`));
 
     const sendAnotherButton = await waitFor(() => screen.getByText("Send another"));
-    userEvent.click(sendAnotherButton);
+    await userEvent.click(sendAnotherButton);
 
     await waitFor(() => screen.getByLabelText("Enter Your Email:"));
   });
@@ -123,14 +123,14 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.click(screen.getByText("Send Email"));
+    await userEvent.click(screen.getByText("Send Email"));
 
     await waitFor(() => screen.getByText("Sorry, there was an error!"));
 
     const sendAnotherButton = await waitFor(() => screen.getByText("Try again"));
-    userEvent.click(sendAnotherButton);
+    await userEvent.click(sendAnotherButton);
 
     await waitFor(() => screen.getByLabelText("Enter Your Email:"));
   });
@@ -143,14 +143,20 @@ describe("Index", () => {
     );
 
     const emailInput = await waitFor(() => screen.getByLabelText("Enter Your Email:"));
-    userEvent.type(emailInput, email);
+    await userEvent.type(emailInput, email);
 
-    userEvent.clear(emailInput);
+    await userEvent.clear(emailInput);
 
     await waitFor(() => screen.getByText("An email address is required"));
   });
 });
 
-const setupPostStatusCode = (status: number) => {
-  mockedAxios.post = jest.fn().mockResolvedValue({ status, data: undefined });
+const setupPostStatusCode = (status: number, requestDuration: number = 0) => {
+  mockedAxios.post = jest.fn().mockReturnValue(
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ status, data: undefined });
+      }, requestDuration);
+    })
+  );
 };

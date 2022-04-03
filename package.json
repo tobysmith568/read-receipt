@@ -2,6 +2,12 @@
   "private": true,
   "name": "read-receipt",
   "version": "0.0.0",
+  "author": {
+    "name": "Toby Smith",
+    "email": "tobysmith568@hotmail.co.uk",
+    "url": "https://tobysmith.uk"
+  },
+  "license": "UNLICENSED",
   "prettier": "@tobysmith568/prettier-config",
   "scripts": {
     "dev": "next dev",
@@ -33,7 +39,7 @@
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^14.0.0",
-    "@tobysmith568/prettier-config": "^1.2.0",
+    "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^27.4.1",
     "@types/jest-when": "^3.5.0",
     "@types/node": "17.0.21",

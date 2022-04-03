@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  Build-and-unit-test:
+  CI:
     name: Build and unit test
 
     runs-on: ubuntu-latest
@@ -26,6 +26,9 @@ jobs:
       - name: Run ESLint
         run: npx eslint ./src --max-warnings 0
 
+      - name: Run Prettier
+        run: npx prettier --check .
+
       - name: Build
         run: npm run build
 
@@ -43,7 +46,7 @@ jobs:
           api-key: ${{ secrets.FOSSA_API_KEY }}
 
   E2E-tests:
-    needs: Build-and-unit-test
+    needs: CI
 
     strategy:
       matrix:
@@ -81,7 +84,7 @@ jobs:
           start: npm run start:e2e
           wait-on: http://localhost:3000
 
-  Deployment:
+  CD:
     needs: E2E-tests
     name: Deploy to Cloud Run
 

@@ -46,7 +46,7 @@ jobs:
           api-key: ${{ secrets.FOSSA_API_KEY }}
 
   E2E-tests:
-    needs: Build-and-unit-test
+    needs: CI
 
     strategy:
       matrix:

@@ -1,13 +1,13 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
 interface Props {
   showHome?: boolean;
   maxWidth: string;
 }
 
-const Content: FC<Props> = ({ showHome, maxWidth, children }) => {
+const Content: FC<PropsWithChildren<Props>> = ({ showHome, maxWidth, children }) => {
   return (
     <>
       {showHome && (

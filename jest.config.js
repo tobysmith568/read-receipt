@@ -1,5 +1,3 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-
 const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
@@ -10,7 +8,7 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   moduleDirectories: ["node_modules", "<rootDir>/"],
-  testEnvironment: "jest-environment-jsdom",
+  testEnvironment: "<rootDir>/jest.env.js",
   snapshotSerializers: ["jest-serializer-html"],
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"]
 };

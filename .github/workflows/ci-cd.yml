@@ -1,9 +1,13 @@
 name: CI/CD
 on:
-  pull_request:
   push:
     branches:
       - main
+      - renovate/*
+  pull_request:
+    branches:
+      - main
+      - renovate/*
 
 jobs:
   CI:

@@ -53,6 +53,7 @@ jobs:
     needs: CI
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         browser: [chrome, firefox]

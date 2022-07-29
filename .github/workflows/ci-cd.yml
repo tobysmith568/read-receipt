@@ -81,7 +81,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Run E2E Tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           browser: ${{ matrix.browser }}
           install-command: npm ci

@@ -58,7 +58,7 @@
     "jest-environment-jsdom": "^28.0.2",
     "jest-when": "^3.5.1",
     "mockdate": "^3.0.5",
-    "smtp-tester": "^1.2.0",
+    "smtp-tester": "^2.0.0",
     "typescript": "^4.6.2"
   }
 }

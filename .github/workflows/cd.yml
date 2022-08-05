@@ -1,0 +1,53 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+  ARCHIVE_PATH: ./docker-build.tar
+
+jobs:
+  ci:
+    name: Run CI
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - ci
+
+    environment:
+      name: Production
+      url: https://read-receipt.tobythe.dev
+
+    steps:
+      - name: Login to GCP
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v3
+        with:
+          name: Build
+          path: $ARCHIVE_PATH
+
+      - name: Load Docker image
+        run: docker load --input $ARCHIVE_PATH
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
+
+      - name: Deploy Docker image
+        run: gcloud run deploy ${{ secrets.GCP_APP_NAME }} --image $IMAGE_NAME --region europe-west1 --platform managed

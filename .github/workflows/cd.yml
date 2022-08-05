@@ -6,7 +6,8 @@ on:
       - main
 
 env:
-  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+  IMAGE_NAME: gcr.io/tobythe-dev/read-receipt
+  ARCHIVE_NAME: Build
   ARCHIVE_PATH: ./docker-build.tar
 
 jobs:
@@ -40,14 +41,17 @@ jobs:
       - name: Download Docker image
         uses: actions/download-artifact@v3
         with:
-          name: Build
-          path: $ARCHIVE_PATH
+          name: ${{ env.ARCHIVE_NAME }}
 
       - name: Load Docker image
-        run: docker load --input $ARCHIVE_PATH
+        run: docker load --input ${{ env.ARCHIVE_PATH }}
 
       - name: Push Docker image
-        run: docker push $IMAGE_NAME
+        run: docker push ${{ env.IMAGE_NAME }}
 
       - name: Deploy Docker image
-        run: gcloud run deploy ${{ secrets.GCP_APP_NAME }} --image $IMAGE_NAME --region europe-west1 --platform managed
+        run: >
+          gcloud run deploy ${{ secrets.GCP_APP_NAME }}
+          --image ${{ env.IMAGE_NAME }}
+          --region europe-west1
+          --platform managed

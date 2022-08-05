@@ -9,7 +9,8 @@
     "Serializers",
     "zdnfztgnfgt", // Used as unique string to stop asset caching
     "codecov",
-    "fossas"
+    "fossas",
+    "tobythe-dev"
   ],
   "ignoreWords": [],
   "import": [],

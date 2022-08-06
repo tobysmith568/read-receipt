@@ -1,3 +1,6 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["eslint:recommended", "next"],
+  "env": {
+    "jest": true
+  }
 }

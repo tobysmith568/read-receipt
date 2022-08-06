@@ -13,10 +13,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "start:e2e": "cross-env FORCE_HTTP=true npm run start",
     "lint": "next lint",
     "test": "jest",
-    "test:ci": "jest --ci --coverage",
     "e2e": "cypress open"
   },
   "dependencies": {
@@ -48,7 +46,6 @@
     "@types/react-dom": "^18.0.0",
     "@types/request-ip": "^0.0.37",
     "@types/ua-parser-js": "^0.7.36",
-    "cross-env": "^7.0.3",
     "cspell": "^6.0.0",
     "cypress": "^10.3.1",
     "eslint": "8.21.0",

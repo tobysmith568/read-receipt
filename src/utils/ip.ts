@@ -21,7 +21,7 @@ export interface IpResponse {
 export const getIpFromRequest = (req: NextApiRequest): string => {
   const env = getEnv();
 
-  if (env.dev.isDev && !!env.dev.ip) {
+  if (env.dev.ip) {
     return env.dev.ip;
   }
 

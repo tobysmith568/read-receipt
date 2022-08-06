@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - renovate/*
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+
+env:
+  IMAGE_NAME: gcr.io/tobythe-dev/read-receipt
+  ARCHIVE_NAME: Build
+  ARCHIVE_PATH: ./docker-build.tar
+  NODE_VERSION: 16
+
+jobs:
+  lint:
+    name: Lint
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint . --max-warnings 0
+
+      - name: Run Prettier
+        run: npx prettier --check .
+
+      - name: Run CSpell
+        run: npx cspell "**/*.*"
+
+  build:
+    name: Build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build . -t ${{ env.IMAGE_NAME }}
+
+      - name: Export Docker image
+        run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_PATH }}
+
+  test:
+    name: Test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npx jest --ci --coverage
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage
+
+  licence:
+    name: Check licences
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - uses: fossas/fossa-action@v1.3.1
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+
+  e2e:
+    needs:
+      - build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
+
+    name: E2E test (${{ matrix.browser }})
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+
+      - name: Load Docker image
+        run: docker load --input ${{ env.ARCHIVE_PATH }}
+
+      - name: Run Docker image
+        run: >
+          docker run
+          --name test_container
+          -d
+          -p 3000:3000
+          -e "EMAIL_HOST=172.17.0.1"
+          -e "EMAIL_PORT=2525"
+          -e "EMAIL_SENDER_NAME=Read Receipt"
+          -e "EMAIL_SENDER_EMAIL=read.receipt@tobythe.dev"
+          -e "EMAIL_USER=user"
+          -e "EMAIL_PASS=pass"
+          -e "DEV_IP=95.150.202.188"
+          -e "FORCE_HTTP=true"
+          ${{ env.IMAGE_NAME }}
+
+      - name: Run E2E tests
+        uses: cypress-io/github-action@v4
+        with:
+          browser: ${{ matrix.browser }}
+          wait-on: http://localhost:3000
+
+      - name: Upload E2E screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: Screenshots
+          path: e2e/screenshots/**.png
+
+      - name: Upload E2E videos
+        uses: actions/upload-artifact@v3
+        with:
+          name: Videos
+          path: e2e/videos/**.mp4

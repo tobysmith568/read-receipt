@@ -1,6 +1,6 @@
 const ms = require("smtp-tester");
 
-module.exports = (on, config) => {
+module.exports = on => {
   const port = 2525;
   const mailServer = ms.init(port);
   console.log("mail server at port %d", port);

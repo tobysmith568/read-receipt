@@ -32,24 +32,16 @@ describe("ip utils", () => {
       jest.restoreAllMocks();
     });
 
-    it("should return the dev ip when isDev and a dev ip is given", () => {
-      mockedGetEnv.mockReturnValue({ dev: { isDev: true, ip: devIp } } as Env);
+    it("should return the dev ip when a dev ip is given", () => {
+      mockedGetEnv.mockReturnValue({ dev: { ip: devIp } } as Env);
 
       const result = getIpFromRequest(request);
 
       expect(result).toBe(devIp);
     });
 
-    it("should not return the dev ip when isDev but a dev ip is not given", () => {
-      mockedGetEnv.mockReturnValue({ dev: { isDev: true, ip: undefined } } as Env);
-
-      const result = getIpFromRequest(request);
-
-      expect(result).not.toBe(devIp);
-    });
-
-    it("should not return the dev ip when isDev is false but a dev ip is given", () => {
-      mockedGetEnv.mockReturnValue({ dev: { isDev: false, ip: devIp } } as Env);
+    it("should not return the dev ip when a dev ip is not given", () => {
+      mockedGetEnv.mockReturnValue({ dev: { ip: undefined } } as Env);
 
       const result = getIpFromRequest(request);
 

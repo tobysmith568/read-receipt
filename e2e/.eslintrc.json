@@ -1,0 +1,6 @@
+{
+  "extends": ["../.eslintrc"],
+  "globals": {
+    "cy": true
+  }
+}

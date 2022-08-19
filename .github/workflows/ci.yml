@@ -162,13 +162,17 @@ jobs:
           wait-on: http://localhost:3000
 
       - name: Upload E2E screenshots
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Screenshots
-          path: e2e/screenshots/**.png
+          path: e2e/screenshots/
+          if-no-files-found: ignore
 
       - name: Upload E2E videos
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Videos
-          path: e2e/videos/**.mp4
+          path: e2e/videos/
+          if-no-files-found: ignore

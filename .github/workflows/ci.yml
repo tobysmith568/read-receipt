@@ -120,7 +120,7 @@ jobs:
 
     name: E2E test (${{ matrix.browser }})
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3

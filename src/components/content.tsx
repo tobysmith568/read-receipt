@@ -11,7 +11,7 @@ const Content: FC<PropsWithChildren<Props>> = ({ showHome, maxWidth, children })
   return (
     <>
       {showHome && (
-        <Link href="/" passHref>
+        <Link href="/" passHref legacyBehavior>
           <HomeButton>&lt;- Home</HomeButton>
         </Link>
       )}

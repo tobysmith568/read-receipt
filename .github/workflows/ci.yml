@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build Docker image
-        run: docker build . -t ${{ env.IMAGE_NAME }}
+        run: docker build . -t ${{ env.IMAGE_NAME }} --build-arg NEXT_PUBLIC_YEAR=$(date +%Y)
 
       - name: Export Docker image
         run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}

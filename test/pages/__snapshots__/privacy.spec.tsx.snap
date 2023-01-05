@@ -346,7 +346,7 @@ exports[`Privacy should render the privacy policy 1`] = `
       class="css-1g71zvr"
     >
       Copyright © Toby Smith 
-      2022
+      the year
       .
       <a
         class="css-gy0gih"

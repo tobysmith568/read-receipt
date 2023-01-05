@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { Provider } from "jotai";
+import React from "react";
 import Index from "src/pages";
 
 jest.mock("axios");

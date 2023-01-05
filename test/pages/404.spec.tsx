@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import { Provider } from "jotai";
+import React from "react";
 import NotFoundPage from "src/pages/404";
 
 describe("Privacy", () => {

@@ -5,6 +5,7 @@ import { Provider } from "jotai";
 import { GetStaticPropsContext, PreviewData } from "next";
 import path from "path";
 import { ParsedUrlQuery } from "querystring";
+import React from "react";
 import LicensesPage, { getStaticProps } from "src/pages/licenses";
 
 jest.mock("generate-license-file");

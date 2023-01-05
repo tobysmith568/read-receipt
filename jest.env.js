@@ -10,3 +10,6 @@ export default class CustomTestEnvironment extends Environment {
     await super.setup();
   }
 }
+
+// Set the NEXT_PUBLIC_YEAR environment var used in the footer
+process.env.NEXT_PUBLIC_YEAR = "the year";

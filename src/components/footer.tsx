@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
 
-const year = new Date().getFullYear().toString();
-
 const Footer = () => {
+  const year = process.env.NEXT_PUBLIC_YEAR ?? null;
+
   return (
     <Copyright>
       Copyright © Toby Smith {year}.

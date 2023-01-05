@@ -9,6 +9,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG NEXT_PUBLIC_YEAR
 RUN npm run build
 
 FROM node:18-alpine AS runner

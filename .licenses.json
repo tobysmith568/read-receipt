@@ -1,0 +1,4 @@
+{
+  "extends": "@license-cop/permissive",
+  "packages": ["caniuse-lite"]
+}

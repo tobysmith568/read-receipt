@@ -28,3 +28,13 @@ To run the project use:
 npm install
 npm run dev
 ```
+
+# License
+
+read-receipt is [copyrighted](./LICENSE.md) and is not available for re-distribution or re-use.
+
+Copyright © 2020-2023 Toby Smith.
+
+<a href="https://license-cop.js.org">
+  <img alt="Protected by: License-Cop" src="https://license-cop.js.org/shield.svg">
+</a>

@@ -67,7 +67,7 @@ const FirstEmail: FC<FirstEmailProps> = ({ domain, timestamp, urlSafeEmail }) =>
 
       <p>
         If you have any questions, you can reach out to me at{" "}
-        <a href="mailto:tobysmith568@hotmail.co.uk">tobysmith568@hotmail.co.uk</a> or find me at{" "}
+        <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a> or find me at{" "}
         <a href="https://tobysmith.uk">https://tobysmith.uk</a>.
       </p>
 

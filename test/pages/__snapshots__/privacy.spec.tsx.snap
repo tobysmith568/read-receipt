@@ -25,7 +25,7 @@ exports[`Privacy should render the privacy policy 1`] = `
       </p>
       <p>
         We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the
-         
+
         <a
           href="https://www.freeprivacypolicy.com/blog/sample-privacy-policy-template/"
           rel="external nofollow noreferrer noopener"
@@ -131,7 +131,7 @@ exports[`Privacy should render the privacy policy 1`] = `
               Website
             </strong>
              refers to Read Receipt, accessible from
-             
+
             <a
               href="https://read-receipt.tobythe.dev/"
               rel="external nofollow noreferrer noopener"
@@ -333,11 +333,11 @@ exports[`Privacy should render the privacy policy 1`] = `
         class="css-kq9es3"
       >
         <li>
-          By email: 
+          By email:
           <a
-            href="mailto:tobysmith568@hotmail.co.uk"
+            href="mailto:contact@tobythe.dev"
           >
-            tobysmith568@hotmail.co.uk
+            contact@tobythe.dev
           </a>
         </li>
       </ul>
@@ -345,7 +345,7 @@ exports[`Privacy should render the privacy policy 1`] = `
     <div
       class="css-1g71zvr"
     >
-      Copyright © Toby Smith 
+      Copyright © Toby Smith
       the year
       .
       <a

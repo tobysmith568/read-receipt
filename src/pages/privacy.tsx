@@ -279,7 +279,7 @@ const PrivacyPolicyPage: FC = () => {
           <p>If you have any questions about this Privacy Policy, You can contact us:</p>
           <UL>
             <li>
-              By email: <a href="mailto:tobysmith568@hotmail.co.uk">tobysmith568@hotmail.co.uk</a>
+              By email: <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a>
             </li>
           </UL>
         </Content>

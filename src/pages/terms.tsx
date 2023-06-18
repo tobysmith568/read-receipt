@@ -272,7 +272,7 @@ const TermsAndConditionsPage: FC = () => {
           <h1>Contact Us</h1>
           <p>If you have any questions about these Terms and Conditions, You can contact us:</p>
           <UL>
-            <li>By email: tobysmith568@hotmail.co.uk</li>
+            <li>By email: contact@tobythe.dev</li>
           </UL>
         </Content>
 

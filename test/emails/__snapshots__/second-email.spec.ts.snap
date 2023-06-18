@@ -151,8 +151,8 @@ exports[`second email should render all the data correctly 1`] = `
     </p>
     <p>
       If you have any questions, you can reach out to me at
-      <a href="mailto:tobysmith568@hotmail.co.uk">
-        tobysmith568@hotmail.co.uk
+      <a href="mailto:contact@tobythe.dev">
+        contact@tobythe.dev
       </a>
       or find me at
       <a href="https://tobysmith.uk">

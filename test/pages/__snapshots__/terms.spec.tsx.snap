@@ -87,7 +87,7 @@ exports[`Terms should render the terms and conditions 1`] = `
               Terms and Conditions
             </strong>
              (also referred as "Terms") mean these Terms and Conditions that form the entire agreement between You and the Company regarding the use of the Service. This Terms and Conditions agreement has been created with the help of the
-
+             
             <a
               href="https://www.freeprivacypolicy.com/blog/sample-terms-conditions-template/"
               rel="external nofollow noreferrer noopener"
@@ -112,7 +112,7 @@ exports[`Terms should render the terms and conditions 1`] = `
               Website
             </strong>
              refers to Read Receipt, accessible from
-
+             
             <a
               href="https://read-receipt.tobythe.dev"
               rel="external nofollow noreferrer noopener"
@@ -265,7 +265,7 @@ exports[`Terms should render the terms and conditions 1`] = `
     <div
       class="css-1g71zvr"
     >
-      Copyright © Toby Smith
+      Copyright © Toby Smith 
       the year
       .
       <a

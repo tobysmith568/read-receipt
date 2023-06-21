@@ -22,7 +22,7 @@ describe("Index", () => {
   });
 
   it("should show a spinner when an email is submitted", async () => {
-    setupPostStatusCode(200, 500);
+    setupPostStatusCode(200, 1000);
 
     render(
       <Provider>

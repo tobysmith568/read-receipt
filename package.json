@@ -33,7 +33,7 @@
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@license-cop/permissive": "^1.1.0",
-    "@testing-library/cypress": "^9.0.0",
+    "@testing-library/cypress": "^10.0.0",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",

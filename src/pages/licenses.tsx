@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
-import { getProjectLicenses } from "generate-license-file";
-import { ILicense } from "generate-license-file/dist/models/license";
+import { ILicense, getProjectLicenses } from "generate-license-file";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 import { FC } from "react";

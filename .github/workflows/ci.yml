@@ -57,7 +57,7 @@ jobs:
         run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}
 
       - name: Upload Docker image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
           path: ${{ env.ARCHIVE_PATH }}
@@ -162,7 +162,7 @@ jobs:
 
       - name: Upload E2E screenshots
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Screenshots
           path: e2e/screenshots/
@@ -170,7 +170,7 @@ jobs:
 
       - name: Upload E2E videos
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Videos
           path: e2e/videos/

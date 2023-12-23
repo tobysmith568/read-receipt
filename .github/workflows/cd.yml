@@ -43,7 +43,7 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Download Docker image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
 

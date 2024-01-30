@@ -83,7 +83,7 @@ jobs:
         run: npx jest --ci --coverage
 
       - name: Codecov
-        uses: codecov/codecov-action@v3.1.5
+        uses: codecov/codecov-action@v3.1.6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: coverage

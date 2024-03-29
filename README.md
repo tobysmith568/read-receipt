@@ -33,7 +33,7 @@ npm run dev
 
 read-receipt is [copyrighted](./LICENSE.md) and is not available for re-distribution or re-use.
 
-Copyright © 2020-2023 Toby Smith.
+Copyright © 2020-2024 Toby Smith.
 
 <a href="https://license-cop.js.org">
   <img alt="Protected by: License-Cop" src="https://license-cop.js.org/shield.svg">

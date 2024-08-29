@@ -8,6 +8,7 @@ on:
     branches:
       - main
   workflow_call:
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: gcr.io/tobythe-dev/read-receipt

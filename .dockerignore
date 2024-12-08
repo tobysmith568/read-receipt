@@ -1,0 +1,5 @@
+**/coverage
+**/.next
+**/node_modules
+**/.git
+**/.idea

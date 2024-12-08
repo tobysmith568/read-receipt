@@ -1,6 +1,5 @@
 import { render } from "@testing-library/react";
-import { getProjectLicenses } from "generate-license-file";
-import { ILicense } from "generate-license-file/dist/models/license";
+import { ILicense, getProjectLicenses } from "generate-license-file";
 import { Provider } from "jotai";
 import { GetStaticPropsContext, PreviewData } from "next";
 import path from "path";
@@ -13,12 +12,17 @@ const mockedGetProjectLicenses = jest.mocked(getProjectLicenses);
 
 describe("Licenses", () => {
   const licenses: ILicense[] = [
-    { content: "license content #1", dependencies: ["dependency#1@v1.2.3", "dependency#2@v4.5.6"] },
+    {
+      content: "license content #1",
+      dependencies: ["dependency#1@v1.2.3", "dependency#2@v4.5.6"],
+      notices: []
+    },
     {
       content: "license content #2",
-      dependencies: ["dependency#3@7.8.9", "dependency#4@1.4.7", "dependency#5@2.5.8"]
+      dependencies: ["dependency#3@7.8.9", "dependency#4@1.4.7", "dependency#5@2.5.8"],
+      notices: []
     },
-    { content: "license content #3", dependencies: ["dependency#6@3.6.9"] }
+    { content: "license content #3", dependencies: ["dependency#6@3.6.9"], notices: [] }
   ];
 
   beforeEach(() => {

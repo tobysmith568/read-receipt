@@ -4,7 +4,7 @@ import { secondEmailAsHtml } from "src/emails/second-email";
 import emailReadApiHandler from "src/pages/api/open/[email]/[timestamp]";
 import { getDomainForRequest } from "src/utils/domain";
 import { sendHtml } from "src/utils/email";
-import { getIpData, getIpFromRequest, IpResponse } from "src/utils/ip";
+import { IpResponse, getIpData, getIpFromRequest } from "src/utils/ip";
 import {
   getCurrentTimestampUTC,
   getDifferenceBetweenTimestamps,

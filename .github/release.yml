@@ -1,0 +1,8 @@
+changelog:
+  exclude:
+    labels:
+      - dependencies
+      - no-release
+    authors:
+      - renovate
+      - dependabot[bot]

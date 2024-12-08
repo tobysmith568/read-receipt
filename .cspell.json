@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
-  "ignorePaths": ["public", "**.snap", "coverage"],
+  "ignorePaths": ["public", "**.snap", "coverage", "pnpm-lock.yaml"],
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb", "html", "fullstack", "css"],
   "words": [

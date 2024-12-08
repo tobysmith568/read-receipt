@@ -23,25 +23,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Run ESLint
-        run: npx eslint . --max-warnings 0
+        run: pnpm eslint . --max-warnings 0
 
       - name: Run Prettier
-        run: npx prettier --check .
+        run: pnpm prettier --check .
 
       - name: Run CSpell
-        run: npx cspell "**/*.*"
+        run: pnpm cspell "**/*.*"
 
   build:
     name: Build
@@ -69,19 +63,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Run Unit Tests
-        run: npx jest --ci --coverage
+        run: pnpm jest --ci --coverage
 
       - name: Codecov
         uses: codecov/codecov-action@v5.1.1
@@ -95,19 +83,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Check licences
-        run: npx license-cop
+        run: pnpm license-cop
 
   e2e:
     needs:
@@ -123,13 +105,10 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: tobysmith568/actions/.github/actions/checkout-pnpm-project@main
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
 
       - name: Download Docker image
         uses: actions/download-artifact@v4

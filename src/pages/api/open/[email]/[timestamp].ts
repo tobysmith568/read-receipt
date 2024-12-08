@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { secondEmailAsHtml, Times, User } from "../../../../emails/second-email";
+import { Times, User, secondEmailAsHtml } from "../../../../emails/second-email";
 import { getDomainForRequest } from "../../../../utils/domain";
 import { sendHtml } from "../../../../utils/email";
 import { getIpData, getIpFromRequest } from "../../../../utils/ip";

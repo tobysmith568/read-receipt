@@ -41,7 +41,7 @@
     "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^29.0.0",
     "@types/jest-when": "^3.5.0",
-    "@types/node": "22.15.16",
+    "@types/node": "22.15.17",
     "@types/nodemailer": "^6.4.4",
     "@types/react": "18.3.21",
     "@types/react-dom": "^18.0.0",

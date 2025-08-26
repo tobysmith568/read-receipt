@@ -48,7 +48,7 @@
     "@types/request-ip": "^0.0.41",
     "@types/ua-parser-js": "^0.7.36",
     "cspell": "^8.0.0",
-    "cypress": "^13.14.0",
+    "cypress": "^15.0.0",
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.30",
     "generate-license-file": "^3.0.0",

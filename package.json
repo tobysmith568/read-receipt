@@ -23,7 +23,7 @@
     "jest-serializer-html": "^7.1.0",
     "jotai": "^2.0.0",
     "next": "14.2.35",
-    "nodemailer": "^7.0.0",
+    "nodemailer": "^7.0.12",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "request-ip": "^3.0.0",

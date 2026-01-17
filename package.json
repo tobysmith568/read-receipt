@@ -51,11 +51,11 @@
     "cypress": "^15.8.1",
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.35",
-    "generate-license-file": "^3.0.0",
+    "generate-license-file": "^3.8.1",
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
     "jest-when": "^3.5.1",
-    "license-cop": "^1.7.1",
+    "license-cop": "^1.8.1",
     "mockdate": "^3.0.5",
     "smtp-tester": "^2.0.0",
     "typescript": "^5.0.0"

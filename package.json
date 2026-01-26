@@ -47,7 +47,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/request-ip": "^0.0.41",
     "@types/ua-parser-js": "^0.7.36",
-    "cspell": "^8.0.0",
+    "cspell": "^9.0.0",
     "cypress": "^15.8.1",
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.35",

@@ -18,7 +18,7 @@
     "e2e": "cypress open"
   },
   "dependencies": {
-    "axios": "^1.13.2",
+    "axios": "^1.13.5",
     "dayjs": "^1.10.8",
     "jest-serializer-html": "^7.1.0",
     "jotai": "^2.0.0",

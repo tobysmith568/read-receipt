@@ -132,7 +132,7 @@ jobs:
           cache: npm
 
       - name: Download Docker image
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.ARCHIVE_NAME }}
 

@@ -1,0 +1,25 @@
+services:
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    ports:
+      - "2525:25" # SMTP - matches e2e/mail-server.ts's port and the committed .env
+      - "5000:80" # web UI: http://localhost:5000
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+    profiles: ["app"] # only starts via `docker compose up app`, not plain `up`
+    ports:
+      - "3000:3000"
+    environment:
+      EMAIL_HOST: smtp4dev
+      EMAIL_PORT: "25"
+      EMAIL_SENDER_NAME: Read Receipt
+      EMAIL_SENDER_EMAIL: read.receipt@whatever.com
+      EMAIL_USER: user
+      EMAIL_PASS: pass
+      DEV_IP: 95.150.202.188
+      FORCE_HTTP: "true"
+    depends_on:
+      - smtp4dev

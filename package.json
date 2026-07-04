@@ -14,7 +14,7 @@
     "start": "bun ./dist/server/entry.mjs",
     "lint": "biome ci .",
     "test": "jest",
-    "e2e": "cypress open"
+    "e2e": "playwright test --ui"
   },
   "dependencies": {
     "@astrojs/node": "^11.0.2",
@@ -34,8 +34,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.2",
     "@license-cop/permissive": "^1.7.1",
+    "@playwright/test": "^1.61.1",
     "@swc/jest": "^0.2.39",
-    "@testing-library/cypress": "^10.1.0",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -48,7 +48,6 @@
     "@types/react-dom": "^18.0.0",
     "@types/ua-parser-js": "^0.7.36",
     "cspell": "^8.0.0",
-    "cypress": "^15.8.1",
     "generate-license-file": "^3.0.0",
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",

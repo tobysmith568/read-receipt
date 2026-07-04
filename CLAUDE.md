@@ -31,11 +31,15 @@ geolocation, user agent, and the time between sending and opening).
   `biome.json` to avoid false positives on props/imports only used in markup.
 - Jest 30 + Testing Library (transformed via `@swc/jest`, not `next/jest`), specs
   mirrored under `test/` (not colocated with source)
-- Cypress 15 for e2e, run against a built Docker image in CI (chrome + firefox)
+- Playwright for e2e (`chromium`/`firefox` projects), run against a built Docker
+  image in CI; mail capture for the tracking-pixel flow goes through
+  `smtp-tester` via a small local admin HTTP server (`e2e/mail-server.ts` +
+  `e2e/mail-client.ts`), not a Cypress-style task, since Playwright test files
+  run in separate worker processes from `globalSetup`/`globalTeardown`
 - cspell (spell-checking), license-cop (license auditing)
 - Docker (`oven/bun` base image) → GCR → Cloud Run for deployment
 
-A staged rewrite to Playwright/`bun:test` is still planned — see
+A staged rewrite to colocated `bun:test` is still planned — see
 `docs/modernization-plan.md` for the full plan and current stage.
 
 ## Commands
@@ -50,24 +54,31 @@ bunx biome format --write .  # format the repo (not a package.json script)
 bun run test           # run full Jest suite (bare `bun test` runs Bun's own test runner, not this)
 bunx jest path/to/file.spec.ts        # run a single Jest file
 bunx jest -t "test name"              # run tests matching a name
-bun run e2e            # open Cypress interactively
-bunx cypress run        # run Cypress headlessly (used in CI, against a built Docker image)
+bun run e2e            # open the Playwright UI (interactive) - auto builds/starts the app if nothing's running on :3000
+bunx playwright test     # run Playwright headlessly (used in CI, against a built Docker image)
+bunx playwright test --project=chromium  # run a single project (also: firefox)
 bunx cspell "**/*.*"     # spell-check
 bunx license-cop         # check dependency licenses
+docker compose up        # starts smtp4dev only, for manually viewing sent emails at http://localhost:5000
+docker compose up app    # additionally builds/runs the production Docker image locally, talking to smtp4dev
 ```
 
 ## Required environment variables
 
-Not committed; create a local `.env`:
+`.env` is committed with working defaults (points at `smtp4dev`/the e2e
+suite's own `smtp-tester`, both on port 2525 - never running at the same
+time, so one file covers both). Override locally via a gitignored `.env.local`
+for different real values (e.g. actual SMTP credentials):
 
 ```
 EMAIL_HOST=localhost
-EMAIL_PORT=25
+EMAIL_PORT=2525
 EMAIL_SENDER_NAME=Read Receipt
 EMAIL_SENDER_EMAIL=read.receipt@whatever.com
 EMAIL_USER=user
 EMAIL_PASS=pass
-DEV_IP=xxx.xxx.xxx.xxx   # mock IP used for dev builds, since localhost has no real one
+DEV_IP=95.150.202.188   # mock IP used for dev builds, since localhost has no real one
+FORCE_HTTP=true         # needed once running the *built* app (bun run start / docker compose up app); harmless in dev
 ```
 
 Read in `src/utils/env.ts` via `getEnv()` — always go through that function rather
@@ -121,10 +132,21 @@ Other notable pieces:
   Jest snapshots serialized as HTML (`jest-serializer-html`). There's no page-level
   snapshot coverage any more (the old `test/pages/*.spec.tsx` rendered Next page
   components directly, which no longer exist as standalone components) — routing/
-  content coverage for those pages now lives solely in the Cypress specs.
-- E2E specs (`e2e/integration/*.cy.ts`) run against a built Docker image, not the dev
+  content coverage for those pages now lives solely in the Playwright specs.
+- E2E specs (`e2e/integration/*.spec.ts`) run against a built Docker image, not the dev
   server — CI builds the image once and shares it between the `e2e` matrix jobs
-  (chrome/firefox) via an uploaded artifact.
+  (`chromium`/`firefox`) via an uploaded artifact. The SMTP capture server
+  (`e2e/global-setup.ts`) runs on the GitHub Actions runner itself, not inside
+  the container — the container's `EMAIL_HOST=172.17.0.1` (the Docker bridge
+  gateway) points nodemailer back at it. `playwright.config.ts`'s `webServer`
+  (`bun run build && bun run start`, `reuseExistingServer: true`) means
+  running Playwright locally builds/starts the app automatically if nothing's
+  already on `:3000`; in CI it just reuses the already-running container.
+- `compose.yml` is for manual local dev only, unrelated to the e2e suite's own
+  `smtp-tester` instance: `docker compose up` starts `smtp4dev` (a real SMTP
+  server with a web UI at `http://localhost:5000`) so emails sent while
+  poking at the app by hand (`bun run dev`) can actually be seen; `docker
+  compose up app` additionally builds/runs the production image against it.
 - Deployment: `Dockerfile` builds the Astro node-adapter standalone output; unlike
   Next's `.next/standalone`, Astro doesn't trace/bundle production `node_modules`
   automatically, so the runner stage installs and copies `node_modules` itself

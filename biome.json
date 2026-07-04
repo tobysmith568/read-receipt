@@ -10,7 +10,6 @@
       "!**/.next",
       "!**/coverage",
       "!**/node_modules",
-      "!e2e/downloads",
       "!public"
     ]
   },
@@ -50,14 +49,7 @@
       }
     },
     {
-      "includes": ["e2e/**/*.{js,ts,tsx}"],
-      "javascript": { "globals": ["Cypress", "cy"] },
-      "linter": {
-        "rules": { "suspicious": { "noExportsInTest": "off" } }
-      }
-    },
-    {
-      "includes": ["cypress.config.ts", "jest.config.js", "jest.env.js"],
+      "includes": ["jest.config.js", "jest.env.js"],
       "linter": {
         "rules": { "style": { "noCommonJs": "off" } }
       }

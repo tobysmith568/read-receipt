@@ -10,24 +10,20 @@ Hosted at: https://read-receipt.tobythe.dev
 
 ## Dev Setup
 
-Project needs a `.env` file with the following properties for the SMTP server as well as a mock IP address to use when run as a dev build:
-
-```
-EMAIL_HOST=localhost
-EMAIL_PORT=25
-EMAIL_SENDER_NAME=Read Receipt
-EMAIL_SENDER_EMAIL=read.receipt@whatever.com
-EMAIL_USER=user
-EMAIL_PASS=pass
-DEV_IP=xxx.xxx.xxx.xxx
-```
+A `.env` is committed with working defaults for the SMTP server and a mock IP
+address to use when run as a dev build (override with a gitignored `.env.local`
+if you need different values, e.g. real SMTP credentials).
 
 To run the project use:
 
 ```
 bun install
+docker compose up   # starts smtp4dev, so sent emails can be viewed at http://localhost:5000
 bun run dev
 ```
+
+`docker compose up app` additionally builds and runs the production Docker
+image locally (talking to the same `smtp4dev`), instead of `bun run dev`.
 
 # License
 

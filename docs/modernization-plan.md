@@ -248,7 +248,7 @@ from deps and workflows.
   (`lint/a11y/useAltText`) — added `alt=""` since it's a decorative pixel,
   not a content image.
 
-## Stage 5 — Playwright instead of Cypress
+## Stage 5 — Playwright instead of Cypress ✅ done
 
 **Depends on:** Stage 3 (Astro) — write specs once, against final Astro
 markup/routes, not against Next.js output that's about to change.
@@ -268,6 +268,63 @@ markup/routes, not against Next.js output that's about to change.
 
 **Exit criteria:** All 5 e2e scenarios pass under Playwright in CI across the
 same browser matrix Cypress covered; Cypress fully removed.
+
+**Outcome / deviations from the plan above:**
+
+- The trickiest part wasn't the spec syntax, it was `e2e/plugins/index.js`'s
+  Cypress `task`s (`deleteAllEmails`/`getLastEmail`), which read captured
+  emails from an in-process `smtp-tester` instance. Cypress plugins run in the
+  same Node process as the test runner, so that in-memory state was directly
+  reachable; Playwright test files run in separate worker processes from
+  `globalSetup`/`globalTeardown`, so the same in-memory object isn't visible
+  to the spec files. Solved by having `e2e/global-setup.ts` start both the
+  `smtp-tester` SMTP server *and* a tiny local admin HTTP server
+  (`e2e/mail-server.ts`, port 4526) exposing `POST /reset` and
+  `GET /last-email?to=`; spec files call it through `e2e/mail-client.ts` via
+  plain `fetch`, replacing Cypress's `cy.task` RPC with an equivalent
+  same-machine HTTP RPC.
+- `cy.get('h1:contains("X")')` (jQuery substring match, non-unique) had no
+  direct Playwright equivalent; used `page.getByRole("heading", { level, name,
+  exact: true })` instead, which is both idiomatic Playwright and stricter —
+  it avoids accidental matches against other headings that merely contain the
+  target text as a substring (e.g. `terms.astro`'s "Changes to These Terms and
+  Conditions" section heading vs. the page's own "Terms and Conditions" h1).
+- `smtp-tester` has no published types; added a minimal
+  `e2e/smtp-tester.d.ts` ambient module declaration rather than pulling in
+  `@types/smtp-tester` (doesn't exist).
+- Because chromium and firefox now run as concurrent Playwright *projects*
+  against the same shared mail-server admin process, the Index spec's tests
+  were changed to send from a fresh `user+<uuid>@tobysmith.uk` address per
+  test (`node:crypto` `randomUUID()`) rather than one fixed address — the
+  original Cypress suite never hit this because its two browser runs were
+  fully separate CI jobs/containers, each with their own `smtp-tester`
+  instance.
+- Actually running this suite end-to-end (rather than just porting syntax)
+  surfaced two real, pre-existing bugs, both fixed as part of this stage:
+  - `src/pages/api/open/[email]/[timestamp].ts` never decoded its `email`
+    route param. Astro's router decodes path segments with `decodeURI`, which
+    deliberately leaves `%40` (and other reserved-delimiter escapes) alone, so
+    nodemailer was receiving `"user%40example.com"` as the recipient and
+    failing nodemailer's envelope validation with "No recipients defined" —
+    silently, since the
+    handler's outer catch swallows all errors before always returning the
+    pixel. This means the second ("you just opened this email") email has
+    likely been broken on the live site since the Stage 3 Astro migration.
+    Fixed with a `decodeURIComponent(email)` in `getQueryArgs`.
+  - The ported tracking-pixel regex (copied from the Cypress version) assumed
+    `"/>` immediately followed the closing quote of the `<img>`'s `src`
+    attribute; that stopped matching once Stage 4 added `alt=""` to the same
+    `<img>` for `lint/a11y/useAltText`, so the regex silently never matched
+    from that point on. Rewritten to tolerate attributes between `src="..."`
+    and the self-closing `/>`.
+- CI matrix renamed `[chrome, firefox]` → `[chromium, firefox]` (Playwright's
+  project names); added a `bunx playwright install --with-deps <browser>`
+  step and a `bunx wait-on http://localhost:3000` step (Cypress's GitHub
+  Action bundled both internally, Playwright's CLI doesn't).
+- `biome.json`'s `e2e/**` override (`Cypress`/`cy` globals,
+  `noExportsInTest: "off"`) and the `!e2e/downloads` files ignore were dropped
+  entirely — Playwright specs don't need Cypress's global test API and don't
+  export anything, and there's no download-testing equivalent in use.
 
 ## Stage 6 — Colocated `bun:test` instead of Jest
 

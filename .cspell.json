@@ -26,7 +26,8 @@
     "tseslint",
     "tsconfigs",
     "prerender",
-    "prerendered"
+    "prerendered",
+    "rnwood"
   ],
   "ignoreWords": [],
   "import": [],

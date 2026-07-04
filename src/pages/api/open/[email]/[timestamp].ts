@@ -68,7 +68,10 @@ const getQueryArgs = (params: APIContext["params"]): { email: string; timestamp:
     throw new Error("timestamp is required");
   }
 
-  return { email, timestamp };
+  // Astro's router decodes path segments with `decodeURI`, which deliberately
+  // leaves `%40` (and other reserved-delimiter escapes) alone, so the `email`
+  // param arrives as e.g. "user%40example.com" rather than "user@example.com".
+  return { email: decodeURIComponent(email), timestamp };
 };
 
 const sendPixel = (): Response =>

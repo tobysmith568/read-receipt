@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback } from "react";
+import { useCallback, type SyntheticEvent } from "react";
 import LinkButton from "../link-button";
 import { useFormData, useResetForm } from "./use-form-state";
 

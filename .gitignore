@@ -1,6 +1,6 @@
 *.mp4
 
-##### THE FOLLOWING IS FROM NEXT.JS
+##### THE FOLLOWING IS FROM ASTRO
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -12,9 +12,9 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# astro
+/dist/
+.astro/
 
 # production
 /build
@@ -42,7 +42,7 @@ yarn-error.log*
 *.tsbuildinfo
 
 
-##### END OF NEXT.JS
+##### END OF ASTRO
 ##### THE FOLLOWING IS FROM GITIGNORE.IO
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,visualstudiocode,rider

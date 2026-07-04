@@ -1,4 +1,3 @@
-import { NextApiRequest } from "next";
 import { getUserAgentData } from "src/utils/user-agent";
 
 describe("user-agent utils", () => {
@@ -51,24 +50,20 @@ describe("user-agent utils", () => {
       }
     ].forEach(testCase =>
       it("should return the user agent data", () => {
-        const req: NextApiRequest = {
-          headers: {
-            "user-agent": testCase.userAgent
-          }
-        } as NextApiRequest;
+        const request = new Request("http://example.com", {
+          headers: { "user-agent": testCase.userAgent }
+        });
 
-        const result = getUserAgentData(req);
+        const result = getUserAgentData(request);
 
         expect(result).toEqual(testCase.result);
       })
     );
 
     it("should return undefined values if the user agent is not defined", () => {
-      const req: NextApiRequest = {
-        headers: {}
-      } as NextApiRequest;
+      const request = new Request("http://example.com");
 
-      const result = getUserAgentData(req);
+      const result = getUserAgentData(request);
 
       expect(result).toStrictEqual({
         browser: undefined,
@@ -79,13 +74,11 @@ describe("user-agent utils", () => {
     });
 
     it("should return undefined values if they cannot be gotten from the user agent", () => {
-      const req: NextApiRequest = {
-        headers: {
-          "user-agent": "Not a user agent"
-        }
-      } as NextApiRequest;
+      const request = new Request("http://example.com", {
+        headers: { "user-agent": "Not a user agent" }
+      });
 
-      const result = getUserAgentData(req);
+      const result = getUserAgentData(request);
 
       expect(result).toStrictEqual({
         browser: undefined,

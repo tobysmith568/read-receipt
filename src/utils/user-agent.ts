@@ -1,4 +1,3 @@
-import { NextApiRequest } from "next";
 import UAParser from "ua-parser-js";
 
 export interface UserAgentDetails {
@@ -8,8 +7,8 @@ export interface UserAgentDetails {
   version?: string;
 }
 
-export const getUserAgentData = (req: NextApiRequest): UserAgentDetails => {
-  const userAgent = req.headers["user-agent"];
+export const getUserAgentData = (request: Request): UserAgentDetails => {
+  const userAgent = request.headers.get("user-agent") ?? undefined;
 
   const userAgentParser = new UAParser(userAgent);
 

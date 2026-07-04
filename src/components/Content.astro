@@ -1,0 +1,33 @@
+---
+interface Props {
+  showHome?: boolean;
+  maxWidth: string;
+}
+
+const { showHome = false, maxWidth } = Astro.props;
+---
+
+{showHome && <a class="home-button" href="/">&lt;- Home</a>}
+<div class="inner-content" style={{ "--max-width": maxWidth }}>
+  <slot />
+</div>
+
+<style>
+  .home-button {
+    display: inline-block;
+    padding-bottom: 0.25em;
+    margin-left: 0.25em;
+    color: #0c0c0c;
+  }
+
+  .inner-content {
+    max-width: var(--max-width);
+    max-height: 80vh;
+    background: #f9f9f9;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    overflow-y: auto;
+    white-space: pre-line;
+  }
+</style>

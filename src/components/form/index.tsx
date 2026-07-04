@@ -3,7 +3,7 @@ import Error from "./error";
 import Form from "./form";
 import Sending from "./sending";
 import Sent from "./sent";
-import { Status, useFormState } from "./use-form-state";
+import { useFormState, type Status } from "./use-form-state";
 
 const EmailForm = () => {
   const formState = useFormState();

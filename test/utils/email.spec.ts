@@ -16,8 +16,8 @@ describe("email", () => {
   let subject = "";
   let html = "";
 
-  let mockedCreateTransport = jest.mocked(createTransport);
-  let mockedGetEnv = jest.mocked(getEnv);
+  const mockedCreateTransport = jest.mocked(createTransport);
+  const mockedGetEnv = jest.mocked(getEnv);
 
   beforeEach(() => {
     jest.resetAllMocks();

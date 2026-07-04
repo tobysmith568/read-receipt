@@ -1,11 +1,8 @@
 import axios from "axios";
-import { NextApiRequest } from "next";
-import requestIp from "request-ip";
 import { Env, getEnv } from "src/utils/env";
 import { getIpData, getIpFromRequest } from "src/utils/ip";
 
 jest.mock("src/utils/env");
-jest.mock("request-ip");
 jest.mock("axios");
 
 const non200StatusCodes = [301, 302, 400, 401, 403, 404, 500];
@@ -16,16 +13,14 @@ describe("ip utils", () => {
 
   describe("getIpFromRequest", () => {
     const mockedGetEnv = jest.mocked(getEnv);
-    const mockedRequestIp = jest.mocked(requestIp);
 
-    let request: NextApiRequest;
+    const buildRequest = (forwardedFor?: string): Request =>
+      new Request("http://example.com", {
+        headers: forwardedFor ? { "x-forwarded-for": forwardedFor } : {}
+      });
 
     beforeEach(() => {
       jest.resetAllMocks();
-
-      request = {} as NextApiRequest;
-
-      mockedRequestIp.getClientIp.mockReturnValue(userIp);
     });
 
     afterAll(() => {
@@ -35,7 +30,7 @@ describe("ip utils", () => {
     it("should return the dev ip when a dev ip is given", () => {
       mockedGetEnv.mockReturnValue({ dev: { ip: devIp } } as Env);
 
-      const result = getIpFromRequest(request);
+      const result = getIpFromRequest(buildRequest(userIp));
 
       expect(result).toBe(devIp);
     });
@@ -43,24 +38,23 @@ describe("ip utils", () => {
     it("should not return the dev ip when a dev ip is not given", () => {
       mockedGetEnv.mockReturnValue({ dev: { ip: undefined } } as Env);
 
-      const result = getIpFromRequest(request);
+      const result = getIpFromRequest(buildRequest(userIp));
 
       expect(result).not.toBe(devIp);
     });
 
-    it("should return the result of request-ip when isDev is false", () => {
+    it("should return the first x-forwarded-for address when a dev ip is not given", () => {
       mockedGetEnv.mockReturnValue({ dev: { isDev: false } } as Env);
 
-      const result = getIpFromRequest(request);
+      const result = getIpFromRequest(buildRequest(`${userIp}, 1.2.3.4`));
 
       expect(result).toBe(userIp);
     });
 
-    it("should throw if request-ip returns null", () => {
+    it("should throw if there is no x-forwarded-for header", () => {
       mockedGetEnv.mockReturnValue({ dev: { isDev: false } } as Env);
-      mockedRequestIp.getClientIp.mockReturnValue(null);
 
-      expect(() => getIpFromRequest(request)).toThrow("Could not get IP address");
+      expect(() => getIpFromRequest(buildRequest())).toThrow("Could not get IP address");
     });
   });
 

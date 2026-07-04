@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
-  "ignorePaths": ["public", "**.snap", "coverage"],
+  "ignorePaths": ["public", "**.snap", "coverage", "dist"],
   "dictionaryDefinitions": [],
   "dictionaries": ["en-gb", "html", "fullstack", "css"],
   "words": [
@@ -22,7 +22,11 @@
     "dbaeumer",
     "mockdate",
     "lcov",
-    "ultrareview"
+    "ultrareview",
+    "tseslint",
+    "tsconfigs",
+    "prerender",
+    "prerendered"
   ],
   "ignoreWords": [],
   "import": [],

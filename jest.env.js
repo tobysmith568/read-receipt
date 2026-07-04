@@ -7,9 +7,12 @@ export default class CustomTestEnvironment extends Environment {
       const { TextEncoder } = require("util");
       this.global.TextEncoder = TextEncoder;
     }
+    if (typeof this.global.Request === "undefined") {
+      this.global.Request = Request;
+      this.global.Response = Response;
+      this.global.Headers = Headers;
+      this.global.fetch = fetch;
+    }
     await super.setup();
   }
 }
-
-// Set the NEXT_PUBLIC_YEAR environment var used in the footer
-process.env.NEXT_PUBLIC_YEAR = "the year";

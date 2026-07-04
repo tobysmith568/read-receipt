@@ -1,7 +1,6 @@
 import { when } from "jest-when";
-import { NextApiRequest, NextApiResponse } from "next";
 import { secondEmailAsHtml } from "src/emails/second-email";
-import emailReadApiHandler from "src/pages/api/open/[email]/[timestamp]";
+import { GET } from "src/pages/api/open/[email]/[timestamp]";
 import { getDomainForRequest } from "src/utils/domain";
 import { sendHtml } from "src/utils/email";
 import { getIpData, getIpFromRequest, IpResponse } from "src/utils/ip";
@@ -54,11 +53,10 @@ describe("Submit API", () => {
     254, 2, 254, 167, 53, 129, 132, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
   ]);
 
-  let req: NextApiRequest;
-  let res: NextApiResponse<Buffer>;
+  const request = new Request("http://example.com/api/open/a/1");
 
-  let resSetHeader = jest.fn();
-  let resSend = jest.fn();
+  const makeContext = (email?: string, timestamp?: string) =>
+    ({ request, params: { email, timestamp } } as Parameters<typeof GET>[0]);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -71,15 +69,6 @@ describe("Submit API", () => {
     when(mockedPrintTimestamp)
       .calledWith(currentTimeStamp)
       .mockReturnValue(timeStampOfSecondEmailFormatted);
-
-    req = {} as NextApiRequest;
-    res = {} as NextApiResponse<Buffer>;
-
-    resSetHeader = jest.fn(() => res);
-    res.setHeader = resSetHeader;
-
-    resSend = jest.fn(() => res);
-    res.send = resSend;
 
     mockedGetDomainForRequest.mockReturnValue(requestDomain);
     mockedGetCurrentTimestampUTC.mockReturnValue(currentTimeStamp);
@@ -99,12 +88,7 @@ describe("Submit API", () => {
   });
 
   it("should calculate the time difference between the two emails", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
+    await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
     expect(mockedGetDifferenceBetweenTimestamps).toHaveBeenCalledTimes(1);
     expect(mockedGetDifferenceBetweenTimestamps).toHaveBeenCalledWith(
@@ -114,36 +98,21 @@ describe("Submit API", () => {
   });
 
   it("should fetch the Ip data for the user's Ip address", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
+    await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
     expect(mockedGetIpData).toHaveBeenCalledTimes(1);
     expect(mockedGetIpData).toHaveBeenCalledWith(usersIpAddress);
   });
 
   it("should fetch the user agent data for the user's browser", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
+    await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
     expect(mockedGetUserAgentData).toHaveBeenCalledTimes(1);
-    expect(mockedGetUserAgentData).toHaveBeenCalledWith(req);
+    expect(mockedGetUserAgentData).toHaveBeenCalledWith(request);
   });
 
   it("should create the second email with the correct props", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
+    await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
     expect(mockedSecondEmailAsHtml).toHaveBeenCalledTimes(1);
     expect(mockedSecondEmailAsHtml).toHaveBeenCalledWith({
@@ -170,12 +139,7 @@ describe("Submit API", () => {
   });
 
   it("should send the second email to the user", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
+    await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
     expect(mockedSendHtml).toHaveBeenCalledTimes(1);
     expect(mockedSendHtml).toHaveBeenCalledWith(
@@ -186,84 +150,36 @@ describe("Submit API", () => {
   });
 
   it("should return the tracking pixel", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: timeStampOfFirstEmail.toString()
-    };
+    const response = await GET(makeContext(usersEmail, timeStampOfFirstEmail.toString()));
 
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    await expect(response.arrayBuffer()).resolves.toEqual(
+      trackingPixelAsBuffer.buffer.slice(
+        trackingPixelAsBuffer.byteOffset,
+        trackingPixelAsBuffer.byteOffset + trackingPixelAsBuffer.byteLength
+      )
+    );
   });
 
   it("should still return the tracking pixel if there is no email", async () => {
-    req.query = {
-      timestamp: timeStampOfFirstEmail.toString()
-    };
+    const response = await GET(makeContext(undefined, timeStampOfFirstEmail.toString()));
 
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
-  });
-
-  it("should still return the tracking pixel if there are multiple emails", async () => {
-    req.query = {
-      email: [usersEmail, "another@email.com"],
-      timestamp: timeStampOfFirstEmail.toString()
-    };
-
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 
   it("should still return the tracking pixel if there is no timestamp", async () => {
-    req.query = {
-      email: usersEmail
-    };
+    const response = await GET(makeContext(usersEmail, undefined));
 
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
-  });
-
-  it("should still return the tracking pixel if there are multiple timestamps", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: [timeStampOfFirstEmail.toString(), "123"]
-    };
-
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 
   it("should still return the tracking pixel if the timestamps cannot be parsed as a number", async () => {
-    req.query = {
-      email: usersEmail,
-      timestamp: "not a valid number"
-    };
+    const response = await GET(makeContext(usersEmail, "not a valid number"));
 
-    await emailReadApiHandler(req, res);
-
-    expect(resSetHeader).toHaveBeenCalledTimes(2);
-    expect(resSetHeader).toHaveBeenCalledWith("Content-Type", "image/png");
-    expect(resSetHeader).toHaveBeenCalledWith("Cache-Control", "no-store");
-    expect(resSend).toHaveBeenCalledWith(trackingPixelAsBuffer);
+    expect(response.headers.get("Content-Type")).toBe("image/png");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 });

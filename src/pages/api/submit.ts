@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { APIRoute } from "astro";
 import { firstEmailAsHtml } from "../../emails/first-email";
 import { getDomainForRequest } from "../../utils/domain";
 import { sendHtml } from "../../utils/email";
@@ -10,20 +10,20 @@ export interface SubmitResponse {
   success: boolean;
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<SubmitResponse>) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
-    await handleRequest(req);
-    res.status(200).json({ success: true });
-  } catch (error) {
-    res.status(500).json({ success: false });
+    await handleRequest(request);
+    return jsonResponse({ success: true }, 200);
+  } catch {
+    return jsonResponse({ success: false }, 500);
   }
 };
-export default handler;
 
-const handleRequest = async (req: NextApiRequest) => {
-  const currentDomain = getDomainForRequest(req);
+const handleRequest = async (request: Request) => {
+  const currentDomain = getDomainForRequest(request);
 
-  const recipientEmailAddress = req.body.email;
+  const body = await request.json();
+  const recipientEmailAddress = body.email;
   const recipientEmailAddressBase64 = encodeURIComponent(recipientEmailAddress);
 
   const timestamp = getCurrentTimestampUTC();
@@ -36,3 +36,9 @@ const handleRequest = async (req: NextApiRequest) => {
 
   await sendHtml(recipientEmailAddress, "Read Receipt", emailContentAsHtml);
 };
+
+const jsonResponse = (body: SubmitResponse, status: number): Response =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" }
+  });

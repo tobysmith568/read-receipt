@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, type ChangeEvent, type SyntheticEvent } from "react";
 import { useFormData } from "./use-form-state";
 import { useSubmitEmail } from "./use-submit-email";
 

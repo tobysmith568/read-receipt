@@ -1,6 +1,0 @@
-{
-  "extends": ["eslint:recommended", "next"],
-  "env": {
-    "jest": true
-  }
-}

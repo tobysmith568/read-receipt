@@ -1,0 +1,80 @@
+---
+export const prerender = true;
+
+// cspell: ignore noindex
+import { getProjectLicenses } from "generate-license-file";
+import Content from "../components/Content.astro";
+import Layout from "../layouts/Layout.astro";
+
+const licenses = await getProjectLicenses(new URL("../../package.json", import.meta.url).pathname);
+
+const getPackageUrl = (packageNameAndVersion: string) => {
+  const indexOfLastAt = packageNameAndVersion.lastIndexOf("@");
+  const packageName = packageNameAndVersion.substring(0, indexOfLastAt);
+  const packageVersion = packageNameAndVersion.substring(indexOfLastAt + 1);
+
+  return `https://www.npmjs.com/package/${packageName}/v/${packageVersion}`;
+};
+---
+
+<Layout title="Licenses" description="Third-party licenses" noIndex>
+  <Content maxWidth="800px" showHome>
+    <h1>Third-Party Licenses</h1>
+    <h3 class="subtitle">This page lists all of the third-party licenses used by this website</h3>
+    <h4 class="generated-by">
+      This page was generated using the
+      <a
+        class="package-link"
+        href="https://www.npmjs.com/package/generate-license-file"
+        target="_blank"
+        rel="noreferrer">generate-license-file npm package</a
+      >.
+    </h4>
+    {
+      licenses.map(license => (
+        <div class="license">
+          <p>The following npm packages may be included in this website:</p>
+          <ul class="package-list">
+            {license.dependencies.map(dependency => (
+              <li>
+                <a class="package-link" href={getPackageUrl(dependency)} target="_blank" rel="noreferrer">
+                  {dependency}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p>These packages contains the following license and notice below:</p>
+          {license.content}
+          <br />
+          <hr />
+          <br />
+        </div>
+      ))
+    }
+  </Content>
+</Layout>
+
+<style>
+  .subtitle {
+    margin-bottom: 0.5em;
+    font-weight: normal;
+  }
+
+  .generated-by {
+    margin-bottom: 3em;
+    font-weight: normal;
+  }
+
+  .license {
+    padding-left: 0;
+  }
+
+  .package-list {
+    list-style-type: none;
+    margin-bottom: 1em;
+  }
+
+  .package-link {
+    text-decoration: underline;
+  }
+</style>

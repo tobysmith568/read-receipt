@@ -1,0 +1,46 @@
+---
+import Footer from "../components/Footer.astro";
+import "../styles/globals.css";
+
+interface Props {
+  title: string;
+  description: string;
+  noIndex?: boolean;
+}
+
+const { title, description, noIndex = false } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <base href="/" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex" />}
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=zdnfztgnfgt" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=zdnfztgnfgt" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=zdnfztgnfgt" />
+    <link rel="manifest" href="/site.webmanifest?v=zdnfztgnfgt" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=zdnfztgnfgt" color="#2fa7ec" />
+    <link rel="shortcut icon" href="/favicon.ico?v=zdnfztgnfgt" />
+    <meta name="msapplication-TileColor" content="#2fa7ec" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <slot />
+      <Footer />
+    </div>
+  </body>
+</html>
+
+<style>
+  .wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-content: center;
+  }
+</style>

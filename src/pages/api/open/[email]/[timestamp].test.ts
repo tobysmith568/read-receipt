@@ -1,38 +1,54 @@
-import { when } from "jest-when";
-import { secondEmailAsHtml } from "src/emails/second-email";
-import { GET } from "src/pages/api/open/[email]/[timestamp]";
-import { getDomainForRequest } from "src/utils/domain";
-import { sendHtml } from "src/utils/email";
-import { getIpData, getIpFromRequest, type IpResponse } from "src/utils/ip";
-import {
-  getCurrentTimestampUTC,
-  getDifferenceBetweenTimestamps,
-  printTimestamp
-} from "src/utils/time";
-import { getUserAgentData } from "src/utils/user-agent";
-
-jest.mock("src/emails/second-email");
-const mockedSecondEmailAsHtml = jest.mocked(secondEmailAsHtml);
-
-jest.mock("src/utils/domain");
-const mockedGetDomainForRequest = jest.mocked(getDomainForRequest);
-
-jest.mock("src/utils/time");
-const mockedGetCurrentTimestampUTC = jest.mocked(getCurrentTimestampUTC);
-const mockedPrintTimestamp = jest.mocked(printTimestamp);
-const mockedGetDifferenceBetweenTimestamps = jest.mocked(getDifferenceBetweenTimestamps);
-
-jest.mock("src/utils/email");
-const mockedSendHtml = jest.mocked(sendHtml);
-
-jest.mock("src/utils/ip");
-const mockedGetIpData = jest.mocked(getIpData);
-const mockedGetIpFromRequest = jest.mocked(getIpFromRequest);
-
-jest.mock("src/utils/user-agent");
-const mockedGetUserAgentData = jest.mocked(getUserAgentData);
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import type { secondEmailAsHtml as SecondEmailAsHtml } from "../../../../emails/second-email";
+import { isolatedModuleMock } from "../../../../test-support/isolated-module-mock";
+import type { getDomainForRequest as GetDomainForRequest } from "../../../../utils/domain";
+import type { sendHtml as SendHtml } from "../../../../utils/email";
+import type {
+  getIpData as GetIpData,
+  getIpFromRequest as GetIpFromRequest,
+  IpResponse
+} from "../../../../utils/ip";
+import type {
+  getCurrentTimestampUTC as GetCurrentTimestampUTC,
+  getDifferenceBetweenTimestamps as GetDifferenceBetweenTimestamps,
+  printTimestamp as PrintTimestamp
+} from "../../../../utils/time";
+import type { getUserAgentData as GetUserAgentData } from "../../../../utils/user-agent";
+import { GET } from "./[timestamp]";
 
 describe("Submit API", () => {
+  const mockedSecondEmailAsHtml = isolatedModuleMock("src/emails/second-email", () => ({
+    secondEmailAsHtml: mock<typeof SecondEmailAsHtml>()
+  })).secondEmailAsHtml;
+
+  const mockedGetDomainForRequest = isolatedModuleMock("src/utils/domain", () => ({
+    getDomainForRequest: mock<typeof GetDomainForRequest>()
+  })).getDomainForRequest;
+
+  const mockedTime = isolatedModuleMock("src/utils/time", () => ({
+    getCurrentTimestampUTC: mock<typeof GetCurrentTimestampUTC>(),
+    printTimestamp: mock<typeof PrintTimestamp>(),
+    getDifferenceBetweenTimestamps: mock<typeof GetDifferenceBetweenTimestamps>()
+  }));
+  const mockedGetCurrentTimestampUTC = mockedTime.getCurrentTimestampUTC;
+  const mockedPrintTimestamp = mockedTime.printTimestamp;
+  const mockedGetDifferenceBetweenTimestamps = mockedTime.getDifferenceBetweenTimestamps;
+
+  const mockedSendHtml = isolatedModuleMock("src/utils/email", () => ({
+    sendHtml: mock<typeof SendHtml>()
+  })).sendHtml;
+
+  const mockedIp = isolatedModuleMock("src/utils/ip", () => ({
+    getIpData: mock<typeof GetIpData>(),
+    getIpFromRequest: mock<typeof GetIpFromRequest>()
+  }));
+  const mockedGetIpData = mockedIp.getIpData;
+  const mockedGetIpFromRequest = mockedIp.getIpFromRequest;
+
+  const mockedGetUserAgentData = isolatedModuleMock("src/utils/user-agent", () => ({
+    getUserAgentData: mock<typeof GetUserAgentData>()
+  })).getUserAgentData;
+
   const requestDomain = "http://example.com";
   const emailContent = "This is the email content";
   const usersEmail = "theUsers@email.address";
@@ -59,32 +75,28 @@ describe("Submit API", () => {
     ({ request, params: { email, timestamp } }) as Parameters<typeof GET>[0];
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    mockedSecondEmailAsHtml.mockReset().mockReturnValue(emailContent);
 
-    mockedSecondEmailAsHtml.mockReturnValue(emailContent);
+    mockedPrintTimestamp
+      .mockReset()
+      .mockImplementation(timestamp =>
+        timestamp === timeStampOfFirstEmail
+          ? timeStampOfFirstEmailFormatted
+          : timeStampOfSecondEmailFormatted
+      );
 
-    when(mockedPrintTimestamp)
-      .calledWith(timeStampOfFirstEmail)
-      .mockReturnValue(timeStampOfFirstEmailFormatted);
-    when(mockedPrintTimestamp)
-      .calledWith(currentTimeStamp)
-      .mockReturnValue(timeStampOfSecondEmailFormatted);
-
-    mockedGetDomainForRequest.mockReturnValue(requestDomain);
-    mockedGetCurrentTimestampUTC.mockReturnValue(currentTimeStamp);
-    mockedGetDifferenceBetweenTimestamps.mockReturnValue(differenceBetweenEmails);
-    mockedGetIpFromRequest.mockReturnValue(usersIpAddress);
-    mockedGetUserAgentData.mockReturnValue({
+    mockedGetDomainForRequest.mockReset().mockReturnValue(requestDomain);
+    mockedGetCurrentTimestampUTC.mockReset().mockReturnValue(currentTimeStamp);
+    mockedGetDifferenceBetweenTimestamps.mockReset().mockReturnValue(differenceBetweenEmails);
+    mockedSendHtml.mockReset().mockResolvedValue(undefined);
+    mockedGetIpFromRequest.mockReset().mockReturnValue(usersIpAddress);
+    mockedGetUserAgentData.mockReset().mockReturnValue({
       browser: "Chrome",
       os: "Windows",
       platform: "Windows",
       version: "99.0.4844.51"
     });
-    mockedGetIpData.mockResolvedValue(usersIpData);
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
+    mockedGetIpData.mockReset().mockResolvedValue(usersIpData);
   });
 
   it("should calculate the time difference between the two emails", async () => {

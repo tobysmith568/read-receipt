@@ -1,4 +1,5 @@
-import { parseNumber } from "src/utils/number";
+import { describe, expect, it } from "bun:test";
+import { parseNumber } from "./number";
 
 const validNumbers = {
   "-5": -5,

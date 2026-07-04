@@ -1,4 +1,6 @@
-import { type SecondEmailProps, secondEmailAsHtml } from "../../src/emails/second-email";
+import { beforeEach, describe, expect, it } from "bun:test";
+import toDiffableHtml from "diffable-html";
+import { type SecondEmailProps, secondEmailAsHtml } from "./second-email";
 
 describe("second email", () => {
   let props: SecondEmailProps;
@@ -41,7 +43,7 @@ describe("second email", () => {
   it("should render all the data correctly", () => {
     const result = secondEmailAsHtml(props);
 
-    expect(result).toMatchSnapshot();
+    expect(toDiffableHtml(result).trim()).toMatchSnapshot();
   });
 
   it("should render the Ip data if it's defined", () => {

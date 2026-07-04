@@ -1,4 +1,5 @@
-import { type Env, getEnv } from "src/utils/env";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { type Env, getEnv } from "./env";
 
 describe("env utils", () => {
   let originalEnv: any;

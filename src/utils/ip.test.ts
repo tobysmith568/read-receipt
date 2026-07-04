@@ -1,30 +1,30 @@
-import axios from "axios";
-import { type Env, getEnv } from "src/utils/env";
-import { getIpData, getIpFromRequest } from "src/utils/ip";
-
-jest.mock("src/utils/env");
-jest.mock("axios");
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { isolatedModuleMock } from "../test-support/isolated-module-mock";
+import type { Env, getEnv as GetEnv } from "./env";
+import { getIpData, getIpFromRequest } from "./ip";
 
 const non200StatusCodes = [301, 302, 400, 401, 403, 404, 500];
 
 describe("ip utils", () => {
+  const mockedGetEnv = isolatedModuleMock("src/utils/env", () => ({
+    getEnv: mock<typeof GetEnv>()
+  })).getEnv;
+
+  const mockedAxiosGet = isolatedModuleMock("axios", () => ({
+    default: { get: mock<(url: string) => Promise<{ status: number; data: unknown }>>() }
+  })).default.get;
+
   const devIp = "123.456.789.0";
   const userIp = "987.654.321.0";
 
   describe("getIpFromRequest", () => {
-    const mockedGetEnv = jest.mocked(getEnv);
-
     const buildRequest = (forwardedFor?: string): Request =>
       new Request("http://example.com", {
         headers: forwardedFor ? { "x-forwarded-for": forwardedFor } : {}
       });
 
     beforeEach(() => {
-      jest.resetAllMocks();
-    });
-
-    afterAll(() => {
-      jest.restoreAllMocks();
+      mockedGetEnv.mockReset();
     });
 
     it("should return the dev ip when a dev ip is given", () => {
@@ -59,7 +59,9 @@ describe("ip utils", () => {
   });
 
   describe("getIpData", () => {
-    const mockedAxiosGet = jest.mocked(axios.get);
+    beforeEach(() => {
+      mockedAxiosGet.mockReset();
+    });
 
     it("should make a get request to ip-api.com with the given ip address", async () => {
       mockedAxiosGet.mockResolvedValue({

@@ -29,8 +29,12 @@ geolocation, user agent, and the time between sending and opening).
   needed), but Biome can't see across the `---` boundary into the template, so
   `noUnusedImports`/`noUnusedVariables` are disabled for `**/*.astro` in
   `biome.json` to avoid false positives on props/imports only used in markup.
-- Jest 30 + Testing Library (transformed via `@swc/jest`, not `next/jest`), specs
-  mirrored under `test/` (not colocated with source)
+- `bun:test`, colocated with source as `*.test.ts(x)` (e.g. `src/utils/domain.ts`
+  ↔ `src/utils/domain.test.ts`) rather than mirrored under a separate `test/`
+  tree. Before writing or editing a test that mocks a sibling module, read
+  `docs/testing.md` — `bun:test`'s module mocking and mock-reset semantics
+  differ from Jest's in ways that produce order-dependent failures if you don't
+  follow the pattern documented there.
 - Playwright for e2e (`chromium`/`firefox` projects), run against a built Docker
   image in CI; mail capture for the tracking-pixel flow goes through
   `smtp-tester` via a small local admin HTTP server (`e2e/mail-server.ts` +
@@ -38,9 +42,6 @@ geolocation, user agent, and the time between sending and opening).
   run in separate worker processes from `globalSetup`/`globalTeardown`
 - cspell (spell-checking), license-cop (license auditing)
 - Docker (`oven/bun` base image) → GCR → Cloud Run for deployment
-
-A staged rewrite to colocated `bun:test` is still planned — see
-`docs/modernization-plan.md` for the full plan and current stage.
 
 ## Commands
 
@@ -51,9 +52,9 @@ bun run build          # production build (astro build)
 bun run start          # run a production build (bun ./dist/server/entry.mjs)
 bun run lint           # biome ci .
 bunx biome format --write .  # format the repo (not a package.json script)
-bun run test           # run full Jest suite (bare `bun test` runs Bun's own test runner, not this)
-bunx jest path/to/file.spec.ts        # run a single Jest file
-bunx jest -t "test name"              # run tests matching a name
+bun run test           # bun test src (colocated *.test.ts(x) unit tests, excluding e2e/)
+bun test src/utils/domain.test.ts     # run a single test file
+bun test src -t "test name"           # run tests matching a name
 bun run e2e            # open the Playwright UI (interactive) - auto builds/starts the app if nothing's running on :3000
 bunx playwright test     # run Playwright headlessly (used in CI, against a built Docker image)
 bunx playwright test --project=chromium  # run a single project (also: firefox)
@@ -127,12 +128,11 @@ Other notable pieces:
 - `src/components/Content.astro` / `Footer.astro` — shared chrome components;
   `LinkButton` (`src/components/link-button.tsx`) stays React since it's only ever
   rendered inside the form island.
-- Tests live under `test/`, mirroring `src/`'s structure rather than being colocated
-  (e.g. `src/utils/domain.ts` ↔ `test/utils/domain.spec.ts`); email template tests use
-  Jest snapshots serialized as HTML (`jest-serializer-html`). There's no page-level
-  snapshot coverage any more (the old `test/pages/*.spec.tsx` rendered Next page
-  components directly, which no longer exist as standalone components) — routing/
-  content coverage for those pages now lives solely in the Playwright specs.
+- Tests are colocated next to the source they cover as `*.test.ts(x)` — see the
+  `bun:test` bullet above for the module-mocking and DOM-environment caveats.
+  There's no page-level snapshot coverage (the old Next-era page-component
+  snapshot tests were dropped back in the Astro migration) — routing/content
+  coverage for those pages lives solely in the Playwright specs.
 - E2E specs (`e2e/integration/*.spec.ts`) run against a built Docker image, not the dev
   server — CI builds the image once and shares it between the `e2e` matrix jobs
   (`chromium`/`firefox`) via an uploaded artifact. The SMTP capture server

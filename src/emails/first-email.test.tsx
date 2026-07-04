@@ -1,4 +1,6 @@
-import { type FirstEmailProps, firstEmailAsHtml } from "../../src/emails/first-email";
+import { describe, expect, it } from "bun:test";
+import toDiffableHtml from "diffable-html";
+import { type FirstEmailProps, firstEmailAsHtml } from "./first-email";
 
 describe("first email", () => {
   it("should render correctly", () => {
@@ -10,6 +12,6 @@ describe("first email", () => {
 
     const result = firstEmailAsHtml(props);
 
-    expect(result).toMatchSnapshot();
+    expect(toDiffableHtml(result).trim()).toMatchSnapshot();
   });
 });

@@ -1,21 +1,19 @@
-import { getDomainForRequest } from "src/utils/domain";
-import { type Env, getEnv } from "src/utils/env";
-
-jest.mock("src/utils/env");
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { isolatedModuleMock } from "../test-support/isolated-module-mock";
+import { getDomainForRequest } from "./domain";
+import type { Env, getEnv as GetEnv } from "./env";
 
 describe("domain utils", () => {
   describe("getDomainForRequest", () => {
-    const mockedGetEnv = jest.mocked(getEnv);
+    const mockedGetEnv = isolatedModuleMock("src/utils/env", () => ({
+      getEnv: mock<typeof GetEnv>()
+    })).getEnv;
 
     const buildRequest = (host: string): Request =>
       new Request("http://example.com", { headers: { host } });
 
     beforeEach(() => {
-      jest.resetAllMocks();
-    });
-
-    afterAll(() => {
-      jest.restoreAllMocks();
+      mockedGetEnv.mockReset();
     });
 
     it("should return the http protocol when forceHttp is true", () => {

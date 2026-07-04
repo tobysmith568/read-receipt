@@ -326,7 +326,7 @@ same browser matrix Cypress covered; Cypress fully removed.
   entirely — Playwright specs don't need Cypress's global test API and don't
   export anything, and there's no download-testing equivalent in use.
 
-## Stage 6 — Colocated `bun:test` instead of Jest
+## Stage 6 — Colocated `bun:test` instead of Jest ✅ done
 
 **Depends on:** Stage 3 (Astro) — colocate tests once, next to the final
 `.astro`/`.ts` source files, not next to `.tsx` files that are about to move.
@@ -348,6 +348,86 @@ same browser matrix Cypress covered; Cypress fully removed.
 
 **Exit criteria:** same test count/assertions passing under `bun test`,
 colocated with source; Jest fully removed; coverage still uploaded to Codecov.
+
+**Outcome / deviations from the plan above:**
+
+- `bun:test` has no auto-mocking (`jest.mock("module")` + `jest.mocked(fn)`) —
+  every mocked module became an explicit `mock.module(specifier, factory)` with
+  hand-built `mock()` instances. That surfaced a much bigger issue than
+  expected: `mock.module` replaces a module's exports **process-wide**, not
+  just for the file that calls it, and mutates them **in place** — capturing
+  `await import(id)` once and handing that same namespace object back to
+  `mock.module` to "restore" it later does not work, since the captured
+  reference reflects whatever the module was most recently mocked as by the
+  time you read it back. With every spec file's mocking initially done at
+  module top-level, one file mocking `src/utils/env.ts` silently leaked into
+  every other colocated test that imports the real module, in a way that
+  depended on file/test execution order — invisible in a normal run, but
+  reliably reproducible with `bun test --randomize`. Rather than leave this as
+  a footgun to re-solve per file, it's factored into a single helper,
+  `src/test-support/isolated-module-mock.ts`, that captures the real
+  implementation and registers/restores the mock around every individual test
+  (`beforeEach`/`afterEach`, not once per describe — so a skipped test never
+  leaves a mock in place for the next one). Confirmed correct with a standalone
+  repro (including concurrent mocking of the same module from three separate
+  `describe`s under `--randomize`) before rewriting the real spec files against
+  it. `docs/testing.md` documents the pattern and its constraints (in
+  particular: pass the `src/...`-rooted specifier form, never a `./`-relative
+  one, since `mock.module`/`import()` inside the helper resolve relative to
+  the helper's own file, not the caller's) — `CLAUDE.md` points here instead of
+  repeating the explanation inline.
+- `jest.resetAllMocks()` (via `bun:test`'s `jest` compat namespace) silently
+  does **not** reset mocks created with `bun:test`'s own `mock()` — confirmed
+  with a minimal repro. Only visible under `--randomize`, since the normal
+  file/declaration order happened to mask it. Every `beforeEach` now calls
+  `.mockReset()` on each named mock instance directly instead of a bulk
+  "reset everything" call.
+- `jest.isolateModules(() => require("src/utils/email"))` existed only because
+  `src/utils/email.ts` built the nodemailer transport as an import-time side
+  effect. Rather than find a `bun:test` workaround, `email.ts` was refactored so
+  `sendHtml` builds the transporter itself on every call — a real (small,
+  low-risk) source change, not just a test-only one, and it removes the need
+  for module re-isolation entirely.
+- `jest-when`'s single call site (`printTimestamp` returning different values
+  per argument) became a plain `mockImplementation` branching on the argument —
+  not worth keeping the dependency for one usage.
+- `mockdate` → `bun:test`'s built-in `setSystemTime`/`useFakeTimers`, no
+  separate package needed.
+- `jest-serializer-html` (a custom Jest snapshot serializer, unsupported by
+  `bun:test`) was replaced by calling its underlying formatter, `diffable-html`,
+  directly on the string before `toMatchSnapshot()` — confirmed byte-identical
+  output by reading `jest-serializer-html`'s source first.
+- DOM environment: only `src/utils/user-agent.test.ts` touches `window`/
+  `navigator` (spying on `navigator.userAgent` so `ua-parser-js` doesn't fall
+  back to the test runner's own UA string). The plan's assumption of a global
+  `happy-dom` preload (`bunfig.toml` + `@happy-dom/global-registrator`) broke
+  `src/utils/domain.test.ts`: happy-dom's `Request`/`Headers` silently strips
+  the `host` header (forbidden by the Fetch spec) that `getDomainForRequest`
+  reads, which Bun's own native `Request` does not enforce. Fixed by
+  registering/unregistering happy-dom locally inside `user-agent.test.ts`'s
+  `beforeAll`/`afterAll` instead of globally, and dropping `bunfig.toml`
+  entirely. Also, `bun:test`'s `spyOn` doesn't yet support accessor properties
+  (`spyOn(obj, "userAgent", "get")` throws), so that one spy uses
+  `Object.defineProperty` directly instead.
+- `tsconfig.json`'s exclude glob moved from `**/*.spec.ts(x)` to
+  `**/*.test.ts(x)`, and `test/tsconfig.json` was deleted outright — colocated
+  tests share the root config instead of needing their own. Added `@types/bun`
+  as a devDependency so `bun:test` types resolve for both the CLI and editors
+  (nothing previously pulled it in).
+- `biome.json`'s override glob for the relaxed test-file rules
+  (`noNonNullAssertion`, `useIterableCallbackReturn`, etc.) moved from
+  `**/*.spec.{ts,tsx}` to `**/*.test.{ts,tsx}`; the now-unneeded
+  `jest.config.js`/`jest.env.js` override was deleted.
+- `package.json`'s `test` script is `bun test src`, not a bare `bun test` —
+  the latter would also try to run the Playwright specs under `e2e/`.
+- Found but deliberately left for Stage 7: `@testing-library/dom`,
+  `@testing-library/jest-dom`, `@testing-library/react`, and
+  `@testing-library/user-event` are unused by anything in `src/` (the tests
+  that used them were the Next-era page snapshot tests, dropped back in
+  Stage 3) — they're only still installed because `@testing-library/jest-dom`
+  declares `jest` as a peer dependency, which is why `jest` itself still shows
+  up in `node_modules` despite being fully removed from this project's own
+  config/scripts.
 
 ## Stage 7 — General code review pass
 

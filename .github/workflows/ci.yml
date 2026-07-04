@@ -71,7 +71,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run Unit Tests
-        run: bunx jest --ci --coverage
+        run: bun test src --coverage --coverage-reporter=lcov
 
       - name: Codecov
         uses: codecov/codecov-action@v6.0.0

@@ -1,22 +1,28 @@
-import { firstEmailAsHtml } from "src/emails/first-email";
-import { POST } from "src/pages/api/submit";
-import { getDomainForRequest } from "src/utils/domain";
-import { sendHtml } from "src/utils/email";
-import { getCurrentTimestampUTC } from "src/utils/time";
-
-jest.mock("src/emails/first-email");
-const mockedFirstEmailAsHtml = jest.mocked(firstEmailAsHtml);
-
-jest.mock("src/utils/email");
-const mockedSendHtml = jest.mocked(sendHtml);
-
-jest.mock("src/utils/domain");
-const mockedGetDomainForRequest = jest.mocked(getDomainForRequest);
-
-jest.mock("src/utils/time");
-const mockedGetCurrentTimestampUTC = jest.mocked(getCurrentTimestampUTC);
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import type { firstEmailAsHtml as FirstEmailAsHtml } from "../../emails/first-email";
+import { isolatedModuleMock } from "../../test-support/isolated-module-mock";
+import type { getDomainForRequest as GetDomainForRequest } from "../../utils/domain";
+import type { sendHtml as SendHtml } from "../../utils/email";
+import type { getCurrentTimestampUTC as GetCurrentTimestampUTC } from "../../utils/time";
+import { POST } from "./submit";
 
 describe("Submit API", () => {
+  const mockedFirstEmailAsHtml = isolatedModuleMock("src/emails/first-email", () => ({
+    firstEmailAsHtml: mock<typeof FirstEmailAsHtml>()
+  })).firstEmailAsHtml;
+
+  const mockedSendHtml = isolatedModuleMock("src/utils/email", () => ({
+    sendHtml: mock<typeof SendHtml>()
+  })).sendHtml;
+
+  const mockedGetDomainForRequest = isolatedModuleMock("src/utils/domain", () => ({
+    getDomainForRequest: mock<typeof GetDomainForRequest>()
+  })).getDomainForRequest;
+
+  const mockedGetCurrentTimestampUTC = isolatedModuleMock("src/utils/time", () => ({
+    getCurrentTimestampUTC: mock<typeof GetCurrentTimestampUTC>()
+  })).getCurrentTimestampUTC;
+
   const emailContent = "This is the email content";
   const requestDomain = "http://example.com";
   const usersEmail = "theUsers@email.address";
@@ -24,16 +30,10 @@ describe("Submit API", () => {
   const currentTimeStamp = 1234567890;
 
   beforeEach(() => {
-    jest.resetAllMocks();
-
-    mockedFirstEmailAsHtml.mockReturnValue(emailContent);
-
-    mockedGetDomainForRequest.mockReturnValue(requestDomain);
-    mockedGetCurrentTimestampUTC.mockReturnValue(currentTimeStamp);
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
+    mockedFirstEmailAsHtml.mockReset().mockReturnValue(emailContent);
+    mockedSendHtml.mockReset().mockResolvedValue(undefined);
+    mockedGetDomainForRequest.mockReset().mockReturnValue(requestDomain);
+    mockedGetCurrentTimestampUTC.mockReset().mockReturnValue(currentTimeStamp);
   });
 
   const buildRequest = (email: string): Request =>
@@ -41,6 +41,8 @@ describe("Submit API", () => {
       method: "POST",
       body: JSON.stringify({ email })
     });
+
+  const makeContext = (request: Request) => ({ request }) as Parameters<typeof POST>[0];
 
   it("should create the first email with the correct props", async () => {
     await POST(makeContext(buildRequest(usersEmail)));
@@ -88,5 +90,3 @@ describe("Submit API", () => {
     await expect(response.json()).resolves.toEqual({ success: false });
   });
 });
-
-const makeContext = (request: Request) => ({ request }) as Parameters<typeof POST>[0];

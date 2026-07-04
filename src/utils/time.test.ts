@@ -1,9 +1,5 @@
-import mockDate from "mockdate";
-import {
-  getCurrentTimestampUTC,
-  getDifferenceBetweenTimestamps,
-  printTimestamp
-} from "src/utils/time";
+import { afterAll, beforeAll, describe, expect, it, setSystemTime } from "bun:test";
+import { getCurrentTimestampUTC, getDifferenceBetweenTimestamps, printTimestamp } from "./time";
 
 const currentTimestamp = 1646861851;
 const currentTimestampAsDate = new Date(2022, 2, 9, 21, 37, 31, 123);
@@ -11,11 +7,11 @@ const currentTimestampFormatted = "9:37:31pm, 9 March 2022 UTC";
 
 describe("time utils", () => {
   beforeAll(() => {
-    mockDate.set(currentTimestampAsDate);
+    setSystemTime(currentTimestampAsDate);
   });
 
   afterAll(() => {
-    mockDate.reset();
+    setSystemTime();
   });
 
   describe("getCurrentTimestampUTC", () => {

@@ -1,15 +1,39 @@
-import { getUserAgentData } from "src/utils/user-agent";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { GlobalRegistrator } from "@happy-dom/global-registrator";
+import { getUserAgentData } from "./user-agent";
 
 describe("user-agent utils", () => {
-  let userAgentGetter: jest.SpyInstance<string, []>;
+  // Only this file needs a `window`/`navigator` global (ua-parser-js falls back to
+  // `navigator.userAgent` when constructed without a value), so happy-dom is
+  // registered/unregistered here rather than globally for the whole test run —
+  // its Request/Headers implementation strips the (spec-forbidden) `host` header
+  // that src/utils/domain.test.ts relies on, so a global registration would break it.
+  let originalDescriptor: PropertyDescriptor | undefined;
 
   beforeAll(() => {
-    userAgentGetter = jest.spyOn(window.navigator, "userAgent", "get");
-    userAgentGetter.mockReturnValue(undefined!);
+    GlobalRegistrator.register();
+
+    originalDescriptor = Object.getOwnPropertyDescriptor(
+      Object.getPrototypeOf(window.navigator),
+      "userAgent"
+    );
+
+    Object.defineProperty(window.navigator, "userAgent", {
+      configurable: true,
+      get: () => undefined
+    });
   });
 
-  afterAll(() => {
-    userAgentGetter.mockRestore();
+  afterAll(async () => {
+    if (originalDescriptor) {
+      Object.defineProperty(
+        Object.getPrototypeOf(window.navigator),
+        "userAgent",
+        originalDescriptor
+      );
+    }
+
+    await GlobalRegistrator.unregister();
   });
 
   describe("getUserAgentData", () => {

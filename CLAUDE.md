@@ -24,16 +24,18 @@ geolocation, user agent, and the time between sending and opening).
   runs under `bun`, not `node`.
 - `@astrojs/react` provides the one React island (the email form); everything else
   is native `.astro` + scoped `<style>`
-- ESLint 10 flat config (`eslint.config.mjs`, `typescript-eslint` +
-  `eslint-plugin-react`/`react-hooks` + `eslint-plugin-astro`) + Prettier
-  (`@tobysmith568/prettier-config`) — a full Biome migration is still planned
+- Biome 2 (`biome.json`) — single lint + format tool, replacing ESLint/Prettier.
+  `.astro` frontmatter is linted/formatted out of the box (no experimental flag
+  needed), but Biome can't see across the `---` boundary into the template, so
+  `noUnusedImports`/`noUnusedVariables` are disabled for `**/*.astro` in
+  `biome.json` to avoid false positives on props/imports only used in markup.
 - Jest 30 + Testing Library (transformed via `@swc/jest`, not `next/jest`), specs
   mirrored under `test/` (not colocated with source)
 - Cypress 15 for e2e, run against a built Docker image in CI (chrome + firefox)
 - cspell (spell-checking), license-cop (license auditing)
 - Docker (`oven/bun` base image) → GCR → Cloud Run for deployment
 
-A staged rewrite to Biome/Playwright/`bun:test` is still planned — see
+A staged rewrite to Playwright/`bun:test` is still planned — see
 `docs/modernization-plan.md` for the full plan and current stage.
 
 ## Commands
@@ -43,8 +45,8 @@ bun install          # install deps
 bun run dev           # start the Astro dev server
 bun run build          # production build (astro build)
 bun run start          # run a production build (bun ./dist/server/entry.mjs)
-bun run lint           # eslint .
-bunx prettier --check .  # format check (not a package.json script)
+bun run lint           # biome ci .
+bunx biome format --write .  # format the repo (not a package.json script)
 bun run test           # run full Jest suite (bare `bun test` runs Bun's own test runner, not this)
 bunx jest path/to/file.spec.ts        # run a single Jest file
 bunx jest -t "test name"              # run tests matching a name

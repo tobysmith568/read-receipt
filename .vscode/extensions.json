@@ -1,8 +1,7 @@
 {
   "recommendations": [
     "streetsidesoftware.code-spell-checker",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
+    "biomejs.biome",
     "EditorConfig.EditorConfig",
     "astro-build.astro-vscode"
   ]

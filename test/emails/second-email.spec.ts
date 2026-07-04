@@ -1,4 +1,4 @@
-import { secondEmailAsHtml, SecondEmailProps } from "../../src/emails/second-email";
+import { type SecondEmailProps, secondEmailAsHtml } from "../../src/emails/second-email";
 
 describe("second email", () => {
   let props: SecondEmailProps;

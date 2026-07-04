@@ -4,7 +4,7 @@ import { getDomainForRequest } from "../../utils/domain";
 import { sendHtml } from "../../utils/email";
 import { getCurrentTimestampUTC } from "../../utils/time";
 
-export interface SubmitRequest {}
+export type SubmitRequest = {};
 
 export interface SubmitResponse {
   success: boolean;

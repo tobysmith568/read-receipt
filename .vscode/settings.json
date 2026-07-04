@@ -1,4 +1,4 @@
 {
   "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "biomejs.biome"
 }

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { type FC } from "react";
+import type { FC } from "react";
 
 const Sending: FC = () => {
   return (

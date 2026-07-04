@@ -19,7 +19,7 @@ module.exports = on => {
     }
   });
 
-  mailServer.bind((addr, id, email) => {
+  mailServer.bind((_addr, _id, email) => {
     lastEmailPerRecipient[email.headers.to] = { html: email.html, subject: email.headers.subject };
   });
 };

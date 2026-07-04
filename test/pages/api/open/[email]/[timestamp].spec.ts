@@ -3,7 +3,7 @@ import { secondEmailAsHtml } from "src/emails/second-email";
 import { GET } from "src/pages/api/open/[email]/[timestamp]";
 import { getDomainForRequest } from "src/utils/domain";
 import { sendHtml } from "src/utils/email";
-import { getIpData, getIpFromRequest, IpResponse } from "src/utils/ip";
+import { getIpData, getIpFromRequest, type IpResponse } from "src/utils/ip";
 import {
   getCurrentTimestampUTC,
   getDifferenceBetweenTimestamps,
@@ -56,7 +56,7 @@ describe("Submit API", () => {
   const request = new Request("http://example.com/api/open/a/1");
 
   const makeContext = (email?: string, timestamp?: string) =>
-    ({ request, params: { email, timestamp } } as Parameters<typeof GET>[0]);
+    ({ request, params: { email, timestamp } }) as Parameters<typeof GET>[0];
 
   beforeEach(() => {
     jest.resetAllMocks();

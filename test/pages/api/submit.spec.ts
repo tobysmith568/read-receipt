@@ -89,4 +89,4 @@ describe("Submit API", () => {
   });
 });
 
-const makeContext = (request: Request) => ({ request } as Parameters<typeof POST>[0]);
+const makeContext = (request: Request) => ({ request }) as Parameters<typeof POST>[0];

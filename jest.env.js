@@ -4,7 +4,7 @@ import Environment from "jest-environment-jsdom";
 export default class CustomTestEnvironment extends Environment {
   async setup() {
     if (typeof this.global.TextEncoder === "undefined") {
-      const { TextEncoder } = require("util");
+      const { TextEncoder } = require("node:util");
       this.global.TextEncoder = TextEncoder;
     }
     if (typeof this.global.Request === "undefined") {

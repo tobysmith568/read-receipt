@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Env, getEnv } from "src/utils/env";
+import { type Env, getEnv } from "src/utils/env";
 import { getIpData, getIpFromRequest } from "src/utils/ip";
 
 jest.mock("src/utils/env");

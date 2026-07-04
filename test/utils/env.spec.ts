@@ -1,4 +1,4 @@
-import { Env, getEnv } from "src/utils/env";
+import { type Env, getEnv } from "src/utils/env";
 
 describe("env utils", () => {
   let originalEnv: any;

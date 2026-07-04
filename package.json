@@ -8,12 +8,11 @@
     "url": "https://tobysmith.uk"
   },
   "license": "UNLICENSED",
-  "prettier": "@tobysmith568/prettier-config",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "start": "bun ./dist/server/entry.mjs",
-    "lint": "eslint .",
+    "lint": "biome ci .",
     "test": "jest",
     "e2e": "cypress open"
   },
@@ -33,7 +32,7 @@
     "ua-parser-js": "^1.0.33"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@biomejs/biome": "2.5.2",
     "@license-cop/permissive": "^1.7.1",
     "@swc/jest": "^0.2.39",
     "@testing-library/cypress": "^10.1.0",
@@ -41,7 +40,6 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@tobysmith568/prettier-config": "^2.0.0",
     "@types/jest": "^30.0.0",
     "@types/jest-when": "^3.5.0",
     "@types/node": "24.12.2",
@@ -49,22 +47,15 @@
     "@types/react": "18.3.28",
     "@types/react-dom": "^18.0.0",
     "@types/ua-parser-js": "^0.7.36",
-    "astro-eslint-parser": "^2.1.0",
     "cspell": "^8.0.0",
     "cypress": "^15.8.1",
-    "eslint": "9.39.4",
-    "eslint-plugin-astro": "^2.1.1",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
     "generate-license-file": "^3.0.0",
-    "globals": "^17.7.0",
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
     "jest-when": "^3.5.1",
     "license-cop": "^1.7.1",
     "mockdate": "^3.0.5",
     "smtp-tester": "^2.0.0",
-    "typescript": "^5.0.0",
-    "typescript-eslint": "^8.62.1"
+    "typescript": "^5.0.0"
   }
 }

@@ -1,5 +1,5 @@
-import { createTransport, Transporter } from "nodemailer";
-import { Env, getEnv } from "src/utils/env";
+import { createTransport, type Transporter } from "nodemailer";
+import { type Env, getEnv } from "src/utils/env";
 
 jest.mock("src/utils/env");
 jest.mock("nodemailer");

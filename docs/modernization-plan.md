@@ -174,7 +174,7 @@ GCR → Cloud Run pipeline, existing Jest + Cypress suites passing against it
   few paragraphs/list items at a time) got past it with no content changes
   needed. Both pages are now fully ported.
 
-## Stage 4 — Biome.js instead of ESLint/Prettier
+## Stage 4 — Biome.js instead of ESLint/Prettier ✅ done
 
 **Depends on:** Stage 3 (Astro) and Stage 2 (Bun) — config should target the
 final `.astro`/`.ts` file layout so it isn't written twice.
@@ -199,6 +199,54 @@ final `.astro`/`.ts` file layout so it isn't written twice.
 
 **Exit criteria:** `biome ci .` passes in CI; ESLint/Prettier fully removed
 from deps and workflows.
+
+**Outcome / deviations from the plan above:**
+
+- Biome supports `.astro` files out of the box as of v2.3+ (no
+  `html.experimentalFullSupportEnabled` flag needed) for both linting and
+  formatting the frontmatter script — confirmed by spiking `biome format`
+  against a deliberately mis-indented copy of `Content.astro` before relying
+  on it.
+- The gap the spike did find: Biome's `.astro` analysis doesn't see across
+  the `---` frontmatter/template boundary, so every destructured prop or
+  import that's only referenced in the markup below (e.g. `showHome` in
+  `Content.astro`, `Layout`/`Content` imports in the page files) was flagged
+  as unused. Rather than silently losing that coverage, `noUnusedImports`
+  and `noUnusedVariables` are explicitly turned off for `**/*.astro` in
+  `biome.json`, documented there and in `CLAUDE.md` — those two rules still
+  apply everywhere else (`.ts`/`.tsx`).
+- `bunx biome migrate eslint --write` / `migrate prettier` were tried first;
+  the ESLint migration produced an unwieldy fully-decomposed rule list
+  (every individual recommended rule spelled out under `"preset": "none"`,
+  plus duplicated per-glob global lists for every DOM event handler) instead
+  of just keeping `"preset": "recommended"`. Hand-written config using the
+  preset was simpler to read and maintain, so the migration output was
+  discarded in favour of that; the Prettier migration couldn't run at all
+  since `@tobysmith568/prettier-config` is an external npm package rather
+  than a local config file, so its settings (`printWidth: 100`,
+  `arrowParens: avoid`, `trailingComma: none`, `bracketSameLine: true`, LF,
+  double quotes) were copied into `biome.json`'s `javascript.formatter`
+  by hand instead.
+- A handful of rules were disabled with justification rather than blindly
+  accepted: `complexity.noBannedTypes` (mirrors the old
+  `@typescript-eslint/no-empty-object-type: off` override, needed for an
+  intentionally-empty `SubmitRequest` type), `suspicious.noShadowRestrictedNames`
+  for `src/components/form/**` (the `Error` component intentionally shares
+  its name with the global), `suspicious.noExportsInTest` for `e2e/**`
+  (false positive on Cypress spec files), and
+  `suspicious.useIterableCallbackReturn` /
+  `style.noNonNullAssertion` for `**/*.spec.{ts,tsx}` (both fire on
+  idiomatic, pre-existing test patterns — parameterized `.forEach(() => it(...))`
+  blocks and non-null assertions on mocked values — that would otherwise
+  need rewriting purely for lint compliance).
+- `public/**` is excluded from Biome entirely — `biome check` was trying to
+  parse `public/safari-pinned-tab.svg` as a source file and erroring on it;
+  ESLint/Prettier never touched `public/` either, this just makes the
+  exclusion explicit in `biome.json`.
+- One real (not tooling-driven) fix landed alongside the migration: the
+  first-email tracking pixel `<img>` had no `alt` attribute
+  (`lint/a11y/useAltText`) — added `alt=""` since it's a decorative pixel,
+  not a content image.
 
 ## Stage 5 — Playwright instead of Cypress
 

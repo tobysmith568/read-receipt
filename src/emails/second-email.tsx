@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import type { FC } from "react";
 import { renderToString } from "react-dom/server";
 import type { IpResponse } from "../utils/ip";
 import type { UserAgentDetails } from "../utils/user-agent";

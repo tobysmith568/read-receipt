@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`first email should render correctly 1`] = `
 <!DOCTYPE html>
@@ -63,7 +63,9 @@ exports[`first email should render correctly 1`] = `
     <p>
       Thanks!
     </p>
-    <img src="https://wherever.this.is.hosted/api/open/this.is.a.url.safe.email.address%40mail.com/1234567890">
+    <img src="https://wherever.this.is.hosted/api/open/this.is.a.url.safe.email.address%40mail.com/1234567890"
+         alt
+    >
   </body>
 </html>
 `;

@@ -1,8 +1,8 @@
-import { useCallback, type SyntheticEvent } from "react";
+import { type SyntheticEvent, useCallback } from "react";
 import LinkButton from "../link-button";
 import { useResetForm } from "./use-form-state";
 
-const Error = () => {
+const ErrorState = () => {
   const resetForm = useResetForm();
 
   const onSubmit = useCallback(
@@ -24,6 +24,6 @@ const Error = () => {
     </form>
   );
 };
-export default Error;
+export default ErrorState;
 
 const focusRef = (ref: HTMLElement | null) => ref?.focus();

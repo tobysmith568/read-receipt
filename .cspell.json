@@ -10,7 +10,19 @@
     "zdnfztgnfgt", // Used as unique string to stop asset caching
     "codecov",
     "fossas",
-    "tobythe-dev"
+    "tobythe-dev",
+    "colocated",
+    "bunx",
+    "bunfig",
+    "headlessly",
+    "mergeable",
+    "astrojs",
+    "codeql",
+    "Autobuild",
+    "dbaeumer",
+    "mockdate",
+    "lcov",
+    "ultrareview"
   ],
   "ignoreWords": [],
   "import": [],

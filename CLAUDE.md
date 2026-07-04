@@ -15,35 +15,36 @@ a first email containing a tracking pixel, and when they open it a second email 
 sent back showing exactly what information the pixel revealed (IP address,
 geolocation, user agent, and the time between sending and opening).
 
-## Current stack (pre-migration baseline)
+## Current stack (mid-migration)
 
-- Node 20 + npm (`package-lock.json`)
+- Bun (runtime + package manager, `bun.lock`) — Node's no longer used to run scripts
+  (Next.js itself still executes under Node internally)
 - Next.js 14, Pages Router (`src/pages`)
 - ESLint 8 (`eslint-config-next`) + Prettier (`@tobysmith568/prettier-config`)
 - Jest 30 + Testing Library, specs mirrored under `test/` (not colocated with source)
 - Cypress 15 for e2e, run against a built Docker image in CI (chrome + firefox)
 - cspell (spell-checking), license-cop (license auditing)
-- Docker → GCR → Cloud Run for deployment
+- Docker (`oven/bun` base image) → GCR → Cloud Run for deployment
 
-A staged rewrite to Bun/Astro/Biome/Playwright/`bun:test` is planned — see
+A staged rewrite to Astro/Biome/Playwright/`bun:test` is still planned — see
 `docs/modernization-plan.md` for the full plan and current stage.
 
 ## Commands
 
 ```
-npm install          # install deps
-npm run dev           # start Next dev server
-npm run build          # production build
-npm run start          # run a production build
-npm run lint           # next lint (ESLint)
-npx prettier --check .  # format check (not a package.json script)
-npm test               # run full Jest suite
-npx jest path/to/file.spec.ts        # run a single Jest file
-npx jest -t "test name"              # run tests matching a name
-npm run e2e            # open Cypress interactively
-npx cypress run        # run Cypress headlessly (used in CI, against a built Docker image)
-npx cspell "**/*.*"     # spell-check
-npx license-cop         # check dependency licenses
+bun install          # install deps
+bun run dev           # start Next dev server
+bun run build          # production build
+bun run start          # run a production build
+bun run lint           # next lint (ESLint)
+bunx prettier --check .  # format check (not a package.json script)
+bun run test           # run full Jest suite (bare `bun test` runs Bun's own test runner, not this)
+bunx jest path/to/file.spec.ts        # run a single Jest file
+bunx jest -t "test name"              # run tests matching a name
+bun run e2e            # open Cypress interactively
+bunx cypress run        # run Cypress headlessly (used in CI, against a built Docker image)
+bunx cspell "**/*.*"     # spell-check
+bunx license-cop         # check dependency licenses
 ```
 
 ## Required environment variables

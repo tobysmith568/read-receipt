@@ -25,8 +25,8 @@ DEV_IP=xxx.xxx.xxx.xxx
 To run the project use:
 
 ```
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 # License

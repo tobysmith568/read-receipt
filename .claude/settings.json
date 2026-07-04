@@ -1,21 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install)",
-      "Bash(npm ci)",
-      "Bash(npm run build)",
-      "Bash(npm run build:*)",
-      "Bash(npm run dev)",
-      "Bash(npm run start)",
-      "Bash(npm run lint)",
-      "Bash(npm test)",
-      "Bash(npm run e2e)",
-      "Bash(npx prettier --check *)",
-      "Bash(npx eslint *)",
-      "Bash(npx jest *)",
-      "Bash(npx cypress run *)",
-      "Bash(npx cspell *)",
-      "Bash(npx license-cop)"
+      "Bash(bun install)",
+      "Bash(bun install --frozen-lockfile)",
+      "Bash(bun run build)",
+      "Bash(bun run build:*)",
+      "Bash(bun run dev)",
+      "Bash(bun run start)",
+      "Bash(bun run lint)",
+      "Bash(bun run test)",
+      "Bash(bun run e2e)",
+      "Bash(bunx prettier --check *)",
+      "Bash(bunx eslint *)",
+      "Bash(bunx jest *)",
+      "Bash(bunx cypress run *)",
+      "Bash(bunx cspell *)",
+      "Bash(bunx license-cop)"
     ]
   }
 }

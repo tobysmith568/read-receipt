@@ -429,25 +429,130 @@ colocated with source; Jest fully removed; coverage still uploaded to Codecov.
   up in `node_modules` despite being fully removed from this project's own
   config/scripts.
 
-## Stage 7 — General code review pass
+## Stage 7 — General code review pass ✅ done
 
 **Depends on:** all above stages complete (so the review is against the final
 stack, not code that's about to be rewritten again).
 
-- Sweep `src/` for dead code, outdated dependency usage, and inconsistencies
-  introduced across the migration stages (e.g. leftover Next-isms, mixed
-  import styles).
-- Check `package.json` deps for anything still present but now unused
-  (`@emotion/react`/`styled` if no longer needed once Astro/CSS approach is
-  settled, `request-ip`, `ua-parser-js`, etc. — verify each is still used).
-- Revisit `renovate.json`/dependency-update config for the new toolchain.
-- Confirm `license-cop`, `cspell`, `codeql-analysis.yml` still make sense
-  and pass under the new file layout.
-- Use `/code-review` (or `ultrareview` for a deeper pass) once the branch is
-  ready, rather than reviewing ad hoc.
+Pre-review sweep confirmed most of this doc's original open questions are
+already resolved by earlier stages; the concrete remaining work is narrower
+than originally scoped:
+
+- Remove `@testing-library/dom`, `@testing-library/jest-dom`,
+  `@testing-library/react`, `@testing-library/user-event` from
+  `package.json` — confirmed unused anywhere in `src/`/`e2e/` (flagged but
+  deliberately deferred in Stage 6's outcome notes). `@testing-library/jest-dom`
+  is the sole reason `jest` still resolves in `bun.lock` as a transitive peer
+  dep despite being fully removed from config/scripts in Stage 6 — removing
+  these four should drop `jest` out of the lockfile too; confirm with
+  `bun install` + `grep -c '"jest"' bun.lock` after.
+- Other deps flagged as "verify still used" in the original plan are already
+  confirmed live and should stay: `@emotion/react`/`styled` (form components,
+  `src/components/form/*`, `link-button.tsx`), `axios` (`utils/ip.ts`,
+  `use-submit-email.ts`), `ua-parser-js` (`utils/user-agent.ts`), `dayjs`
+  (`utils/time.ts`). `request-ip` is already gone (removed in Stage 3) — no
+  action needed there.
+- Sweep `src/` for dead code and inconsistencies introduced across migration
+  stages (leftover Next-isms, mixed import styles) — a first pass found none
+  (no `next/`-style imports, no `getStaticProps`/`_app`/`_document` remnants),
+  but re-check once the testing-library removal above lands.
+- `renovate.json` still just extends the external shared config
+  (`local>tobysmith568/renovate-config`); Stage 2 left "confirm it understands
+  `bun.lock`" as an open spike — since Renovate has presumably opened PRs
+  against this repo in the time since, check its recent PR/dependency-dashboard
+  history for evidence it's already handling `bun.lock` correctly rather than
+  re-spiking from scratch.
+- `cspell.json`, `codeql-analysis.yml`, `.vscode/*` all reviewed and already
+  consistent with the current stack (correct excludes, `language: javascript`
+  still correct for Astro/TS, no stale extension recommendations) — no
+  changes needed. `license-cop`'s config was *also* reviewed and looked fine
+  by inspection, but — see the outcome notes below — inspecting the config
+  file isn't the same as running the tool, and it was in fact failing.
+- Minor inconsistency found: `README.md`'s copyright line is hardcoded
+  `Copyright © 2020-2024 Toby Smith`, while the site footer already reads the
+  current year from build-time `PUBLIC_YEAR` (`src/components/Footer.astro`,
+  landed in the Astro migration) — reconcile so the README isn't the one
+  place still going stale year over year (either drop the end year, or note
+  it's intentionally fixed at first-publication year — confirm with the repo
+  owner which is intended before changing).
+- Use `/code-review` (or `ultrareview` for a deeper pass) once the dep/dead-code
+  cleanup above is committed, rather than reviewing ad hoc.
 
 **Exit criteria:** clean `/code-review` pass, no orphaned deps/config left
-over from earlier stages.
+over from earlier stages, `bun.lock` no longer resolves `jest`.
+
+**Outcome / deviations from the plan above:**
+
+- Removed `@testing-library/dom`, `@testing-library/jest-dom`,
+  `@testing-library/react`, `@testing-library/user-event` from
+  `package.json`; `bun install` confirmed both `jest` and `testing-library`
+  drop out of `bun.lock` entirely (`grep -c` for each returns `0`). `bun run
+  lint` and `bun run test` both still pass (146 tests, 0 fail) — nothing was
+  quietly relying on them.
+- Dead-code sweep found nothing to clean up: no `next/`-style imports, no
+  `getStaticProps`/`_app`/`_document` remnants, no stray `jest.*` calls
+  outside `package.json`, no mixed React import styles. The migration stages
+  left the tree cleaner than the plan assumed.
+- `renovate.json` needed no changes — checked recent PR history via `gh pr
+  list` and found #229 ("Update dependency nodemailer to v8") merged cleanly
+  post-Stage-2, plus a steady stream of 2026-dated PRs, confirming Renovate
+  already understands `bun.lock` without any config changes.
+- Found (but deliberately left alone) stale open Renovate PRs targeting
+  dependencies removed in earlier stages — #227 (`next` → v15), #156
+  (`eslint` → v9), and possibly others. Rather than closing them by hand,
+  decided to let Renovate's own reconciliation close them automatically next
+  time it runs (it detects the dependency no longer exists and closes/skips
+  the PR itself) — no manual GitHub action taken.
+- `cspell.json`, `codeql-analysis.yml`, and `.vscode/*` were all reviewed and
+  required no changes — already consistent with the current stack.
+- `license-cop` was initially (wrongly) signed off as "no changes needed" from
+  reading `.licenses.json` alone — actually running `bunx license-cop` (as
+  CI's `licence` job does) failed. Root cause: `license-cop` (even at the
+  latest npm release, 1.9.0, checked directly against its source) has no Bun
+  awareness at all — its package-manager detection only recognizes
+  `npm`/`yarn`/`pnpm` lockfiles/`packageManager` fields, so with no
+  `package-lock.json`/`yarn.lock`/`pnpm-lock.yaml` present it silently falls
+  back to treating the project as npm and scans via `@npmcli/arborist`'s
+  `loadActual()`. That part still classifies dev-vs-prod dependencies
+  correctly (verified: dev-only packages like `smtp-tester`/`axe-core` are
+  excluded by default, exactly as before Bun); the actual failures were three
+  legitimately new *production*-transitive dependencies pulled in by Astro's
+  own tree that were never vetted:
+  - `satteri` (+ its `@bruits/satteri-linux-x64-*` native binaries) — Astro's
+    markdown parser — flagged as unlicensed only because upstream's
+    `package.json` omits the `license` field; its bundled `LICENSE` file is
+    plain MIT (confirmed by reading it directly).
+  - `argparse` (Python-2.0) via `astro → js-yaml → argparse` (YAML
+    frontmatter parsing at build time).
+  - `lightningcss` (+ native binaries, MPL-2.0) via `astro`/`@astrojs/react →
+    vite` (build-time CSS transform).
+  - `@img/sharp-libvips-*` (LGPL-3.0-or-later) via Astro's *optional*
+    image-optimization support (`sharp`) — confirmed unused anywhere in
+    `src/` (no `astro:assets`/`getImage`/`<Image>`).
+  Resolved as: renamed `.licenses.json` → `.licenses.jsonc` (license-cop
+  supports both; `.jsonc` allows the explanatory comments below to live next
+  to the rules they justify) and allow-listed `satteri` (+ native binaries),
+  `argparse`, and `lightningcss` (+ native binaries) by package name in
+  `packages`, plus added `Python-2.0` and `MPL-2.0` to `licenses` — confirmed
+  Python-2.0 is genuinely permissive (MIT-equivalent for this purpose), and
+  MPL-2.0's file-level copyleft doesn't trigger here since `lightningcss` is
+  used unmodified, not vendored/patched. Separately, `sharp`/`@img/sharp-libvips-*`
+  were also added to `Dockerfile`'s `prod-deps` stage via `--omit=optional`
+  (confirmed with a clean-`node_modules` local install that this actually
+  drops them from what ships) — allow-listed in `.licenses.jsonc` too, since
+  CI's `licence` job runs a full (non-`--production`) install where they're
+  still present on disk; scanning against a `--production`-only install
+  isn't viable because `license-cop`'s own `extends: "@license-cop/permissive"`
+  requires that (dev-dependency) package to be present to resolve. Verified
+  clean with `bunx license-cop` (exit 0, "No issues found") after all changes,
+  and re-ran `bun run lint`/`bun run test` (146 pass) to confirm nothing else
+  regressed from the `node_modules` churn during investigation.
+- Bumped the copyright end year in both `README.md` and `LICENSE.md` from
+  `2020-2024` to `2020-2026` (a plain static edit, not templated) — decided
+  against wiring these through `PUBLIC_YEAR` like the footer, since neither
+  file goes through the Astro build pipeline; the tradeoff is these two need
+  a manual bump each time this stage (or an equivalent later pass) runs,
+  unlike the footer.
 
 ## Suggested order
 

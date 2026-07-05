@@ -554,6 +554,94 @@ over from earlier stages, `bun.lock` no longer resolves `jest`.
   a manual bump each time this stage (or an equivalent later pass) runs,
   unlike the footer.
 
+## Stage 8 — CI/CD overhaul: IaC instead of click-ops GCP
+
+**Depends on:** all above stages complete — this targets the final Bun/Astro/
+Docker shape, and stage 7 already confirmed the repo's config/deps are clean,
+so this is the last remaining "the code is modern but the deployment path
+still predates it" gap.
+
+The job granularity (lint/build/test/licence/e2e, then a separate deploy job
+gated on CI passing) mostly stays as-is — this stage is primarily about *what
+the deploy job talks to*, not the workflow shape, plus a couple of workflow
+housekeeping items bundled in since they touch the same files:
+
+- Rename `ci.yml` → `integration.yml` and `cd.yml` → `deployment.yml` (and
+  update the `uses: ./.github/workflows/ci.yml` reference in the renamed
+  `deployment.yml`, plus any other cross-references e.g. branch protection
+  required-check names, which are matched by job name not filename but are
+  worth double-checking still resolve after the rename).
+- Give both workflows more informative top-level `name:` keys by
+  interpolating the triggering ref, e.g. `name: Integration (${{
+  github.ref_name }})` / `name: Deployment (${{ github.ref_name }})` — useful
+  since `integration.yml` runs across `renovate/*` pushes, PRs to `main`, and
+  as a reusable `workflow_call` from `deployment.yml`, so the ref alone
+  currently isn't visible at a glance in the Actions run list.
+- Add a `typecheck` job to `integration.yml`: just `tsc --noEmit` over the
+  project (add a `typecheck` script to `package.json` alongside `lint`/
+  `test`) — not `astro check`, plain `tsc` is enough per current scope. `build`
+  and `test` should depend on it (`needs: typecheck`) so a type error fails
+  fast before spending time on a Docker build or the test run; `lint` and
+  `licence` stay independent (Biome doesn't need TS's type info, and
+  license-cop doesn't touch app code at all) so they keep running in
+  parallel rather than waiting.
+- Considered but rejected: dropping the Docker image from the `e2e` job in
+  favour of Playwright's own `webServer` (`bun run build && bun run start`).
+  That config is a local-dev convenience for when nothing's already on
+  `:3000` — it doesn't build the container at all, so relying on it in CI
+  would mean nothing in the pipeline ever exercises the actual artifact that
+  gets pushed and deployed (multi-stage build, `oven/bun` runtime, the
+  `--production`-only `node_modules` stage). Keeping e2e on the built image
+  matters even more once this stage changes what gets pushed/deployed, so
+  the Docker-based `e2e` job is unchanged by this stage.
+- Add a small `infra/` package of Bun TS classes representing the GCP
+  resources this app actually needs (Artifact Registry repo, Secret Manager
+  secrets, the Cloud Run service) — no Pulumi/Terraform; a project this size
+  doesn't need a state backend or a general-purpose DSL. Each class's methods
+  (`ensure()`/`apply()`/similar) are thin wrappers that shell out to `gcloud`
+  (Bun's `$` shell helper or `Bun.spawn`), and are written idempotently
+  (`gcloud ... describe` to check current state before `create`/`update`),
+  since there's no state file tracking what's already been applied.
+- Add a `bun run infra:apply`-style script that `deployment.yml`'s `deploy`
+  job calls instead of today's inline `gcloud run deploy ...` step, so the
+  resource definitions live in versioned TS rather than YAML flags.
+- Migrate off Google Container Registry (`gcr.io/tobythe-dev/read-receipt`,
+  referenced via `IMAGE_NAME` in both `integration.yml` and `deployment.yml`)
+  to Artifact Registry — GCR is deprecated in favour of Artifact Registry,
+  and the new Docker repo should itself be one of the IaC-managed resources
+  rather than something clicked into existence once. Update `IMAGE_NAME` in
+  both workflows to the new `<region>-docker.pkg.dev/...` path.
+- Add a `mise` config (`mise.toml` or an entry in an existing one) pinning the
+  `gcloud` CLI version, since it's not currently installed on all dev
+  machines and the IaC classes assume it's on `PATH` both locally and in CI.
+- Audit what's currently click-ops'd in the GCP console (Cloud Run service
+  config/env vars, any Secret Manager secrets backing `EMAIL_*` in
+  production, the existing GCR repo) and decide per-resource whether the IaC
+  classes adopt the existing resource (`describe` finds it, so `apply()`
+  updates in place) or recreate it fresh — recreation is acceptable where
+  adoption doesn't gel cleanly (the user has said so explicitly), but note
+  which resources went which way so it's not a surprise later.
+- Spike/confirm whether this is also the right moment to replace the
+  long-lived `GCP_CREDENTIALS` JSON key (used by `google-github-actions/auth`
+  in `deployment.yml`) with Workload Identity Federation — it's a natural
+  pairing with an IaC overhaul (the federation pool/provider binding would
+  itself be one of the new `infra/` resources) but isn't required by the IaC
+  change itself, so don't block this stage on it if it turns out to be its
+  own can of worms.
+- Revisit `CLAUDE.md`'s "Commands"/"Current stack"/deployment sections once
+  landed — the "Docker → GCR → Cloud Run" description throughout the doc
+  (including this plan's own baseline section) becomes "Docker → Artifact
+  Registry → Cloud Run via `infra/`", `ci.yml`/`cd.yml` references become
+  `integration.yml`/`deployment.yml`, and the `gcloud` mise dependency needs
+  documenting alongside the other required local tooling.
+
+**Exit criteria:** `deployment.yml` deploys via the new `infra/` classes and
+Artifact Registry, not raw inline `gcloud run deploy` against GCR; GCR fully
+retired; `gcloud` available via `mise` for local use; `integration.yml` gates
+`build`/`test` behind a passing `typecheck` job; `CLAUDE.md` no longer
+describes the click-ops/GCR deployment path or the old `ci.yml`/`cd.yml`
+filenames.
+
 ## Suggested order
 
 1. AI tooling — `CLAUDE.md` + `.claude/` (context for every stage after this)
@@ -564,6 +652,8 @@ over from earlier stages, `bun.lock` no longer resolves `jest`.
 5. Playwright (specs written once, against final Astro markup)
 6. Colocated bun:test (tests colocated once, against final source layout)
 7. General code review (final pass)
+8. CI/CD overhaul — IaC instead of click-ops GCP (last, since it targets the
+   final deployment artifact produced by every stage above)
 
 Stages 4–6 can happen in any relative order once Stage 3 lands; the ordering
 above is just cheapest-and-least-risky first among them. Stage 3 itself keeps

@@ -1,0 +1,23 @@
+---
+export const prerender = true;
+
+// cspell: ignore noindex
+import Content from "../components/Content.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="404 - Not Found!" description="404 - Not Found!" noIndex>
+  <Content maxWidth="800px" showHome>
+    <div class="fixed-size">
+      <h1>404</h1>
+      <h4>Not Found!</h4>
+    </div>
+  </Content>
+</Layout>
+
+<style>
+  .fixed-size {
+    height: 400px;
+    width: 400px;
+  }
+</style>

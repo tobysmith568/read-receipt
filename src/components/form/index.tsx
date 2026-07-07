@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import Error from "./error";
+import ErrorState from "./error";
 import Form from "./form";
 import Sending from "./sending";
 import Sent from "./sent";
-import { Status, useFormState } from "./use-form-state";
+import { type Status, useFormState } from "./use-form-state";
 
 const EmailForm = () => {
   const formState = useFormState();
@@ -24,7 +24,7 @@ const getFormPage = (formState: Status) => {
       return <Sent />;
 
     default:
-      return <Error />;
+      return <ErrorState />;
   }
 };
 

@@ -1,9 +1,7 @@
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
-import React, { FC } from "react";
+import type { FC } from "react";
 import { renderToString } from "react-dom/server";
-import { IpResponse } from "../utils/ip";
-import { UserAgentDetails } from "../utils/user-agent";
+import type { IpResponse } from "../utils/ip";
+import type { UserAgentDetails } from "../utils/user-agent";
 
 export interface User {
   email: string;

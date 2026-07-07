@@ -1,0 +1,53 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { isolatedModuleMock } from "../test-support/isolated-module-mock";
+import { getDomainForRequest } from "./domain";
+import type { Env, getEnv as GetEnv } from "./env";
+
+describe("domain utils", () => {
+  describe("getDomainForRequest", () => {
+    const mockedGetEnv = isolatedModuleMock("src/utils/env", () => ({
+      getEnv: mock<typeof GetEnv>()
+    })).getEnv;
+
+    const buildRequest = (host: string): Request =>
+      new Request("http://example.com", { headers: { host } });
+
+    beforeEach(() => {
+      mockedGetEnv.mockReset();
+    });
+
+    it("should return the http protocol when forceHttp is true", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: true, dev: { isDev: false } } as Env);
+
+      const result = getDomainForRequest(buildRequest("localhost:3000"));
+
+      expect(result.startsWith("http://")).toBe(true);
+    });
+
+    it("should return the http protocol when idDev is true", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: true } } as Env);
+
+      const result = getDomainForRequest(buildRequest("localhost:3000"));
+
+      expect(result.startsWith("http://")).toBe(true);
+    });
+
+    it("should return the https protocol when forceHttp and isDev are false", () => {
+      mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: false } } as Env);
+
+      const result = getDomainForRequest(buildRequest("localhost:3000"));
+
+      expect(result.startsWith("https://")).toBe(true);
+    });
+
+    ["localhost", "localhost:3000", "github.com", "github.com:433"].forEach(domain => {
+      it(`should return the host ${domain}`, () => {
+        mockedGetEnv.mockReturnValue({ forceHttp: false, dev: { isDev: false } } as Env);
+
+        const result = getDomainForRequest(buildRequest(domain));
+
+        expect(result.endsWith(domain)).toBe(true);
+      });
+    });
+  });
+});

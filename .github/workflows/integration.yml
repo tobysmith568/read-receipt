@@ -1,0 +1,189 @@
+name: Integration
+run-name: Integration (${{ github.ref_name }})
+
+on:
+  push:
+    branches:
+      - renovate/*
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: europe-west1-docker.pkg.dev/tobythe-dev/read-receipt/read-receipt
+  ARCHIVE_NAME: Build
+  ARCHIVE_PATH: ./docker-build.tar
+
+jobs:
+  lint:
+    name: Lint
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Biome
+        run: bunx biome ci .
+
+  typecheck:
+    name: Typecheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run typecheck
+        run: bun run typecheck
+
+  build:
+    name: Build
+
+    needs:
+      - typecheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Build Docker image
+        run: docker build . -t ${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg PUBLIC_YEAR=$(date +%Y)
+
+      - name: Export Docker image
+        run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_PATH }}
+
+  test:
+    name: Test
+
+    needs:
+      - typecheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Unit Tests
+        run: bun test src --coverage --coverage-reporter=lcov
+
+      - name: Run infra/ Unit Tests
+        run: bun test infra
+
+      - name: Codecov
+        uses: codecov/codecov-action@v6.0.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage
+
+  licence:
+    name: Check licences
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check licences
+        run: bunx license-cop
+
+  e2e:
+    needs:
+      - build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+
+    name: E2E test (${{ matrix.browser }})
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: bunx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+
+      - name: Load Docker image
+        run: docker load --input ${{ env.ARCHIVE_PATH }}
+
+      - name: Run Docker image
+        run: >
+          docker run
+          --name test_container
+          -d
+          -p 3000:3000
+          -e "EMAIL_HOST=172.17.0.1"
+          -e "EMAIL_PORT=2525"
+          -e "EMAIL_SENDER_NAME=Read Receipt"
+          -e "EMAIL_SENDER_EMAIL=read.receipt@tobythe.dev"
+          -e "EMAIL_USER=user"
+          -e "EMAIL_PASS=pass"
+          -e "DEV_IP=95.150.202.188"
+          -e "FORCE_HTTP=true"
+          ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Run E2E tests
+        run: bunx playwright test --project=${{ matrix.browser }}
+
+      - name: Upload E2E results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Test results (${{ matrix.browser }})
+          path: test-results/
+          if-no-files-found: ignore
+
+      - name: Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Playwright report (${{ matrix.browser }})
+          path: playwright-report/
+          if-no-files-found: ignore

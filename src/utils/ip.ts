@@ -1,6 +1,4 @@
 import axios from "axios";
-import { NextApiRequest } from "next";
-import requestIp from "request-ip";
 import { getEnv } from "./env";
 
 export interface IpResponse {
@@ -18,14 +16,15 @@ export interface IpResponse {
   proxy: boolean;
 }
 
-export const getIpFromRequest = (req: NextApiRequest): string => {
+export const getIpFromRequest = (request: Request): string => {
   const env = getEnv();
 
   if (env.dev.ip) {
     return env.dev.ip;
   }
 
-  const ip = requestIp.getClientIp(req);
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const ip = forwardedFor?.split(",")[0]?.trim();
 
   if (!ip) {
     throw new Error("Could not get IP address");

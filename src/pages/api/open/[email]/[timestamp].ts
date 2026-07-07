@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { secondEmailAsHtml, Times, User } from "../../../../emails/second-email";
+import type { APIContext, APIRoute } from "astro";
+import { secondEmailAsHtml, type Times, type User } from "../../../../emails/second-email";
 import { getDomainForRequest } from "../../../../utils/domain";
 import { sendHtml } from "../../../../utils/email";
 import { getIpData, getIpFromRequest } from "../../../../utils/ip";
@@ -15,20 +15,19 @@ const base64pixel =
 
 const pixelAsBuffer = Buffer.from(base64pixel, "base64");
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Buffer>) => {
+export const GET: APIRoute = async context => {
   try {
-    await handleRequest(req);
+    await handleRequest(context);
   } catch {
     // empty
   }
 
-  sendPixel(res);
+  return sendPixel();
 };
-export default handler;
 
-const handleRequest = async (req: NextApiRequest) => {
-  const { email, timestamp } = getQueryArgs(req);
-  const currentDomain = getDomainForRequest(req);
+const handleRequest = async ({ request, params }: APIContext) => {
+  const { email, timestamp } = getQueryArgs(params);
+  const currentDomain = getDomainForRequest(request);
   const currentTimestamp = getCurrentTimestampUTC();
 
   const times: Times = {
@@ -37,7 +36,7 @@ const handleRequest = async (req: NextApiRequest) => {
     timestampDifference: getDifferenceBetweenTimestamps(Number(timestamp), currentTimestamp)
   };
 
-  const ip = getIpFromRequest(req);
+  const ip = getIpFromRequest(request);
 
   const user: User = {
     email,
@@ -45,7 +44,7 @@ const handleRequest = async (req: NextApiRequest) => {
   };
 
   const ipData = await getIpData(ip);
-  const userAgentData = getUserAgentData(req);
+  const userAgentData = getUserAgentData(request);
 
   const emailContentAsHtml = secondEmailAsHtml({
     domain: currentDomain,
@@ -58,29 +57,27 @@ const handleRequest = async (req: NextApiRequest) => {
   await sendHtml(email, "You just opened your email!", emailContentAsHtml);
 };
 
-const getQueryArgs = (req: NextApiRequest): { email: string; timestamp: string } => {
-  const { email, timestamp } = req.query;
+const getQueryArgs = (params: APIContext["params"]): { email: string; timestamp: string } => {
+  const { email, timestamp } = params;
 
   if (!email) {
     throw new Error("email is required");
-  }
-  if (typeof email !== "string") {
-    throw new Error("You can only submit one email");
   }
 
   if (!timestamp) {
     throw new Error("timestamp is required");
   }
-  if (typeof timestamp !== "string") {
-    throw new Error("You can only submit one timestamp");
-  }
 
-  return { email, timestamp };
+  // Astro's router decodes path segments with `decodeURI`, which deliberately
+  // leaves `%40` (and other reserved-delimiter escapes) alone, so the `email`
+  // param arrives as e.g. "user%40example.com" rather than "user@example.com".
+  return { email: decodeURIComponent(email), timestamp };
 };
 
-const sendPixel = (res: NextApiResponse<Buffer>) => {
-  res
-    .setHeader("Content-Type", "image/png")
-    .setHeader("Cache-Control", "no-store")
-    .send(pixelAsBuffer);
-};
+const sendPixel = (): Response =>
+  new Response(pixelAsBuffer, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "no-store"
+    }
+  });

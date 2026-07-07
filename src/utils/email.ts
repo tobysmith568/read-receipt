@@ -1,24 +1,27 @@
-import { createTransport } from "nodemailer";
+import { createTransport, type Transporter } from "nodemailer";
 import { getEnv } from "./env";
 
 const securePort = 465;
-const { host, port, user, pass, senderName, senderEmail } = getEnv().email;
 
-const transporter = createTransport({
-  host,
-  port,
-  secure: port === securePort,
-  auth: {
-    user,
-    pass
-  }
-});
+const getTransporter = (): Transporter => {
+  const { host, port, user, pass } = getEnv().email;
 
-const from = `${senderName} <${senderEmail}>`;
+  return createTransport({
+    host,
+    port,
+    secure: port === securePort,
+    auth: {
+      user,
+      pass
+    }
+  });
+};
 
 export const sendHtml = async (to: string, subject: string, html: string): Promise<void> => {
-  await transporter.sendMail({
-    from,
+  const { senderName, senderEmail } = getEnv().email;
+
+  await getTransporter().sendMail({
+    from: `${senderName} <${senderEmail}>`,
     to,
     subject,
     html

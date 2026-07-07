@@ -1,0 +1,32 @@
+---
+const year = import.meta.env.PUBLIC_YEAR ?? null;
+---
+
+<div class="copyright">
+  Copyright © Toby Smith {year}.
+  <a class="licence-link" href="/terms">Terms.</a>
+  <a class="licence-link" href="/privacy">Privacy.</a>
+  <a class="licence-link" href="/licenses">Third-party licenses.</a>
+</div>
+
+<style>
+  .copyright {
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+    font-size: 0.8em;
+    width: 100%;
+    text-align: center;
+    color: #0c0c0c;
+  }
+
+  .licence-link {
+    margin-left: 0.5em;
+    text-decoration: none;
+    color: #0c0c0c;
+  }
+
+  .licence-link:hover {
+    text-decoration: underline;
+  }
+</style>

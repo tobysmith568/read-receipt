@@ -1,0 +1,37 @@
+{
+  "extends": "@license-cop/permissive",
+  // satteri: Astro's markdown parser (transitive via astro -> @astrojs/markdown-satteri).
+  // Its package.json (and its @bruits/satteri-linux-x64-* native binaries) omit the
+  // "license" field entirely (license-cop sees them as unlicensed), but satteri's
+  // bundled LICENSE file is plain MIT.
+  //
+  // sharp / @img/sharp-libvips-*: Astro's *optional* image-optimization feature
+  // (astro:assets), unused anywhere in src/ (no getImage/<Image>/astro:assets import).
+  // The production Dockerfile installs with --omit=optional so these never actually
+  // reach the deployed image; they only show up here because this repo's full `bun
+  // install` (used by CI's licence job, editor tooling, etc.) installs optional deps
+  // too. Allow-listed rather than fixed at the install layer, since license-cop's
+  // config itself (`extends`) needs its own devDependency present, which rules out
+  // running the scan against a --production install.
+  "packages": [
+    "caniuse-lite",
+    "satteri",
+    "@bruits/satteri-linux-x64-gnu",
+    "@bruits/satteri-linux-x64-musl",
+    "sharp",
+    "@img/sharp-libvips-linux-x64",
+    "@img/sharp-libvips-linuxmusl-x64"
+  ],
+  // argparse (Python-2.0, transitive via astro -> js-yaml -> argparse, used for YAML
+  // frontmatter parsing at build time) and lightningcss (MPL-2.0, transitive via
+  // astro/@astrojs/react -> vite, build-time CSS transform) are both build-time-only
+  // Astro toolchain dependencies, used unmodified. Python-2.0 is permissive, same
+  // category as MIT. MPL-2.0 is a weak, file-level copyleft: it only requires
+  // releasing source for files you modify and distribute yourself, and explicitly
+  // allows combining with proprietary code without that obligation spreading. Since
+  // lightningcss is used unmodified here, it imposes no extra obligation in practice
+  // -- but unlike Python-2.0 it isn't unconditionally permissive, so don't treat this
+  // entry as precedent for other MPL-2.0 packages without re-checking whether they're
+  // modified/vendored.
+  "licenses": ["Python-2.0", "MPL-2.0"]
+}

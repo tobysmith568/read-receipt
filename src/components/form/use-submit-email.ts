@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useCallback } from "react";
-import { SubmitResponse } from "../../pages/api/submit";
+import type { SubmitResponse } from "../../pages/api/submit";
 import { useSetFormState } from "./use-form-state";
 
 export const useSubmitEmail = () => {

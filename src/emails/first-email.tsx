@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
-import React, { FC } from "react";
+import type { FC } from "react";
 import { renderToString } from "react-dom/server";
 
 export interface FirstEmailProps {
@@ -73,7 +71,7 @@ const FirstEmail: FC<FirstEmailProps> = ({ domain, timestamp, urlSafeEmail }) =>
 
       <p>Thanks!</p>
 
-      <img src={`${domain}/api/open/${urlSafeEmail}/${timestamp}`} />
+      <img src={`${domain}/api/open/${urlSafeEmail}/${timestamp}`} alt="" />
     </>
   );
 };

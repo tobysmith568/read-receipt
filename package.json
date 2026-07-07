@@ -46,7 +46,7 @@
     "@types/ua-parser-js": "^0.7.36",
     "cspell": "^8.0.0",
     "diffable-html": "^4.1.0",
-    "generate-license-file": "^3.0.0",
+    "generate-license-file": "^4.0.0",
     "license-cop": "^1.7.1",
     "smtp-tester": "^2.0.0",
     "typescript": "^6.0.3"

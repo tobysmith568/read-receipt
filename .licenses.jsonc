@@ -13,6 +13,12 @@
   // too. Allow-listed rather than fixed at the install layer, since license-cop's
   // config itself (`extends`) needs its own devDependency present, which rules out
   // running the scan against a --production install.
+  // @ua-parser-js/pro-personal: the paid single-individual UAParser.js license
+  // (https://store.faisalman.com), used in place of the free ua-parser-js package,
+  // which relicensed from MIT to AGPL-3.0-or-later as of v2. Its package.json
+  // declares "SEE LICENSE IN LICENSE.md" (a purchased commercial license, not a
+  // recognised permissive SPDX identifier), so license-cop can't verify it
+  // automatically -- allow-listed by name since Toby holds a valid personal license.
   "packages": [
     "caniuse-lite",
     "satteri",
@@ -20,7 +26,8 @@
     "@bruits/satteri-linux-x64-musl",
     "sharp",
     "@img/sharp-libvips-linux-x64",
-    "@img/sharp-libvips-linuxmusl-x64"
+    "@img/sharp-libvips-linuxmusl-x64",
+    "@ua-parser-js/pro-personal"
   ],
   // argparse (Python-2.0, transitive via astro -> js-yaml -> argparse, used for YAML
   // frontmatter parsing at build time) and lightningcss (MPL-2.0, transitive via

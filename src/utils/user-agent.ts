@@ -1,4 +1,4 @@
-import UAParser from "ua-parser-js";
+import { UAParser } from "@ua-parser-js/pro-personal";
 
 export interface UserAgentDetails {
   browser?: string;
@@ -10,12 +10,12 @@ export interface UserAgentDetails {
 export const getUserAgentData = (request: Request): UserAgentDetails => {
   const userAgent = request.headers.get("user-agent") ?? undefined;
 
-  const userAgentParser = new UAParser(userAgent);
+  const { browser, os, device } = UAParser(userAgent);
 
   return {
-    browser: userAgentParser.getBrowser().name,
-    os: userAgentParser.getOS().name,
-    platform: userAgentParser.getDevice().vendor,
-    version: userAgentParser.getBrowser().version
+    browser: browser.name,
+    os: os.name,
+    platform: device.vendor,
+    version: browser.version
   };
 };

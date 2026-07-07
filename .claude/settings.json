@@ -14,7 +14,9 @@
       "Bash(bunx biome *)",
       "Bash(bunx cspell *)",
       "Bash(bunx license-cop)",
-      "Bash(bunx tsc *)"
+      "Bash(bunx tsc *)",
+      "Bash(npm view *)",
+      "Bash(grep *)"
     ]
   }
 }

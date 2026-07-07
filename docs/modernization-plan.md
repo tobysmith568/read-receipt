@@ -811,6 +811,47 @@ also covers `infra/`; `CLAUDE.md` no longer describes the click-ops/GCR/
 static-key/`roles/editor` deployment path or the old `ci.yml`/`cd.yml`
 filenames.
 
+**Outcome / deviations from the plan above:**
+
+- `typescript` was pinned `^5.0.0` and resolving to 5.0.2 — too old to parse
+  `@vitejs/plugin-react`'s `.d.ts` (`export { X as "module.exports" }`,
+  string-literal export aliasing), which made the new `typecheck` script fail
+  immediately on `main`, unrelated to anything in `infra/`. Bumped to
+  `typescript@6.0.3`; not otherwise in scope for this stage, but blocking its
+  own exit criteria without the fix.
+- GitHub Actions' workflow-level `name:` key doesn't support `${{ }}`
+  expressions (only `run-name:` does) — the plan's ref-interpolated `name:`
+  idea landed as a static `name:` plus a separate `run-name:` using the
+  interpolation instead.
+- Bun's `$` shell template parses literal parentheses in the command text as
+  shell syntax, not string content — a `gcloud ... --format=value(projectNumber)`
+  call failed with `Unexpected token: "("`. Fixed by building that flag as a
+  plain JS string and interpolating the whole thing, rather than writing it
+  inline in the template.
+- Full pre-CI validation, done live against `tobythe-dev` before trusting any
+  of this to run unattended: ran `infra:bootstrap` (creating the WIF pool/
+  provider, granting the deploy SA its missing roles, seeding both secrets,
+  creating the runtime SA + its secret-access grant), confirmed it's
+  idempotent by re-running it immediately after (no duplicate resources, no
+  new secret versions — `gcloud secrets versions list` stayed at version 1
+  for both). Then built the real Docker image locally, pushed it to Artifact
+  Registry, and ran `infra:apply` for real against the live Cloud Run
+  service — confirmed the resulting revision picked up the Artifact Registry
+  image, the new `read-receipt-runtime@` service account, and
+  Secret-Manager-backed `EMAIL_USER`/`EMAIL_PASS`. Submitted the live email
+  form afterward to confirm the tracking-pixel flow's SMTP send still works
+  end-to-end with credentials now sourced from Secret Manager rather than
+  plaintext — it does. The site never went down during any of this; Cloud
+  Run only swaps traffic to a new revision once it's ready.
+- Secret naming follows the existing `rss-feed` convention in the same
+  project (PascalCase-hyphenated) rather than inventing a new one:
+  `Read-Receipt-Email-User`, `Read-Receipt-Email-Pass`.
+- `infra/`'s Secret Manager `create()`/`addVersion()` had to use `Bun.spawn`
+  with piped stdin rather than Bun's `$` shell helper — `gcloud secrets
+  create ... --data-file=-` needs the secret value written to the
+  subprocess's stdin, which `$` doesn't expose as directly as `Bun.spawn`'s
+  `stdin: "pipe"`.
+
 ## Suggested order
 
 1. AI tooling — `CLAUDE.md` + `.claude/` (context for every stage after this)

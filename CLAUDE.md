@@ -41,7 +41,13 @@ geolocation, user agent, and the time between sending and opening).
   `e2e/mail-client.ts`), not a Cypress-style task, since Playwright test files
   run in separate worker processes from `globalSetup`/`globalTeardown`
 - cspell (spell-checking), license-cop (license auditing)
-- Docker (`oven/bun` base image) → GCR → Cloud Run for deployment
+- Docker (`oven/bun` base image) → Artifact Registry → Cloud Run for deployment,
+  via a small hand-rolled `infra/` package (Bun TS classes shelling out to
+  `gcloud`, no Pulumi/Terraform) rather than raw inline `gcloud` flags in the
+  workflow — see the "Deployment" bullet under Architecture below.
+- `mise` (`mise.toml`/`mise.lock`) pins the `gcloud` CLI version for local use;
+  run `mise install` (or just `mise use`, since the repo is already trusted)
+  before running any `infra:*` script locally.
 
 ## Commands
 
@@ -52,7 +58,8 @@ bun run build          # production build (astro build)
 bun run start          # run a production build (bun ./dist/server/entry.mjs)
 bun run lint           # biome ci .
 bunx biome format --write .  # format the repo (not a package.json script)
-bun run test           # bun test src (colocated *.test.ts(x) unit tests, excluding e2e/)
+bun run typecheck      # tsc --noEmit over src/ and infra/
+bun run test           # bun test src infra (colocated *.test.ts(x) unit tests, excluding e2e/)
 bun test src/utils/domain.test.ts     # run a single test file
 bun test src -t "test name"           # run tests matching a name
 bun run e2e            # open the Playwright UI (interactive) - auto builds/starts the app if nothing's running on :3000
@@ -62,6 +69,8 @@ bunx cspell "**/*.*"     # spell-check
 bunx license-cop         # check dependency licenses
 docker compose up        # starts smtp4dev only, for manually viewing sent emails at http://localhost:5000
 docker compose up app    # additionally builds/runs the production Docker image locally, talking to smtp4dev
+bun run infra:bootstrap  # one-time, manual, project-owner-only: WIF pool/provider, deploy SA roles, runtime SA + secret access
+bun run infra:apply      # what deployment.yml runs on every deploy: Artifact Registry repo, Secret Manager secrets, Cloud Run service
 ```
 
 ## Required environment variables
@@ -150,5 +159,25 @@ Other notable pieces:
 - Deployment: `Dockerfile` builds the Astro node-adapter standalone output; unlike
   Next's `.next/standalone`, Astro doesn't trace/bundle production `node_modules`
   automatically, so the runner stage installs and copies `node_modules` itself
-  (via a `bun install --production` stage) alongside `dist/`. CI (`ci.yml`)
-  builds/tests/lints, CD (`cd.yml`) pushes the image to GCR and deploys to Cloud Run.
+  (via a `bun install --production` stage) alongside `dist/`. `integration.yml`
+  lints/typechecks/builds/tests, `deployment.yml` pushes the image (tagged both
+  `:latest` and `:${{ github.sha }}`) to Artifact Registry
+  (`europe-west1-docker.pkg.dev/tobythe-dev/read-receipt/read-receipt`) and
+  deploys to Cloud Run — not via raw inline `gcloud` flags, but by running
+  `bun run infra:apply`, which shells out to `gcloud` through a small `infra/`
+  package of Bun TS classes (one per GCP resource type: Artifact Registry repo,
+  Secret Manager secret, Cloud Run service), each idempotent (`describe`-then-
+  `create`/`update`). `deployment.yml` authenticates via Workload Identity
+  Federation (`google-github-actions/auth`'s `workload_identity_provider`), not
+  a long-lived JSON key. `EMAIL_USER`/`EMAIL_PASS` live in Secret Manager
+  (`Read-Receipt-Email-User`/`Read-Receipt-Email-Pass`), referenced via
+  `--set-secrets`, not plaintext Cloud Run env vars; the Cloud Run service runs
+  as a dedicated `read-receipt-runtime@` service account (just
+  `secretmanager.secretAccessor` on those two secrets), not the project's
+  default compute service account.
+  There's a second entrypoint, `bun run infra:bootstrap`, for the IAM-admin-
+  shaped resources that must never be something CI can touch: the WIF pool/
+  provider/trust-binding, the deploy service account's own IAM roles, and the
+  runtime service account + its secret-access grant. Run manually, once, by a
+  human with project-owner access — see `infra/bootstrap.ts` for the full list
+  of what it manages and why it's kept separate from `infra:apply`.

@@ -1,4 +1,5 @@
-name: CI
+name: Integration
+run-name: Integration (${{ github.ref_name }})
 
 on:
   push:
@@ -11,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: gcr.io/tobythe-dev/read-receipt
+  IMAGE_NAME: europe-west1-docker.pkg.dev/tobythe-dev/read-receipt/read-receipt
   ARCHIVE_NAME: Build
   ARCHIVE_PATH: ./docker-build.tar
 
@@ -36,8 +37,28 @@ jobs:
       - name: Run CSpell
         run: bunx cspell "**/*.*"
 
+  typecheck:
+    name: Typecheck
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run typecheck
+        run: bun run typecheck
+
   build:
     name: Build
+
+    needs:
+      - typecheck
 
     runs-on: ubuntu-latest
 
@@ -45,10 +66,10 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Build Docker image
-        run: docker build . -t ${{ env.IMAGE_NAME }} --build-arg PUBLIC_YEAR=$(date +%Y)
+        run: docker build . -t ${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg PUBLIC_YEAR=$(date +%Y)
 
       - name: Export Docker image
-        run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}
+        run: docker save --output ${{ env.ARCHIVE_PATH }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Upload Docker image
         uses: actions/upload-artifact@v7
@@ -58,6 +79,9 @@ jobs:
 
   test:
     name: Test
+
+    needs:
+      - typecheck
 
     runs-on: ubuntu-latest
 
@@ -71,7 +95,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run Unit Tests
-        run: bun test src --coverage --coverage-reporter=lcov
+        run: bun test src infra --coverage --coverage-reporter=lcov
 
       - name: Codecov
         uses: codecov/codecov-action@v6.0.0
@@ -143,7 +167,7 @@ jobs:
           -e "EMAIL_PASS=pass"
           -e "DEV_IP=95.150.202.188"
           -e "FORCE_HTTP=true"
-          ${{ env.IMAGE_NAME }}
+          ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Run E2E tests
         run: bunx playwright test --project=${{ matrix.browser }}

@@ -561,6 +561,55 @@ Docker shape, and stage 7 already confirmed the repo's config/deps are clean,
 so this is the last remaining "the code is modern but the deployment path
 still predates it" gap.
 
+**Pre-implementation audit (done as part of planning this stage, live against
+the real `tobythe-dev` GCP project):**
+
+- `gcloud` wasn't installed locally — added via `mise` (`mise.toml`/
+  `mise.lock`, matching the `[settings] lockfile = true` / `gcloud = "latest"`
+  convention already used in the `npm-versions` repo's `mise.toml`) rather
+  than inventing a new pinning style.
+- Artifact Registry already has a `read-receipt` Docker repo in
+  `europe-west1` (created 2022-03-19, empty, 0 images) — this stage doesn't
+  need to *create* the Artifact Registry repo, just start pushing to it and
+  point `IMAGE_NAME` at it. It's adopted by the IaC class, not recreated.
+- The live Cloud Run service `read-receipt` has been running since 2021 with
+  real traffic on the custom domain — adopted as-is, not recreated. Its
+  `containerPort` is `8080` (not `3000`, despite the Dockerfile's
+  `ENV PORT=3000`/`EXPOSE 3000`) — Cloud Run injects its own `PORT` env var
+  matching `containerPort` at runtime, overriding the image's baked-in `ENV`,
+  so this is not a bug; the IaC `CloudRunService` class leaves `containerPort`
+  at `8080` rather than "fixing" it to match the Dockerfile — changing a port
+  that's proven working in production for years is an unforced, unrelated
+  risk to bundle into this stage.
+- Found a real security gap: `EMAIL_USER`/`EMAIL_PASS` (a live AWS SES SMTP
+  key) sit as **plaintext Cloud Run env vars** today, with no Secret Manager
+  secrets for this app at all (only `rss-feed` uses Secret Manager currently).
+  This stage fixes it (see "Secrets" below) rather than just auditing and
+  leaving it.
+- Found a real long-lived-credential risk: the deploy service account
+  (`read-receipt@tobythe-dev.iam.gserviceaccount.com`, backing
+  `GCP_CREDENTIALS`) has 4 keys, including one created 2022-03-19 with **no
+  expiry** (`9999-12-31`). Given this isn't hypothetical, Workload Identity
+  Federation is pulled into this stage's scope rather than left as an
+  optional/deferred spike (see "Workload Identity Federation" below).
+- The GCR image bucket (`gs://artifacts.tobythe-dev.appspot.com`) is **shared**
+  with other unrelated services in the same project (`rss-feed`,
+  `tobythe-dev`, `totp-online`, `row-counter-api` all show up as Cloud Run
+  services in this project) — "retire GCR" for this stage cannot mean
+  deleting the bucket. It means: stop pushing/pulling `read-receipt` images
+  via `gcr.io`, and delete only the old `gcr.io/tobythe-dev/read-receipt`
+  image tags/manifests once the new pipeline is confirmed working.
+- Checked branch protection on `main`: **none configured**. The original
+  plan's worry about the `ci.yml`→`integration.yml` rename breaking
+  required-status-check names is moot — there's nothing to reconcile.
+- Found two orphaned GitHub secrets while auditing what feeds the deploy job:
+  repo-level `FOSSA_API_KEY` (predates `license-cop`, unreferenced by any
+  workflow) and Production-environment `GCP_EMAIL` (created the same day as
+  `GCP_CREDENTIALS` in 2022, never referenced by any workflow — looks like an
+  abandoned attempt at exactly the EMAIL_* delivery problem this stage
+  solves properly). Both deleted as part of this stage's cleanup rather than
+  left as unexplained residue.
+
 The job granularity (lint/build/test/licence/e2e, then a separate deploy job
 gated on CI passing) mostly stays as-is — this stage is primarily about *what
 the deploy job talks to*, not the workflow shape, plus a couple of workflow
@@ -568,9 +617,8 @@ housekeeping items bundled in since they touch the same files:
 
 - Rename `ci.yml` → `integration.yml` and `cd.yml` → `deployment.yml` (and
   update the `uses: ./.github/workflows/ci.yml` reference in the renamed
-  `deployment.yml`, plus any other cross-references e.g. branch protection
-  required-check names, which are matched by job name not filename but are
-  worth double-checking still resolve after the rename).
+  `deployment.yml`). No branch-protection required-check names to reconcile
+  (confirmed above — none exist).
 - Give both workflows more informative top-level `name:` keys by
   interpolating the triggering ref, e.g. `name: Integration (${{
   github.ref_name }})` / `name: Deployment (${{ github.ref_name }})` — useful
@@ -584,7 +632,9 @@ housekeeping items bundled in since they touch the same files:
   fast before spending time on a Docker build or the test run; `lint` and
   `licence` stay independent (Biome doesn't need TS's type info, and
   license-cop doesn't touch app code at all) so they keep running in
-  parallel rather than waiting.
+  parallel rather than waiting. `infra/**/*.ts` is added to root
+  `tsconfig.json`'s `include` (rather than getting its own `tsconfig.json`)
+  so this one `typecheck` script/job covers `src/` and `infra/` together.
 - Considered but rejected: dropping the Docker image from the `e2e` job in
   favour of Playwright's own `webServer` (`bun run build && bun run start`).
   That config is a local-dev convenience for when nothing's already on
@@ -594,53 +644,114 @@ housekeeping items bundled in since they touch the same files:
   `--production`-only `node_modules` stage). Keeping e2e on the built image
   matters even more once this stage changes what gets pushed/deployed, so
   the Docker-based `e2e` job is unchanged by this stage.
-- Add a small `infra/` package of Bun TS classes representing the GCP
-  resources this app actually needs (Artifact Registry repo, Secret Manager
-  secrets, the Cloud Run service) — no Pulumi/Terraform; a project this size
-  doesn't need a state backend or a general-purpose DSL. Each class's methods
-  (`ensure()`/`apply()`/similar) are thin wrappers that shell out to `gcloud`
-  (Bun's `$` shell helper or `Bun.spawn`), and are written idempotently
-  (`gcloud ... describe` to check current state before `create`/`update`),
-  since there's no state file tracking what's already been applied.
-- Add a `bun run infra:apply`-style script that `deployment.yml`'s `deploy`
-  job calls instead of today's inline `gcloud run deploy ...` step, so the
-  resource definitions live in versioned TS rather than YAML flags.
-- Migrate off Google Container Registry (`gcr.io/tobythe-dev/read-receipt`,
-  referenced via `IMAGE_NAME` in both `integration.yml` and `deployment.yml`)
-  to Artifact Registry — GCR is deprecated in favour of Artifact Registry,
-  and the new Docker repo should itself be one of the IaC-managed resources
-  rather than something clicked into existence once. Update `IMAGE_NAME` in
-  both workflows to the new `<region>-docker.pkg.dev/...` path.
-- Add a `mise` config (`mise.toml` or an entry in an existing one) pinning the
-  `gcloud` CLI version, since it's not currently installed on all dev
-  machines and the IaC classes assume it's on `PATH` both locally and in CI.
-- Audit what's currently click-ops'd in the GCP console (Cloud Run service
-  config/env vars, any Secret Manager secrets backing `EMAIL_*` in
-  production, the existing GCR repo) and decide per-resource whether the IaC
-  classes adopt the existing resource (`describe` finds it, so `apply()`
-  updates in place) or recreate it fresh — recreation is acceptable where
-  adoption doesn't gel cleanly (the user has said so explicitly), but note
-  which resources went which way so it's not a surprise later.
-- Spike/confirm whether this is also the right moment to replace the
-  long-lived `GCP_CREDENTIALS` JSON key (used by `google-github-actions/auth`
-  in `deployment.yml`) with Workload Identity Federation — it's a natural
-  pairing with an IaC overhaul (the federation pool/provider binding would
-  itself be one of the new `infra/` resources) but isn't required by the IaC
-  change itself, so don't block this stage on it if it turns out to be its
-  own can of worms.
+
+### `infra/` package design
+
+- One Bun TS class per resource type — no Pulumi/Terraform; a project this
+  size doesn't need a state backend or a general-purpose DSL:
+  - `infra/resources/artifact-registry-repo.ts`
+  - `infra/resources/secret-manager-secret.ts`
+  - `infra/resources/cloud-run-service.ts`
+  - `infra/resources/workload-identity-pool.ts`
+  Each class has an `apply()` that shells out to `gcloud` (Bun's `$` shell
+  helper or `Bun.spawn`) and is idempotent — `describe` current state first,
+  then `create`/`update` only if something actually differs — since there's
+  no state file tracking what's already been applied.
+- Two entrypoints, not one, split by *who* runs them and *how much trust*
+  they need:
+  - `bun run infra:apply` (`infra/apply.ts`) — run by `deployment.yml`'s
+    `deploy` job on every push to `main`, authenticated via WIF. Manages only
+    the Artifact Registry repo, the Secret Manager secrets, and the Cloud Run
+    service, in that dependency order.
+  - `bun run infra:bootstrap` (`infra/bootstrap.ts`) — run manually, locally,
+    by a human with project-owner access. Manages the WIF pool/provider/IAM
+    binding only. **Deliberately excluded from `infra:apply`/CI**: if CI's own
+    service account could modify its own trust policy, a malicious or buggy
+    PR merged to `main` could theoretically widen the trust condition to
+    grant itself persistent access. Keeping WIF-management out of anything
+    CI ever runs closes that off entirely.
+- Secret Manager updates are idempotent in the way that matters for cost, not
+  just for correctness: `SecretManagerSecret.apply()` reads the current
+  latest version's value and only adds a new version if the desired value
+  has actually changed — every version costs money, so a no-op deploy must
+  not churn versions.
+- Unit test coverage (`bun:test`) is limited to each class's create/update/skip
+  *decision* logic (e.g. "given this mocked `describe` output and this desired
+  state, does `apply()` choose to create, update, or skip?") — not full
+  end-to-end mocking of `gcloud`'s real behaviour, which can only actually be
+  verified by running it against GCP.
+
+### Secrets
+
+- `EMAIL_USER`/`EMAIL_PASS` (and any other `EMAIL_*` that shouldn't be
+  plaintext) move from Cloud Run env vars to Secret Manager secrets, created/
+  updated by `SecretManagerSecret` and referenced on the Cloud Run service via
+  `--set-secrets` instead of `--set-env-vars`.
+- The desired values themselves come from **new** Production-environment
+  GitHub secrets (not the old, unused `GCP_EMAIL`, which is deleted rather
+  than repurposed — no confirmed history of what it was for), passed into
+  `infra:apply`'s environment at deploy time.
+
+### Workload Identity Federation
+
+- Pulled into this stage's scope (not deferred) given the no-expiry key found
+  in the audit above.
+- Reuses the existing `read-receipt@tobythe-dev.iam.gserviceaccount.com`
+  service account (already holds the right IAM roles from years of successful
+  deploys) rather than provisioning a fresh one — only *how* GitHub Actions
+  authenticates as it changes.
+- Trust condition scoped tightly: `attribute.repository ==
+  'tobysmith568/read-receipt'` AND `attribute.ref == 'refs/heads/main'`,
+  matching `deployment.yml`'s existing trigger exactly.
+- Bootstrap order (resolves the chicken-and-egg problem: `deployment.yml`
+  can't authenticate via WIF until the pool already exists): run
+  `bun run infra:bootstrap` locally once (as project owner, already
+  authenticated), confirm `deployment.yml` deploys successfully once switched
+  to WIF, *then* revoke all 4 existing SA keys on
+  `read-receipt@tobythe-dev.iam.gserviceaccount.com`. Update
+  `deployment.yml`'s `google-github-actions/auth` step from
+  `credentials_json: ${{ secrets.GCP_CREDENTIALS }}` to
+  `workload_identity_provider: ...` accordingly, and remove the
+  `GCP_CREDENTIALS` GitHub secret once the keys are revoked.
+
+### Artifact Registry / GCR migration
+
+- Update `IMAGE_NAME` in both workflows from `gcr.io/tobythe-dev/read-receipt`
+  to `europe-west1-docker.pkg.dev/tobythe-dev/read-receipt` (the existing,
+  already-created repo — see audit above).
+- Tag pushed images with both `:latest` and `:${{ github.sha }}`; the
+  `CloudRunService` class deploys by the sha-tagged reference, not `:latest`
+  — gives real rollback capability and removes ambiguity about which image a
+  given revision is running, a natural pairing with introducing `infra/` as
+  the deploy mechanism (the current build step tags with no explicit tag at
+  all, i.e. implicitly `:latest` only, with no rollback-by-tag today).
+- Once the new pipeline is confirmed working, delete the old
+  `gcr.io/tobythe-dev/read-receipt` image tags/manifests (not the shared
+  bucket — see audit above for why the whole bucket is out of scope).
+
+### Cleanup bundled into this stage
+
+- Delete orphaned GitHub secrets `FOSSA_API_KEY` (repo-level) and `GCP_EMAIL`
+  (Production-environment) — both confirmed unreferenced by any workflow.
 - Revisit `CLAUDE.md`'s "Commands"/"Current stack"/deployment sections once
   landed — the "Docker → GCR → Cloud Run" description throughout the doc
   (including this plan's own baseline section) becomes "Docker → Artifact
   Registry → Cloud Run via `infra/`", `ci.yml`/`cd.yml` references become
   `integration.yml`/`deployment.yml`, and the `gcloud` mise dependency needs
-  documenting alongside the other required local tooling.
+  documenting alongside the other required local tooling. Also document the
+  `infra:apply` vs `infra:bootstrap` split and why WIF management is
+  deliberately excluded from CI.
 
-**Exit criteria:** `deployment.yml` deploys via the new `infra/` classes and
-Artifact Registry, not raw inline `gcloud run deploy` against GCR; GCR fully
-retired; `gcloud` available via `mise` for local use; `integration.yml` gates
-`build`/`test` behind a passing `typecheck` job; `CLAUDE.md` no longer
-describes the click-ops/GCR deployment path or the old `ci.yml`/`cd.yml`
-filenames.
+**Exit criteria:** `deployment.yml` deploys via the new `infra/` classes
+(Artifact Registry + Secret Manager + Cloud Run) authenticated via Workload
+Identity Federation, not raw inline `gcloud run deploy` with a long-lived
+JSON key against GCR; GCR fully retired for `read-receipt` (repointed, old
+image tags deleted); all 4 old SA keys revoked; `EMAIL_USER`/`EMAIL_PASS` live
+in Secret Manager, not plaintext env vars; orphaned `FOSSA_API_KEY`/
+`GCP_EMAIL` secrets removed; `gcloud` available via `mise` for local use;
+`integration.yml` gates `build`/`test` behind a passing `typecheck` job that
+also covers `infra/`; `CLAUDE.md` no longer describes the click-ops/GCR/
+static-key deployment path or the old `ci.yml`/`cd.yml` filenames.
 
 ## Suggested order
 

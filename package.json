@@ -42,7 +42,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/react": "18.3.31",
     "@types/react-dom": "^18.0.0",
-    "cspell": "^8.0.0",
+    "cspell": "^10.0.0",
     "diffable-html": "^4.1.0",
     "generate-license-file": "^4.0.0",
     "license-cop": "^1.7.1",

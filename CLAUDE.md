@@ -40,7 +40,9 @@ geolocation, user agent, and the time between sending and opening).
   `smtp-tester` via a small local admin HTTP server (`e2e/mail-server.ts` +
   `e2e/mail-client.ts`), not a Cypress-style task, since Playwright test files
   run in separate worker processes from `globalSetup`/`globalTeardown`
-- cspell (spell-checking), license-cop (license auditing)
+- cspell (spell-checking, available locally via `bunx cspell` but no longer
+  run in CI — dropped from the `Lint` job since it kept failing on legitimate
+  technical/GCP terminology), license-cop (license auditing)
 - Docker (`oven/bun` base image) → Artifact Registry → Cloud Run for deployment,
   via a small hand-rolled `infra/` package (Bun TS classes shelling out to
   `gcloud`, no Pulumi/Terraform) rather than raw inline `gcloud` flags in the

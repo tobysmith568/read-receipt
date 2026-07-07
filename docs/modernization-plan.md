@@ -799,17 +799,18 @@ housekeeping items bundled in since they touch the same files:
 **Exit criteria:** `deployment.yml` deploys via the new `infra/` classes
 (Artifact Registry + Secret Manager + Cloud Run) authenticated via Workload
 Identity Federation, not raw inline `gcloud run deploy` with a long-lived
-JSON key against GCR; GCR fully retired for `read-receipt` (repointed, old
-image tags deleted); all 4 old SA keys revoked; `EMAIL_USER`/`EMAIL_PASS` live
-in Secret Manager, not plaintext env vars; the Cloud Run service runs as the
-new narrowly-scoped runtime SA, not the default compute SA's project-wide
+JSON key against GCR; `read-receipt` repointed off GCR to Artifact Registry
+(image tag deletion turned out to be moot — see outcome notes); all
+user-managed SA keys revoked; `EMAIL_USER`/`EMAIL_PASS` live in Secret
+Manager, not plaintext env vars; the Cloud Run service runs as the new
+narrowly-scoped runtime SA, not the default compute SA's project-wide
 `roles/editor`; the deploy SA holds exactly the roles `infra:apply` needs
 (granted via `infra:bootstrap`), no more; orphaned `FOSSA_API_KEY`/
-`GCP_EMAIL` secrets removed; `gcloud` available via `mise` for local use;
-`integration.yml` gates `build`/`test` behind a passing `typecheck` job that
-also covers `infra/`; `CLAUDE.md` no longer describes the click-ops/GCR/
-static-key/`roles/editor` deployment path or the old `ci.yml`/`cd.yml`
-filenames.
+`GCP_EMAIL`/`GCP_CREDENTIALS`/`GCP_APP_NAME` secrets removed; `gcloud`
+available via `mise` for local use; `integration.yml` gates `build`/`test`
+behind a passing `typecheck` job that also covers `infra/`; `CLAUDE.md` no
+longer describes the click-ops/GCR/static-key/`roles/editor` deployment path
+or the old `ci.yml`/`cd.yml` filenames.
 
 **Outcome / deviations from the plan above:**
 
@@ -851,6 +852,58 @@ filenames.
   create ... --data-file=-` needs the secret value written to the
   subprocess's stdin, which `$` doesn't expose as directly as `Bun.spawn`'s
   `stdin: "pipe"`.
+- Folding `infra/`'s tests into the same `--coverage` run as `src/` (as
+  originally written into `package.json`'s `test` script) broke Codecov: the
+  repo was at 100% coverage on `src/` alone, and `infra/`'s intentionally
+  partial coverage (decision logic only, per the design above — the
+  `gcloud`-calling code paths aren't unit tested) dragged the reported
+  project/patch coverage down to ~62%, failing Codecov's default patch-drop
+  gate. Split it in CI: the coverage-tracked `Test` step stays `bun test src`
+  exactly as before, and a separate, non-coverage-tracked step runs
+  `bun test infra` (still required to pass, just not reported to Codecov).
+  `package.json`'s `test` script (for local use) still runs both together.
+- CSpell started failing in CI on legitimate technical/GCP vocabulary this
+  stage introduces in bulk (`gserviceaccount`, `artifactregistry`,
+  `secretmanager`, `nothrow`, `oidc`, etc.) — rather than growing
+  `cspell.json`'s word list stage by stage, the repo owner decided CI
+  shouldn't gate on spelling at all going forward. Dropped the `Run CSpell`
+  step from `integration.yml`'s `Lint` job; `cspell.json`/the `cspell`
+  devDependency stay for optional local use (`bunx cspell "**/*.*"`).
+- The first real CI run of `deployment.yml` on `main` failed, but not from
+  anything in this stage: the reused `integration.yml`'s E2E chromium job hit
+  two unrelated, back-to-back transient failures (a UI timing flake on the
+  email form's submit button staying disabled past Playwright's 30s timeout,
+  then an `apt`/`dpkg` exit-100 failure installing Playwright's browser
+  deps) — neither is close to anything this stage's diff touches. Confirmed
+  by re-running just the failed job: it passed clean on the third attempt
+  (same commit, same image), and `Deploy` then succeeded — authenticated via
+  WIF, no `GCP_CREDENTIALS` involved. Verified directly against the live
+  service afterward: `spec.template.spec.containers[0].image` matched the
+  merge commit's SHA-tagged Artifact Registry image.
+- With the WIF-based deploy proven working in real CI, revoked the deploy
+  SA's keys: `gcloud iam service-accounts keys list` showed 4 keys, but only
+  one (the 2022, no-expiry one that had been backing `GCP_CREDENTIALS`) was
+  `USER_MANAGED` and deletable/meaningful to revoke — the other 3 are
+  `SYSTEM_MANAGED` (Google's own internal signing keys for the service
+  account, not downloadable credentials, can't and shouldn't be deleted).
+  Deleted the one real key; confirmed zero `USER_MANAGED` keys remain.
+  Removed the now-fully-unused `GCP_CREDENTIALS` and `GCP_APP_NAME` GitHub
+  secrets (neither is referenced anywhere in either workflow anymore).
+- GCR image-tag cleanup turned out to be impossible to do safely, not merely
+  out of scope: `gcloud container images list-tags gcr.io/tobythe-dev/read-receipt`
+  (and the `gcloud artifacts` equivalent) both return a `404 Repository not
+  found` — GCR's read/index API appears to already be fully shut down
+  globally (consistent with Google's announced GCR deprecation timeline), so
+  `gcr.io/tobythe-dev/read-receipt` was already unreachable to everyone, not
+  just this pipeline. The backing GCS bucket
+  (`gs://artifacts.tobythe-dev.appspot.com`, still ~5.87 GiB) is a flat,
+  content-addressable blob store with no per-repository path structure — the
+  repository→tag→digest mapping lived entirely in the now-dead index API, so
+  there's no way to attribute individual blobs to `read-receipt` versus the
+  other apps sharing that bucket. Decided, with the repo owner, to leave the
+  bucket alone entirely rather than risk deleting shared, unattributed data —
+  `read-receipt` is fully repointed off GCR either way, so nothing depends on
+  it being cleaned up.
 
 ## Suggested order
 

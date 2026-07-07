@@ -1,20 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(bun install)",
-      "Bash(bun install --frozen-lockfile)",
-      "Bash(bun test *)",
-      "Bash(bun run build)",
-      "Bash(bun run build:*)",
-      "Bash(bun run dev)",
-      "Bash(bun run start)",
-      "Bash(bun run lint)",
-      "Bash(bun run test)",
-      "Bash(bun run e2e)",
-      "Bash(bunx biome *)",
-      "Bash(bunx cspell *)",
-      "Bash(bunx license-cop)",
-      "Bash(bunx tsc *)"
-    ]
+    "allow": ["Bash(bun install)", "Bash(bun install --frozen-lockfile)", "Bash(bun test *)", "Bash(bun run build)", "Bash(bun run build:*)", "Bash(bun run dev)", "Bash(bun run start)", "Bash(bun run lint)", "Bash(bun run test)", "Bash(bun run e2e)", "Bash(bunx biome *)", "Bash(bunx cspell *)", "Bash(bunx license-cop)", "Bash(bunx tsc *)", "Bash(npm view *)", "Bash(grep *)"]
   }
 }

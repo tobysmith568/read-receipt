@@ -1,41 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { GlobalRegistrator } from "@happy-dom/global-registrator";
+import { describe, expect, it } from "bun:test";
 import { getUserAgentData } from "./user-agent";
 
 describe("user-agent utils", () => {
-  // Only this file needs a `window`/`navigator` global (ua-parser-js falls back to
-  // `navigator.userAgent` when constructed without a value), so happy-dom is
-  // registered/unregistered here rather than globally for the whole test run —
-  // its Request/Headers implementation strips the (spec-forbidden) `host` header
-  // that src/utils/domain.test.ts relies on, so a global registration would break it.
-  let originalDescriptor: PropertyDescriptor | undefined;
-
-  beforeAll(() => {
-    GlobalRegistrator.register();
-
-    originalDescriptor = Object.getOwnPropertyDescriptor(
-      Object.getPrototypeOf(window.navigator),
-      "userAgent"
-    );
-
-    Object.defineProperty(window.navigator, "userAgent", {
-      configurable: true,
-      get: () => undefined
-    });
-  });
-
-  afterAll(async () => {
-    if (originalDescriptor) {
-      Object.defineProperty(
-        Object.getPrototypeOf(window.navigator),
-        "userAgent",
-        originalDescriptor
-      );
-    }
-
-    await GlobalRegistrator.unregister();
-  });
-
   describe("getUserAgentData", () => {
     [
       {
@@ -50,7 +16,12 @@ describe("user-agent utils", () => {
       {
         userAgent:
           "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36",
-        result: { browser: "Chrome", os: "Android", platform: "Samsung", version: "59.0.3071.125" }
+        result: {
+          browser: "Mobile Chrome",
+          os: "Android",
+          platform: "Samsung",
+          version: "59.0.3071.125"
+        }
       },
       {
         userAgent:
@@ -60,7 +31,7 @@ describe("user-agent utils", () => {
       {
         userAgent:
           "Mozilla/5.0 (Linux; U; Android 5.1; locale; device Build/build) AppleWebKit/webkit (KHTML, like Gecko) Version/4.0 Chrome/chrome Safari/safari",
-        result: { browser: "Android Browser", os: "Android", platform: undefined, version: "4.0" }
+        result: { browser: "Android Browser", os: "Android", platform: "Generic", version: "4.0" }
       },
       {
         userAgent:

@@ -141,9 +141,10 @@ exports[`second email should render all the data correctly 1`] = `
         none
       </b>
       of your personal information. It&#x27;s totally stateless with no cookies, databases, logs, or anything else! You can check the source code
-      <a target="_blank"
-         rel="noreferrer noopener"
-         href="https://github.com/tobysmith568/Read-Receipt"
+      <a
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://github.com/tobysmith568/Read-Receipt"
       >
         on GitHub
       </a>

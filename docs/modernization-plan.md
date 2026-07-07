@@ -609,6 +609,32 @@ the real `tobythe-dev` GCP project):**
   abandoned attempt at exactly the EMAIL_* delivery problem this stage
   solves properly). Both deleted as part of this stage's cleanup rather than
   left as unexplained residue.
+- Checked the deploy SA's current IAM roles: `run.developer`,
+  `iam.serviceAccountUser`, `storage.admin` (leftover from GCR's GCS-backed
+  storage), `containerregistry.ServiceAgent`. **Missing** `artifactregistry.writer`
+  and a Secret Manager write role — without granting these, `infra:apply`'s
+  first real run fails outright. See "IAM grants" below for where these get
+  added.
+- Bigger finding: the Cloud Run service's **runtime** SA (the identity the
+  app itself runs as — distinct from the deploy SA above) is the project's
+  **default compute service account**, which holds **`roles/editor`** —
+  project-wide write access. That's a materially larger blast radius than the
+  plaintext SMTP creds (a public-facing demo app effectively running with
+  near-owner rights on the whole GCP project), and granting Secret Manager
+  read access to *this* SA for the `--set-secrets` change would otherwise
+  mean granting it to an already-overprivileged identity. Fixed as part of
+  this stage — see "Runtime service account" below.
+- Confirmed the custom domain mapping (`read-receipt.tobythe.dev` →
+  `read-receipt` service, `gcloud beta run domain-mappings list`) is keyed to
+  the Cloud Run *service name*, not any identity/revision — adopting the
+  existing service (rather than recreating it) leaves this untouched, no
+  action needed.
+- Confirmed `FORCE_HTTP`'s absence from the live service's env vars today is
+  correct, not a gap: `src/utils/domain.ts` only forces `http://` links when
+  `env.dev.isDev || env.forceHttp`, and production is neither — it's an
+  override solely for `docker compose up app` (TLS-terminated by nothing),
+  not something a real Cloud Run deployment (TLS-terminated by Cloud Run
+  itself) should ever set. No change needed here.
 
 The job granularity (lint/build/test/licence/e2e, then a separate deploy job
 gated on CI passing) mostly stays as-is — this stage is primarily about *what
@@ -692,6 +718,34 @@ housekeeping items bundled in since they touch the same files:
   than repurposed — no confirmed history of what it was for), passed into
   `infra:apply`'s environment at deploy time.
 
+### IAM grants
+
+- Same chicken-and-egg shape as WIF: the deploy SA can't grant itself
+  permissions it doesn't already have, so its missing roles
+  (`artifactregistry.writer` on the `read-receipt` Artifact Registry repo, and
+  a Secret Manager role covering create-secret + add-version + read-latest-
+  version, e.g. `roles/secretmanager.admin` scoped project-wide since
+  `infra:apply` needs to create secrets that don't exist yet and resource-
+  level IAM can't be assigned before the resource exists) are granted by
+  `infra:bootstrap`, not `infra:apply` — consistent with keeping every
+  IAM-grant-shaped action out of anything CI runs routinely.
+
+### Runtime service account
+
+- `infra:bootstrap` creates a new, narrowly-scoped runtime SA (e.g.
+  `read-receipt-runtime@tobythe-dev.iam.gserviceaccount.com`) and grants it
+  only `secretmanager.secretAccessor` on the specific `EMAIL_*` secrets —
+  nothing else. Same reasoning as the IAM grants above: creating a service
+  account and granting it access is IAM-admin-shaped, so it belongs in the
+  manual bootstrap step, not CI's routine apply.
+- `infra:apply`'s `CloudRunService` class switches the service's runtime
+  identity to this new SA (just references its email — deploying a Cloud Run
+  revision to run as a given SA only needs `run.developer` +
+  `iam.serviceAccountUser`, which the deploy SA already has) and away from
+  the default compute SA's project-wide `roles/editor` — closing a larger,
+  pre-existing security gap than the one this stage originally set out to
+  fix, using IAM work this stage is already doing.
+
 ### Workload Identity Federation
 
 - Pulled into this stage's scope (not deferred) given the no-expiry key found
@@ -747,11 +801,15 @@ housekeeping items bundled in since they touch the same files:
 Identity Federation, not raw inline `gcloud run deploy` with a long-lived
 JSON key against GCR; GCR fully retired for `read-receipt` (repointed, old
 image tags deleted); all 4 old SA keys revoked; `EMAIL_USER`/`EMAIL_PASS` live
-in Secret Manager, not plaintext env vars; orphaned `FOSSA_API_KEY`/
+in Secret Manager, not plaintext env vars; the Cloud Run service runs as the
+new narrowly-scoped runtime SA, not the default compute SA's project-wide
+`roles/editor`; the deploy SA holds exactly the roles `infra:apply` needs
+(granted via `infra:bootstrap`), no more; orphaned `FOSSA_API_KEY`/
 `GCP_EMAIL` secrets removed; `gcloud` available via `mise` for local use;
 `integration.yml` gates `build`/`test` behind a passing `typecheck` job that
 also covers `infra/`; `CLAUDE.md` no longer describes the click-ops/GCR/
-static-key deployment path or the old `ci.yml`/`cd.yml` filenames.
+static-key/`roles/editor` deployment path or the old `ci.yml`/`cd.yml`
+filenames.
 
 ## Suggested order
 

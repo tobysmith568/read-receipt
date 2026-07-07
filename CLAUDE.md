@@ -2,10 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> **Living document:** this repo is mid-migration (see `docs/modernization-plan.md`).
-> Revisit this file at the end of every migration stage so it never describes a
-> stack that's already been replaced (e.g. don't leave "Jest" here after the
-> stage that removes it in favour of `bun:test`).
+> **Living document:** keep this file in sync with the stack as it evolves —
+> don't leave it describing tooling that's already been replaced. Notable past
+> architectural/tooling decisions are recorded as ADRs in `docs/adr/`.
 
 ## Project purpose
 

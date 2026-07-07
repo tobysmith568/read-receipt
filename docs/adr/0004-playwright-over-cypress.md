@@ -1,0 +1,3 @@
+# Playwright instead of Cypress, with a local admin HTTP server bridging mail-capture state
+
+E2E tests moved from Cypress to Playwright. Cypress's `cy.task` let spec files call directly into the same Node process running `smtp-tester`'s in-memory captured-mail state; Playwright test files run in separate worker processes from `globalSetup`/`globalTeardown`, so that in-memory object isn't reachable from the specs the same way. Solved by having `e2e/global-setup.ts` start both the `smtp-tester` SMTP server *and* a small local admin HTTP server (`e2e/mail-server.ts`, port 4526) exposing `POST /reset` and `GET /last-email?to=`; spec files call it via `e2e/mail-client.ts` over plain `fetch`, replacing Cypress's in-process RPC with an equivalent same-machine HTTP RPC.

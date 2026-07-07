@@ -1,0 +1,3 @@
+# Biome instead of ESLint/Prettier, with unused-import/variable rules off for `.astro`
+
+Biome replaced ESLint + Prettier as the single lint/format tool. Biome supports `.astro` files out of the box (v2.3+, no experimental flag), but its analysis doesn't see across the `---` frontmatter/template boundary — any prop or import only referenced in the markup below (e.g. a destructured prop, a component import used only in JSX-like markup) gets flagged as unused. Since that's a real gap rather than a preference, `noUnusedImports` and `noUnusedVariables` are explicitly disabled for `**/*.astro` in `biome.json` (documented there and in `CLAUDE.md`); both rules still apply everywhere else.

@@ -1,0 +1,7 @@
+# GCP deployment hardening: WIF over static keys, secrets in Secret Manager, a narrowly-scoped runtime SA
+
+An audit ahead of the IaC migration (see `0006-hand-rolled-infra-package.md`) found three live security gaps in the click-ops deployment path, all fixed as part of that same stage rather than left for later:
+
+- The deploy service account's long-lived JSON key (`GCP_CREDENTIALS`) had **no expiry**. Fixed by switching `deployment.yml`'s `google-github-actions/auth` step to Workload Identity Federation, with the trust condition scoped to `attribute.repository == 'tobysmith568/read-receipt'` AND `attribute.ref == 'refs/heads/main'`. The existing deploy SA was kept (it already had the right IAM roles from years of deploys) — only how GitHub Actions authenticates as it changed. All `USER_MANAGED` keys on that SA were revoked once WIF was confirmed working in real CI.
+- `EMAIL_USER`/`EMAIL_PASS` (a live SMTP key) were **plaintext Cloud Run env vars**. Fixed by moving them to Secret Manager, referenced via `--set-secrets` instead of `--set-env-vars`.
+- The Cloud Run service's **runtime** identity was the project's default compute service account, which holds project-wide `roles/editor` — a public-facing demo app was effectively running with near-owner rights on the whole GCP project. Fixed by creating a new, narrowly-scoped `read-receipt-runtime@` service account (granted only `secretmanager.secretAccessor` on the two `EMAIL_*` secrets) and switching the Cloud Run service to run as it instead.

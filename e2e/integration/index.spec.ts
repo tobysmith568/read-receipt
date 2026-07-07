@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { getLastEmail } from "../mail-client";
 
 // Matches any attributes between the closing quote of `src` and the closing
@@ -13,6 +13,23 @@ const trackingPixelRegex =
 // reading/clearing each other's captured emails.
 const uniqueEmail = () => `user+${randomUUID()}@tobysmith.uk`;
 
+// The form is a client:load React island - if it hasn't finished hydrating
+// yet when `fill` dispatches its input event, that event is missed and the
+// submit button (disabled until React sees the change) never becomes
+// enabled, no matter how long `click` retries. Re-filling until the button
+// reports enabled self-heals against that hydration race.
+const submitEmail = async (page: Page, email: string) => {
+  const emailInput = page.locator("#email");
+  const submitButton = page.getByRole("button", { name: "Send Email" });
+
+  await expect(async () => {
+    await emailInput.fill(email);
+    await expect(submitButton).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 30_000 });
+
+  await submitButton.click();
+};
+
 test.describe("Index", () => {
   const userEmail = "user@tobysmith.uk";
 
@@ -25,8 +42,7 @@ test.describe("Index", () => {
 
     await page.goto("/");
 
-    await page.locator("#email").fill(userEmail);
-    await page.getByRole("button", { name: "Send Email" }).click();
+    await submitEmail(page, userEmail);
 
     await expect(page.getByText(`Successfully sent to ${userEmail}`)).toBeVisible();
 
@@ -47,8 +63,7 @@ test.describe("Index", () => {
 
     await page.goto("/");
 
-    await page.locator("#email").fill(userEmail);
-    await page.getByRole("button", { name: "Send Email" }).click();
+    await submitEmail(page, userEmail);
 
     await expect(page.getByText(`Successfully sent to ${userEmail}`)).toBeVisible();
 
@@ -71,8 +86,7 @@ test.describe("Index", () => {
   test("Clicking 'Send another' re-shows the email input", async ({ page }) => {
     await page.goto("/");
 
-    await page.locator("#email").fill(userEmail);
-    await page.getByRole("button", { name: "Send Email" }).click();
+    await submitEmail(page, userEmail);
 
     await expect(page.getByText(`Successfully sent to ${userEmail}`)).toBeVisible();
 
@@ -84,8 +98,7 @@ test.describe("Index", () => {
   test("Entering an invalid email address shows the error message", async ({ page }) => {
     await page.goto("/");
 
-    await page.locator("#email").fill("this is not an email address");
-    await page.getByRole("button", { name: "Send Email" }).click();
+    await submitEmail(page, "this is not an email address");
 
     await expect(page.getByText("Sorry, there was an error!")).toBeVisible();
   });
@@ -93,8 +106,7 @@ test.describe("Index", () => {
   test("Clicking 'Try again' re-shows the email input", async ({ page }) => {
     await page.goto("/");
 
-    await page.locator("#email").fill("this is not an email address");
-    await page.getByRole("button", { name: "Send Email" }).click();
+    await submitEmail(page, "this is not an email address");
 
     await page.getByRole("button", { name: "Try again" }).click();
 

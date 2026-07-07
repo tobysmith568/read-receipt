@@ -28,7 +28,7 @@
     "axios": "^1.16.0",
     "dayjs": "^1.10.8",
     "jotai": "^2.0.0",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^9.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "ua-parser-js": "^1.0.33"

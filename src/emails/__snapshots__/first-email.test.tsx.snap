@@ -14,16 +14,18 @@ exports[`first email should render correctly 1`] = `
     </p>
     <p>
       You received this email because your email address was entered into the tool
-      <a target="_blank"
-         rel="noreferrer noopener"
-         href="https://wherever.this.is.hosted"
+      <a
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://wherever.this.is.hosted"
       >
         Read Receipt
       </a>
       created by
-      <a target="_blank"
-         rel="noreferrer noopener"
-         href="https://tobysmith.uk"
+      <a
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://tobysmith.uk"
       >
         Toby Smith
       </a>
@@ -41,9 +43,10 @@ exports[`first email should render correctly 1`] = `
         none
       </b>
       of your personal information. It&#x27;s totally stateless with no cookies, databases, logs, or anything else! You can check the source code
-      <a target="_blank"
-         rel="noreferrer noopener"
-         href="https://github.com/tobysmith568/Read-Receipt"
+      <a
+        target="_blank"
+        rel="noreferrer noopener"
+        href="https://github.com/tobysmith568/Read-Receipt"
       >
         on GitHub
       </a>
@@ -63,8 +66,9 @@ exports[`first email should render correctly 1`] = `
     <p>
       Thanks!
     </p>
-    <img src="https://wherever.this.is.hosted/api/open/this.is.a.url.safe.email.address%40mail.com/1234567890"
-         alt
+    <img
+      src="https://wherever.this.is.hosted/api/open/this.is.a.url.safe.email.address%40mail.com/1234567890"
+      alt
     >
   </body>
 </html>"

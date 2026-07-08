@@ -34,7 +34,7 @@
     "@ua-parser-js/pro-personal": "^2.0.10"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.2",
+    "@biomejs/biome": "2.5.3",
     "@license-cop/permissive": "^1.7.1",
     "@playwright/test": "^1.61.1",
     "@types/bun": "^1.3.14",

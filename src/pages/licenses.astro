@@ -2,11 +2,12 @@
 export const prerender = true;
 
 // cspell: ignore noindex
+import path from "node:path";
 import { getProjectLicenses } from "generate-license-file";
 import Content from "../components/Content.astro";
 import Layout from "../layouts/Layout.astro";
 
-const licenses = await getProjectLicenses(new URL("../../package.json", import.meta.url).pathname);
+const licenses = await getProjectLicenses(path.join(process.cwd(), "package.json"));
 
 const getPackageUrl = (packageNameAndVersion: string) => {
   const indexOfLastAt = packageNameAndVersion.lastIndexOf("@");

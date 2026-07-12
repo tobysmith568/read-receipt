@@ -69,6 +69,7 @@ exports[`first email should render correctly 1`] = `
     <img
       src="https://wherever.this.is.hosted/api/open/this.is.a.url.safe.email.address%40mail.com/1234567890"
       alt
+      loading="lazy"
     >
   </body>
 </html>"

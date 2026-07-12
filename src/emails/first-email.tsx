@@ -71,7 +71,7 @@ const FirstEmail: FC<FirstEmailProps> = ({ domain, timestamp, urlSafeEmail }) =>
 
       <p>Thanks!</p>
 
-      <img src={`${domain}/api/open/${urlSafeEmail}/${timestamp}`} alt="" />
+      <img src={`${domain}/api/open/${urlSafeEmail}/${timestamp}`} alt="" loading="lazy" />
     </>
   );
 };

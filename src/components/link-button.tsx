@@ -7,6 +7,6 @@ const LinkButton = styled.button`
   cursor: pointer;
   text-decoration: underline;
   font-size: 1em;
-  color: inherit;
+  color: var(--color-accent);
 `;
 export default LinkButton;

@@ -13,7 +13,7 @@ test.describe("404", () => {
   test("Can route back to the index", async ({ page }) => {
     await page.goto("/this-is-not-a-valid-url");
 
-    await page.getByRole("link", { name: "<- Home" }).click();
+    await page.getByRole("link", { name: "Home" }).click();
 
     await expect(
       page.getByRole("heading", { level: 1, name: "404", exact: true })

@@ -29,12 +29,10 @@ const getFormPage = (formState: Status) => {
 };
 
 const FormWrapper = styled.div`
-  width: 75%;
-  margin: 1.5em auto 1.5em auto;
+  width: 100%;
+  margin: 1.5em 0;
 
-  @media (max-width: 500px) {
-    &.form {
-      width: 100%;
-    }
+  @media (max-height: 700px) {
+    margin: 0.9em 0;
   }
 `;

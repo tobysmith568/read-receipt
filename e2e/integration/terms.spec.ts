@@ -14,7 +14,7 @@ test.describe("Terms", () => {
   test("Can route back to the index", async ({ page }) => {
     await page.goto("/terms");
 
-    await page.getByRole("link", { name: "<- Home" }).click();
+    await page.getByRole("link", { name: "Home" }).click();
 
     await expect(
       page.getByRole("heading", { level: 1, name: "Terms and Conditions", exact: true })

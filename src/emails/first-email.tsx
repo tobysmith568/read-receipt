@@ -27,46 +27,38 @@ const FirstEmail: FC<FirstEmailProps> = ({ domain, timestamp, urlSafeEmail }) =>
     <>
       <p>Hey 👋</p>
       <p>
-        You received this email because your email address was entered into the tool{" "}
+        You&apos;re receiving this because you entered your email into{" "}
         <a target="_blank" rel="noreferrer noopener" href={domain}>
           Read Receipt
-        </a>{" "}
-        created by{" "}
-        <a target="_blank" rel="noreferrer noopener" href="https://tobysmith.uk">
-          Toby Smith
         </a>
-        .
+        , a tool I built.
       </p>
 
       <p>
-        This email contains a &apos;tracking pixel&apos;; a tiny invisible image. When you opened
-        this email, the image loaded and gave away not only that you opened this email, but also
-        some personal information about you and your device.
+        This email contains a tracking pixel, a tiny invisible image. Opening it did more than
+        reveal that you&apos;d opened the email; it also gave away some information about you and
+        your device.
       </p>
 
       <p>
-        Some email providers are able to block these pixels, but assuming that it was successful,
-        opening this email will trigger another email to be sent to you. This second email, which
-        you should have already received by now, contains all of the information I was able to
-        gather from you opening this email.
+        Some email providers block pixels like this one. If yours didn&apos;t, opening this email
+        should have already triggered a second one, which shows you everything the pixel gathered.
       </p>
 
       <p>
-        This tool stores <b>none</b> of your personal information. It&apos;s totally stateless with
-        no cookies, databases, logs, or anything else! You can check the source code{" "}
+        This tool stores nothing: no cookies, no database, no logs.{" "}
         <a
           target="_blank"
           rel="noreferrer noopener"
           href="https://github.com/tobysmith568/Read-Receipt">
-          on GitHub
+          Source on GitHub
         </a>
         .
       </p>
 
       <p>
-        If you have any questions, you can reach out to me at{" "}
-        <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a> or find me at{" "}
-        <a href="https://tobysmith.uk">https://tobysmith.uk</a>.
+        Questions? Reach me at <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a> or{" "}
+        <a href="https://tobysmith.uk">tobysmith.uk</a>.
       </p>
 
       <p>Thanks!</p>

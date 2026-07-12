@@ -93,10 +93,18 @@ FORCE_HTTP=true         # needed once running the *built* app (bun run start / d
 ```
 
 Read in `src/utils/env.ts` via `getEnv()` — always go through that function rather
-than reading `process.env` directly elsewhere. This still works unchanged under
-Astro: `process.env` is read only inside server/API-route code, which runs in a
-real Bun process at request time. The one exception is the footer's copyright
-year, which is a build-time-inlined _public_ value — that one is `PUBLIC_YEAR`,
+than reading env vars directly elsewhere. `getEnv()` reads `process.env[key] ||
+import.meta.env[key]` (see `readEnvVar`), not either alone — see ADR 0008 for why
+both are needed: under `astro dev`, Vite only reliably loads arbitrary `.env`
+values into `import.meta.env`, leaving `process.env` empty; but for the *built*
+server, Vite statically inlines `import.meta.env.*` at `astro build` time, so it
+can't see values Docker/Cloud Run inject into `process.env` at container
+runtime, after the build already ran. The types for these are declared in
+`src/env.d.ts`'s `ImportMetaEnv` interface — add any new var there too.
+`getEnv().dev.isDev` is the one field that stays `import.meta.env.DEV`-only
+(wrapped in `Boolean(...)`), since it's meant to stay frozen per build rather
+than vary with runtime env vars. The footer's copyright year
+follows the same convention: it's a build-time-inlined _public_ value, `PUBLIC_YEAR`,
 read via `import.meta.env.PUBLIC_YEAR` in `src/components/Footer.astro` (Vite's
 convention for values safe to ship to the client, mirroring what `NEXT_PUBLIC_YEAR`
 was under Next).

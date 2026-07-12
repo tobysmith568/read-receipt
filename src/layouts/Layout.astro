@@ -23,24 +23,31 @@ const { title, description, noIndex = false } = Astro.props;
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=zdnfztgnfgt" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=zdnfztgnfgt" />
     <link rel="manifest" href="/site.webmanifest?v=zdnfztgnfgt" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=zdnfztgnfgt" color="#2fa7ec" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=zdnfztgnfgt" color="#1e90ff" />
     <link rel="shortcut icon" href="/favicon.ico?v=zdnfztgnfgt" />
-    <meta name="msapplication-TileColor" content="#2fa7ec" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="msapplication-TileColor" content="#1e90ff" />
+    <meta name="theme-color" content="#e2edfb" />
   </head>
   <body>
-    <div class="wrapper">
+    <main class="content">
       <slot />
-      <Footer />
-    </div>
+    </main>
+    <Footer />
   </body>
 </html>
 
 <style>
-  .wrapper {
-    width: 100vw;
-    height: 100vh;
-    display: grid;
-    place-content: center;
+  .content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 1.5rem;
+  }
+
+  @media (max-height: 700px) {
+    .content {
+      padding: 1.25rem 1.5rem;
+    }
   }
 </style>

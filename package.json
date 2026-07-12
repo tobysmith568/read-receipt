@@ -10,6 +10,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "astro dev",
+    "smtp4dev": "docker compose up -d smtp4dev",
     "build": "astro build",
     "start": "bun ./dist/server/entry.mjs",
     "lint": "biome ci .",

@@ -14,7 +14,7 @@ test.describe("Third-party licenses", () => {
   test("Can route back to the index", async ({ page }) => {
     await page.goto("/licenses");
 
-    await page.getByRole("link", { name: "<- Home" }).click();
+    await page.getByRole("link", { name: "Home" }).click();
 
     await expect(
       page.getByRole("heading", { level: 1, name: "Third-Party Licenses", exact: true })

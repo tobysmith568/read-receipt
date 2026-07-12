@@ -3,23 +3,27 @@ import type { FC } from "react";
 
 const Sending: FC = () => {
   return (
-    <div>
+    <Wrapper>
       <SpinnerWrapper>
         <Spinner />
       </SpinnerWrapper>
       Sending
-    </div>
+    </Wrapper>
   );
 };
 export default Sending;
+
+const Wrapper = styled.div`
+  text-align: center;
+`;
 
 const SpinnerWrapper = styled.div`
   margin-bottom: 1em;
 `;
 
 const Spinner = styled.div`
-  border: 0.4em solid #cecece;
-  border-top: 0.4em solid dodgerblue;
+  border: 0.4em solid var(--color-card-border);
+  border-top: 0.4em solid var(--color-accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   height: 3em;

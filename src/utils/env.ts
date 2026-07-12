@@ -18,18 +18,18 @@ export interface Env {
 
 export const getEnv = (): Env => ({
   email: {
-    host: process.env.EMAIL_HOST ?? "",
-    port: parseNumber(process.env.EMAIL_PORT, 465),
-    senderName: process.env.EMAIL_SENDER_NAME ?? "",
-    senderEmail: process.env.EMAIL_SENDER_EMAIL ?? "",
-    user: process.env.EMAIL_USER ?? "",
-    pass: process.env.EMAIL_PASS ?? ""
+    host: import.meta.env.EMAIL_HOST ?? "",
+    port: parseNumber(import.meta.env.EMAIL_PORT, 465),
+    senderName: import.meta.env.EMAIL_SENDER_NAME ?? "",
+    senderEmail: import.meta.env.EMAIL_SENDER_EMAIL ?? "",
+    user: import.meta.env.EMAIL_USER ?? "",
+    pass: import.meta.env.EMAIL_PASS ?? ""
   },
   dev: {
-    isDev: process.env.NODE_ENV === "development",
-    ip: isFalsyOrEmpty(process.env.DEV_IP) ? undefined : process.env.DEV_IP
+    isDev: Boolean(import.meta.env.DEV),
+    ip: isFalsyOrEmpty(import.meta.env.DEV_IP) ? undefined : import.meta.env.DEV_IP
   },
-  forceHttp: process.env.FORCE_HTTP === "true"
+  forceHttp: import.meta.env.FORCE_HTTP === "true"
 });
 
 const isFalsyOrEmpty = (value: string | undefined | null): boolean => {

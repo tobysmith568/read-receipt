@@ -42,14 +42,12 @@ const SecondEmail: FC<SecondEmailProps> = ({ domain, user, times, ipData, userAg
     <>
       <p>Hey 👋</p>
       <p>
-        You received this email because your email address was entered into the tool{" "}
-        <a href={domain}>Read Receipt</a> created by <a href="https://tobysmith.uk">Toby Smith</a>{" "}
-        and you opened an email containing a tracking pixel.
+        You&apos;re receiving this because you opened an email from{" "}
+        <a href={domain}>Read Receipt</a> containing a tracking pixel.
       </p>
 
       <p>
-        Below shows all of the information which my implementation of a tracking pixel is able to
-        expose. Note that other people or companies may be able to find out more!
+        Here&apos;s everything it was able to expose. Other senders may be able to gather even more.
       </p>
 
       <p>Times:</p>
@@ -109,34 +107,30 @@ const SecondEmail: FC<SecondEmailProps> = ({ domain, user, times, ipData, userAg
       )}
 
       <p>
-        Some of this information may be inaccurate, especially the location and device sections.
-        This is because some providers attempt to protect their users from tools like the tracking
-        pixel hidden in the first email.
+        Some of this may be inaccurate, especially location and device, since some providers try to
+        protect users from tracking pixels like this one.
       </p>
 
       <p>
-        Reopening the first email you received on different devices or by enabling/disabling WiFi on
-        mobile devices will yield different results with different levels of data accuracy. If you
-        have multiple emails from different providers you will see different results from each of
-        them too, eg, @outlook.com or @gmail.com.
+        Reopening the first email on a different device, or with WiFi toggled on mobile, will give
+        different results. Different providers (e.g. Outlook vs Gmail) will also show different
+        levels of accuracy.
       </p>
 
       <p>
-        This tool stores <b>none</b> of your personal information. It&apos;s totally stateless with
-        no cookies, databases, logs, or anything else! You can check the source code{" "}
+        This tool stores nothing: no cookies, no database, no logs.{" "}
         <a
           target="_blank"
           rel="noreferrer noopener"
           href="https://github.com/tobysmith568/Read-Receipt">
-          on GitHub
+          Source on GitHub
         </a>
         .
       </p>
 
       <p>
-        If you have any questions, you can reach out to me at{" "}
-        <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a> or find me at{" "}
-        <a href="https://tobysmith.uk">https://tobysmith.uk</a>.
+        Questions? Reach me at <a href="mailto:contact@tobythe.dev">contact@tobythe.dev</a> or{" "}
+        <a href="https://tobysmith.uk">tobysmith.uk</a>.
       </p>
 
       <p>Thanks!</p>

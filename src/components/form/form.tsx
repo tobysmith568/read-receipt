@@ -62,30 +62,42 @@ export default Form;
 const focusRef = (ref: HTMLElement | null) => ref?.focus();
 
 const EmailLabel = styled.label`
+  display: inline-block;
   text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  margin-bottom: 0.4em;
 `;
 
 const EmailInput = styled.input`
   width: 100%;
-  margin: 0.5em 0 0.5em 0;
-  padding: 10px;
-  font-size: 1em;
+  margin: 0 0 0.5em 0;
+  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
   text-align: center;
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-input-bg);
+  color: var(--color-heading);
 `;
 
 const Errors = styled.div`
   color: red;
+  font-size: 1rem;
 `;
 
 const Submit = styled.button`
   cursor: pointer;
   width: 100%;
   border: none;
-  background: dodgerblue;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
   color: #fff;
   margin: 0;
-  padding: 10px;
-  font-size: 0.7em;
+  padding: 0.55rem;
+  font-size: 1rem;
+  font-weight: 600;
 
   &:disabled {
     cursor: default;

@@ -2,22 +2,30 @@ import type { APIRoute } from "astro";
 import { firstEmailAsHtml } from "../../emails/first-email";
 import { getDomainForRequest } from "../../utils/domain";
 import { sendHtml } from "../../utils/email";
+import { getEnv } from "../../utils/env";
 import { getCurrentTimestampUTC } from "../../utils/time";
 
 export type SubmitRequest = {};
 
 export interface SubmitResponse {
   success: boolean;
+  error?: string;
 }
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     await handleRequest(request);
     return jsonResponse({ success: true }, 200);
-  } catch {
-    return jsonResponse({ success: false }, 500);
+  } catch (error) {
+    return jsonResponse(
+      { success: false, ...(getEnv().dev.isDev && { error: describeError(error) }) },
+      500
+    );
   }
 };
+
+const describeError = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 const handleRequest = async (request: Request) => {
   const currentDomain = getDomainForRequest(request);

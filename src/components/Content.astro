@@ -7,27 +7,57 @@ interface Props {
 const { showHome = false, maxWidth } = Astro.props;
 ---
 
-{showHome && <a class="home-button" href="/">&lt;- Home</a>}
-<div class="inner-content" style={{ "--max-width": maxWidth }}>
-  <slot />
+<div class="content-wrapper" style={{ "--max-width": maxWidth }}>
+  {showHome && (
+    <a class="home-button" href="/">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      Home
+    </a>
+  )}
+  <div class="inner-content">
+    <slot />
+  </div>
 </div>
 
 <style>
+  .content-wrapper {
+    width: 100%;
+    max-width: var(--max-width);
+  }
+
   .home-button {
-    display: inline-block;
-    padding-bottom: 0.25em;
-    margin-left: 0.25em;
-    color: #0c0c0c;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
   }
 
   .inner-content {
-    max-width: var(--max-width);
-    max-height: 80vh;
-    background: #f9f9f9;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-    overflow-y: auto;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.4rem;
+    text-align: left;
     white-space: pre-line;
+  }
+
+  @media (max-height: 700px) {
+    .inner-content {
+      padding: 1.1rem 1.2rem;
+    }
   }
 </style>

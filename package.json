@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "@license-cop/permissive": "^1.7.1",
+    "@license-cop/permissive": "^2.0.0",
     "@playwright/test": "^1.61.1",
     "@types/bun": "^1.3.14",
     "@types/node": "26.6.3",
@@ -46,7 +46,7 @@
     "cspell": "^10.0.0",
     "diffable-html": "^6.0.0",
     "generate-license-file": "^4.0.0",
-    "license-cop": "^1.7.1",
+    "license-cop": "^2.0.0",
     "smtp-tester": "^2.0.0",
     "typescript": "^7.0.0"
   }

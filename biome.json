@@ -10,6 +10,7 @@
       "!**/.next",
       "!**/coverage",
       "!**/node_modules",
+      "!.agents",
       "!public"
     ]
   },

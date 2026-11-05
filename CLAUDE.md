@@ -96,7 +96,7 @@ Read in `src/utils/env.ts` via `getEnv()` — always go through that function ra
 than reading env vars directly elsewhere. `getEnv()` reads `process.env[key] ||
 import.meta.env[key]` (see `readEnvVar`), not either alone — see ADR 0008 for why
 both are needed: under `astro dev`, Vite only reliably loads arbitrary `.env`
-values into `import.meta.env`, leaving `process.env` empty; but for the *built*
+values into `import.meta.env`, leaving `process.env` empty; but for the _built_
 server, Vite statically inlines `import.meta.env.*` at `astro build` time, so it
 can't see values Docker/Cloud Run inject into `process.env` at container
 runtime, after the build already ran. The types for these are declared in
